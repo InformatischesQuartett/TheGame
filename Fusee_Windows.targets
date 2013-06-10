@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Reference all the dlls! -->
+  <ItemGroup>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>..\..\lib\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>..\..\lib\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Imp.NAudio">
+      <HintPath>..\..\lib\Fusee.Engine.Imp.NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Imp.OpenTK">
+      <HintPath>..\..\lib\Fusee.Engine.Imp.OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>..\..\lib\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.SceneManagement">
+      <HintPath>..\..\lib\Fusee.Engine.SceneManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="JSIL.Meta">
+      <HintPath>..\..\lib\JSIL.Meta.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\..\lib\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlNET.Audio">
+      <HintPath>..\..\lib\sfmlNET.Audio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <!-- BeforeBuild on Windows -->
+  <Target Name="BeforeBuild" Condition=" '$(OS)' == 'Windows_NT' ">
+    <Copy SourceFiles="$(ProjectDir)..\..\lib\csfml-audio-2.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+    <Copy SourceFiles="$(ProjectDir)..\..\lib\libmpg123-0.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+    <Copy SourceFiles="$(ProjectDir)..\..\lib\libsndfile-1.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+    <Copy SourceFiles="$(ProjectDir)..\..\lib\openal32.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+    <Copy SourceFiles="$(ProjectDir)..\..\lib\OpenTK.GLControl.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+  </Target>
+  
+  <!--- AfterBuild on Windows -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Debug+Web' And '$(OS)' == 'Windows_NT' ">
+    <PropertyGroup>
+      <WebOutputDir>$(TargetDir)Web\</WebOutputDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <WebGLScripts Include="$(SolutionDir)JSIL\Scripts\*.*" />
+      <WebGLStyles Include="$(SolutionDir)JSIL\Styles\*.*" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(WebOutputDir)" Condition="!Exists('$(WebOutputDir)')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets" Condition="!Exists('$(WebOutputDir)Assets')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Scripts" Condition="!Exists('$(WebOutputDir)Scripts')" />
+    <MakeDir Directories="$(WebOutputDir)\Assets\Styles" Condition="!Exists('$(WebOutputDir)Styles')" />
+
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): JSIL CCing ###" />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)JSIL\Compiler\JSILc.exe" -o "$(WebOutputDir)Assets\Scripts" "$(TargetPath)"' />
+    
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Copying additional scripts/styles ###" />
+    <Copy SourceFiles="@(WebGLScripts)" DestinationFolder="$(WebOutputDir)Assets\Scripts" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WebGLStyles)" DestinationFolder="$(WebOutputDir)Assets\Styles" SkipUnchangedFiles="true" />
+
+    <!-- Escaping necessary because of quotation marks! -->
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Creating default HTML file ###" />
+    <Exec ContinueOnError="true" Timeout="60000" Command='"$(SolutionDir)JSIL\Compiler\fuHTMLGen.exe" "$(TargetDir)\" "$(WebOutputDir)\" "$(TargetPath)"' />
+    
+    <Message Importance="High" Text="### PostBuildEvent $(TargetName): Done ###" />
+  </Target>
+</Project>
