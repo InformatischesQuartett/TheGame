@@ -49,7 +49,8 @@
   <ItemGroup>
     <Compile Include="GameHandler.cs" />
     <Compile Include="GameStates\AbstractGameState.cs" />
-    <Compile Include="GameStates\GameStates.cs" />
+    <Compile Include="GameStates\GameState.cs" />
+    <Compile Include="GameStates\InGameState.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

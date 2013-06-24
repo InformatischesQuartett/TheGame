@@ -1,26 +1,27 @@
-﻿using System.IO;
-using System.Collections.Generic;
-
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
-
-using Examples.TheGame.GameStates;
 
 namespace Examples.TheGame
 {
-    public class TdM : RenderCanvas
+    /// <summary>
+    /// This class contains the main entry point of the game
+    /// </summary>
+    public class TheGame : RenderCanvas
     {
-
-
         protected ShaderProgram Sp;
         protected IShaderParam[] Param;
         protected ShaderMaterial M;
 
         private static float _red, _green, _blue;
 
-        //GameHandler 
+        /// <summary>
+        /// The main game handler
+        /// </summary>
         private GameHandler _gameHandler;
 
+        /// <summary>
+        /// Initialize FUSEE
+        /// </summary>
         public override void Init()
         {
             Sp = MoreShaders.GetShader("bump", RC);
@@ -29,6 +30,7 @@ namespace Examples.TheGame
             RC.SetLightActive(0, 1);
             RC.SetLightPosition(0, new float3(500, 0, 0));
             RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
+            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
             RC.SetLightDiffuse(0, new float4(_red, _green, _blue, 1));
             RC.SetLightDirection(0, new float3(-1, 0, 0));
 
@@ -36,33 +38,44 @@ namespace Examples.TheGame
             M = new ShaderMaterial(Sp);
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
-            // is called on startup
-
-            //initialize new GmaeHandler object
+            
+            // Create game handler
             _gameHandler = new GameHandler(RC);
         }
 
+        /// <summary>
+        /// Renders everything 
+        /// </summary>
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-         
+
+            // Update game handler and render it
+            _gameHandler.UpdateStates();
+            _gameHandler.RenderAFrame();
+
             Present();
         }
-            
+
+        /// <summary>
+        /// Resizes the game window.
+        /// </summary>
         public override void Resize()
         {
             // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
+        /// <summary>
+        /// Main entry point of the game
+        /// </summary>
         public static void Main()
         {
-            var app = new TdM();
+            var app = new TheGame();
             app.Run();
         }
-
     }
 }
