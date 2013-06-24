@@ -11,11 +11,6 @@ namespace Examples.TheGame
     public class GameHandler
     {
         /// <summary>
-        ///     Currently active and updated game state
-        /// </summary>
-        private AbstractGameState _curGameState;
-
-        /// <summary>
         ///     A dictionary storing all game states that are known to the game
         /// </summary>
         private readonly Dictionary<GameState, AbstractGameState> _gameStates;
@@ -24,6 +19,11 @@ namespace Examples.TheGame
         ///     RenderContext
         /// </summary>
         private readonly RenderContext _rc;
+
+        /// <summary>
+        ///     Currently active and updated game state
+        /// </summary>
+        private AbstractGameState _curGameState;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="GameHandler" /> class.
@@ -42,7 +42,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Inits the list of all states the game knows
+        ///     Inits the list of all states the game knows
         /// </summary>
         /// <param name="list">The list to add the states to</param>
         private void InitStatesList(Dictionary<GameState, AbstractGameState> list)
@@ -59,7 +59,7 @@ namespace Examples.TheGame
         /// </summary>
         public void UpdateStates()
         {
-            if(_curGameState != null)
+            if (_curGameState != null)
                 _curGameState.Update();
         }
 

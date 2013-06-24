@@ -1,33 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using Examples.TheGame.GameEntity;
 using Fusee.Engine;
 
 namespace Examples.TheGame.GameStates
 {
-    // TODO: Add game entities that are automatically handled by game states
-
     /// <summary>
-    /// Abstract game state class. Implements some basic functionality every game state has and defines a common interface.
+    ///     Abstract game state class. Implements some basic functionality every game state has and defines a common interface.
     /// </summary>
     public abstract class AbstractGameState
     {
         /// <summary>
-        /// Gets the ID of this state
+        ///     A list containing all game entities that are maintained by this state
+        /// </summary>
+        private readonly List<AbstractGameEntity> _gameEntities = new List<AbstractGameEntity>();
+
+        /// <summary>
+        ///     A list containing all game entities that are maintained by this state
+        /// </summary>
+        public List<AbstractGameEntity> GameEntities
+        {
+            get { return _gameEntities; }
+        }
+
+        /// <summary>
+        ///     Gets the ID of this state
         /// </summary>
         /// <returns>The ID of this game state</returns>
         public abstract GameState GetId();
 
         /// <summary>
-        /// Updates this game state.
+        ///     Updates this game state.
         /// </summary>
-        public abstract void Update();
+        public virtual void Update()
+        {
+            // Automatically update all entities in this state
+            foreach (AbstractGameEntity entity in GameEntities)
+            {
+                entity.Update(this);
+            }
+        }
 
         /// <summary>
-        /// Renders the game state using the specified render context
+        ///     Renders the game state using the specified render context
         /// </summary>
         /// <param name="rc">The render context to use</param>
-        public abstract void Render(RenderContext rc);
+        public virtual void Render(RenderContext rc)
+        {
+            // Automatically render all entities in this state
+            foreach (AbstractGameEntity entity in GameEntities)
+            {
+                entity.Render(rc, this);
+            }
+        }
     }
 }

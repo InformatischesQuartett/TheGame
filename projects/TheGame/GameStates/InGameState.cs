@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 
 namespace Examples.TheGame.GameStates
 {
     /// <summary>
-    /// The game state used when the player currently is in the game
+    ///     The game state used when the player currently is in the game
     /// </summary>
-    class InGameState : AbstractGameState
+    internal class InGameState : AbstractGameState
     {
         /// <summary>
-        /// Gets the ID of this state
+        ///     Gets the ID of this state
         /// </summary>
         /// <returns>
-        /// The ID of this game state
+        ///     The ID of this game state
         /// </returns>
         public override GameState GetId()
         {
@@ -23,15 +19,17 @@ namespace Examples.TheGame.GameStates
         }
 
         /// <summary>
-        /// Updates this game state.
+        ///     Updates this game state.
         /// </summary>
         public override void Update()
         {
+            base.Update();
             // TODO: Update the state here
         }
 
         public override void Render(RenderContext rc)
         {
+            base.Render(rc);
             // TODO: Render anything over here
         }
     }
