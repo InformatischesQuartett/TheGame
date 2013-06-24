@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Examples.TheGame.GameStates;
+<<<<<<< HEAD
+using System.Linq;
+using System.Text;
 using Examples.TdM.Networking;
+=======
+using Examples.TheGame.GameStates;
+>>>>>>> master
 using Fusee.Engine;
 
 namespace Examples.TheGame
@@ -16,19 +21,20 @@ namespace Examples.TheGame
         /// </summary>
         private AbstractGameState _curGameState;
 
-        /// <summary>
-        ///     Manager for all network activities
-        /// </summary>
+<<<<<<< HEAD
+        //NetworkManager
         private NetworkHandler _networkHandler;
-        
+=======
         /// <summary>
         ///     A dictionary storing all game states that are known to the game
         /// </summary>
         private readonly Dictionary<GameState, AbstractGameState> _gameStates;
+
         /// <summary>
         ///     RenderContext
         /// </summary>
         private readonly RenderContext _rc;
+>>>>>>> master
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="GameHandler" /> class.
@@ -39,8 +45,7 @@ namespace Examples.TheGame
             //pass RenderContext
             _rc = rc;
 
-            // Initialize the network manager
-            _networkHandler = new NetworkHandler(rc);
+            // TODO: NetworkManager initalize
 
             // Initialize list of all game states
             _gameStates = new Dictionary<GameState, AbstractGameState>();
@@ -56,8 +61,13 @@ namespace Examples.TheGame
             // TODO: Add all other game states that are being implemented
             list.Add(GameState.InGame, new InGameState());
 
+<<<<<<< HEAD
+            //NetworkManager initalize
+            _networkHandler = new NetworkHandler(rc);
+=======
             // Set the initial game state to use
             _curGameState = _gameStates[GameState.InGame];
+>>>>>>> master
         }
 
         /// <summary>
@@ -65,9 +75,6 @@ namespace Examples.TheGame
         /// </summary>
         public void UpdateStates()
         {
-            if (_networkHandler != null)
-                _networkHandler.HandleNetwork();
-
             if(_curGameState != null)
                 _curGameState.Update();
         }
@@ -77,8 +84,12 @@ namespace Examples.TheGame
         /// </summary>
         public void RenderAFrame()
         {
+<<<<<<< HEAD
+            _networkHandler.HandleNetwork();
+=======
             if (_curGameState != null)
                 _curGameState.Render(_rc);
+>>>>>>> master
         }
 
         /// <summary>

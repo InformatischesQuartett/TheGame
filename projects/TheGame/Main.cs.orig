@@ -49,9 +49,13 @@ namespace Examples.TheGame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+<<<<<<< HEAD
+         
+=======
 
             // Update game handler and render it
             _gameHandler.UpdateStates();
+>>>>>>> master
             _gameHandler.RenderAFrame();
 
             Present();
