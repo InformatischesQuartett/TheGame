@@ -23,7 +23,7 @@ namespace Examples.TheGame
 
         public override void Init()
         {
-            Sp = MoreShaders.GetShader("bump", RC);
+            Sp = MoreShaders.GetShader("diffuse", RC);
             RC.SetShader(Sp);
             _red = _green = _blue = 0.1f;
             RC.SetLightActive(0, 1);
@@ -46,6 +46,8 @@ namespace Examples.TheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
          
+            _gameHandler.RenderAFrame();
+
             Present();
         }
             

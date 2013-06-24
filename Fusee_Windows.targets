@@ -8,11 +8,14 @@
     <Reference Include="Fusee.Engine.Core">
       <HintPath>..\..\lib\Fusee.Engine.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Engine.Imp.NAudio">
-      <HintPath>..\..\lib\Fusee.Engine.Imp.NAudio.dll</HintPath>
+    <Reference Include="Fusee.Engine.Imp.SFMLAudio">
+      <HintPath>..\..\lib\Fusee.Engine.Imp.SFMLAudio.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Imp.OpenTK">
       <HintPath>..\..\lib\Fusee.Engine.Imp.OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Imp.Lidgren">
+      <HintPath>..\..\lib\Fusee.Engine.Imp.Lidgren.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
       <HintPath>..\..\lib\Fusee.Math.Core.dll</HintPath>
@@ -29,6 +32,9 @@
     <Reference Include="sfmlNET.Audio">
       <HintPath>..\..\lib\sfmlNET.Audio.dll</HintPath>
     </Reference>
+    <Reference Include="Lidgren.Network">
+      <HintPath>..\..\lib\Lidgren.Network.dll</HintPath>
+    </Reference>
   </ItemGroup>
   
   <!-- BeforeBuild on Windows -->
@@ -38,6 +44,7 @@
     <Copy SourceFiles="$(ProjectDir)..\..\lib\libsndfile-1.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(ProjectDir)..\..\lib\openal32.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(ProjectDir)..\..\lib\OpenTK.GLControl.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
+	<Copy SourceFiles="$(ProjectDir)..\..\lib\Lidgren.Network.dll" DestinationFolder="$(TargetDir)" ContinueOnError="true" />
   </Target>
   
   <!--- AfterBuild on Windows -->

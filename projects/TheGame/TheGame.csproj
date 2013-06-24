@@ -51,13 +51,19 @@
     <Compile Include="GameStates\AbstractGameState.cs" />
     <Compile Include="GameStates\GameStates.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Networking\NetworkGUI.cs" />
+    <Compile Include="Networking\NetworkGUIKeys.cs" />
+    <Compile Include="Networking\NetworkHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\guiPlane.obj.model">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <Target Name="Clean">
