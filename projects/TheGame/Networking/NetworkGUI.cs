@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.TdM.Networking
+namespace Examples.TheGame.Networking
 {
     class NetworkGUI
     {
@@ -16,6 +16,10 @@ namespace Examples.TdM.Networking
 
         internal string ConnectToIp = "Discovery?";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NetworkGUI"/> class.
+        /// </summary>
+        /// <param name="rc">The rc.</param>
         internal NetworkGUI(RenderContext rc)
         {
             _renderContext = rc;
@@ -29,6 +33,10 @@ namespace Examples.TdM.Networking
             RefreshGUITex(true);
         }
 
+        /// <summary>
+        /// Refreshes the GUI.
+        /// </summary>
+        /// <param name="clear">if set to <c>true</c> [clear].</param>
         internal void RefreshGUITex(bool clear = false)
         {
             if (clear)
@@ -58,6 +66,9 @@ namespace Examples.TdM.Networking
             _guiTex = _renderContext.CreateTexture(finalImg);
         }
 
+        /// <summary>
+        /// The GUI for the startup.
+        /// </summary>
         internal void StartupGUI()
         {
             _renderContext.SetShaderParamTexture(_texParam, _guiTex);

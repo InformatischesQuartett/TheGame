@@ -1,53 +1,33 @@
-﻿using System.Diagnostics;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 
-namespace Examples.TdM.Networking
+namespace Examples.TheGame.Networking
 {
     class NetworkHandler
     {
         private RenderContext _renderContext;
         private readonly NetworkGUI _networkGUI;
 
+        private readonly NetworkServer _networkServer;
+        // private readonly NetworkClient _networkClient;
+
         public NetworkHandler(RenderContext rc)
         {
             _renderContext = rc;
+
             _networkGUI = new NetworkGUI(rc);
-        }
-
-        private void HandleMessages()
-        {
-            INetworkMsg msg;
-            while ((msg = Network.Instance.IncomingMsg) != null)
-            {
-                if (msg.Type == MessageType.StatusChanged)
-                    _networkGUI.RefreshGUITex();
-
-                if (msg.Type == MessageType.DebugMessage)
-                {
-                    // TODO
-                }
-
-                if (msg.Type == MessageType.Data)
-                {
-                    // TODO
-                }
-
-                if (msg.Type == MessageType.DiscoveryRequest)
-                {
-                    // TODO
-                }
-
-                if (msg.Type == MessageType.DiscoveryResponse)
-                {
-                    _networkGUI.ConnectToIp = msg.Sender.Address.ToString();
-                }
-            }
+            _networkServer = new NetworkServer(_networkGUI);
+            // _networkClient = new NetworkClient(_networkGUI);
         }
 
         internal void HandleNetwork()
         {
             _networkGUI.StartupGUI();
-            HandleMessages();
+
+            if (Network.Instance.Config.SysType == SysType.Server)
+                _networkServer.HandleMessages();
+
+            // if (Network.Instance.Config.SysType == SysType.Client)
+            //    _networkServer.HandleMessages();
         }
     }
 }

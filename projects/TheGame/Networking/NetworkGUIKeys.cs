@@ -1,9 +1,17 @@
 ﻿using Fusee.Engine;
 
-namespace Examples.TdM.Networking
+namespace Examples.TheGame.Networking
 {
+    /// <summary>
+    /// Handles the keyboard input for the GUI.
+    /// </summary>
     static class NetworkGUIKeys
     {
+        /// <summary>
+        /// Handling the typing of the IP on the GUI.
+        /// </summary>
+        /// <param name="oldIp">The old ip.</param>
+        /// <returns>The new ip.</returns>
         public static string KeyInput(string oldIp)
         {
             var key = "";
