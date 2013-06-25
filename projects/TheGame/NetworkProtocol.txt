@@ -1,0 +1,121 @@
+##################################################################
+############################ THE GAME ############################
+######################## NETWORK PROTOCOL ########################
+##################################################################
+
+This is the documentation of the network protocol which is used
+for The Game. It is based on the protocol used by Minecraft*. The
+Lidgren library used in FUSEE communicates via UDP but is able to
+assure (sequenced and non-sequenced) delivery of any packet. In
+this case all packets must be delivered in the order they were
+sent. Packets arriving later than newer packets of the same type
+have to be rejected by the clients or server.
+
+The first byte of every packet identifies the type of the packet.
+The length is fixed per packet type so it is not necessary to add
+an additional field for the packet length. 
+
+* http://mc.kev009.com/Protocol
+
+
+## KEEP ALIVE ####################################################
+
+Packet ID: 0x00
+Length:    6 Bytes
+Direction: Server -> Clients
+
+## UserID         ## int    ## 0 as UserID is the server        ##
+## KeepAliveID    ## int    ## 10000000 - 99999999              ##
+
+The server sends a KeepAlive packet with a random ID every 60 sec
+to all clients. Every client has to respond within 60 sec with the
+same random ID. Otherwise the server disconnects the client.
+
+
+## PLAYER SPAWN ##################################################
+
+Packet ID: 0x01
+Length:    ? Bytes
+Direction: Server -> Client
+
+## UserID         ## int    ## A number greater than zero       ##
+## SpawnPosition  ## float3 ## Coordinates within the 3D space  ##
+
+When the server starts the game or whenever a new client connects,
+the server sends out a PlayerSpawn packet to all clients or to the
+client which just connected. The clients get their fixed user ID
+to be identified by the server. The client has to set the player
+to the given coordinates in the SpawnPosition field before
+starting the game.
+
+
+## PLAYER UPDATE #################################################
+
+Packet ID: 0x02
+Length:    ? Bytes
+Direction: Client -> Server -> Clients
+	   Server -> Clients
+
+## UserID         ## int    ## A number greater than zero       ##
+## PlayerPosition ## float3 ## Coordinates within the 3D space  ##
+## PlayerRotation ## float3 ## Coordinates within the 3D space  ##
+## PlayerVelocity ## float3 ## Vector; Length is speed in px/f  ##
+## PlayerHealth   ## int    ## A number between 0 and 100       ##
+
+Whenever a player changes the direction or speed of his ship by
+pressing a key (respectively by releasing a key) the client sends
+a PlayerUpdate packet to the server. The server then updates his
+own game state and sends a PlayerUpdate packet to all other
+clients.
+
+Whenever the server detects a collision or a hit, the server sends
+a PlayerUpdate packet to all clients. If the PlayerHealth field is
+zero the corresponding player is dead and the PlayerPosition field
+contains coordinates for the location where the client has to
+respawn the player's ship.
+
+
+## OBJECT SPAWN ##################################################
+
+Packet ID: 0x03
+Length:    ? Bytes
+Direction: Client -> Server -> Clients
+           Server -> Client
+
+## ObjectID       ## int    ## A number greater than zero       ##
+## UserID         ## int    ## A number greater than zero       ##
+## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
+## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
+## ObjectVelocity ## float3 ## Vector; Length is speed in px/f  ##
+## ObjectType     ## ?      ## Type of the Object (enum)        ##
+
+Whenever a player shoots a bullet, the client sends an ObjectSpawn
+packet. The server then updates his own game state and sends an
+ObjectSpawn packet to all other clients. The UserID field might be
+used to identify the bullet's owner when a player is hit.
+
+Whenever the server spawns a new object (e.g. power-up) the server
+sends an ObjectSpawn packet to all clients. In this case the
+UserID field is zero.
+
+
+## OBJECT UPATE ##################################################
+
+Packet ID: 0x04
+Length:    5 Bytes
+Direction: Client -> Server -> Clients
+           Server -> Client
+
+## ObjectID       ## int    ## A number greater than zero       ##
+## ObjectRemoved  ## bool   ## true if the object was removed   ##
+
+This packet is only used to remove objects (bullets, power-ups).
+So the ObjectRemoved field is always true.
+
+Whenever a player collects an object (e.g. power-up) the client
+sends an ObjectUpdate packet to the server. The server then
+updates his own game state and sends a ObjectUpdate packet to all
+other clients.
+
+Whenever the server removes an object (e.g. after collision) the
+server sends an ObjectUpdate packet to all clients.

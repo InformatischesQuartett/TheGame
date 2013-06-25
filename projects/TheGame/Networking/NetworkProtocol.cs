@@ -53,7 +53,7 @@ namespace Examples.TheGame.Networking
         internal float3 PlayerPosition;
         internal float3 PlayerRotation;
         internal float3 PlayerVelocity;
-        internal float3 PlayerHealth;
+        internal int PlayerHealth;
     }
 
     /// <summary>
@@ -62,6 +62,7 @@ namespace Examples.TheGame.Networking
     internal struct NetworkPackageObjectSpawn
     {
         internal int ObjectID;
+        internal int UserID;
         internal float3 ObjectPosition;
         internal float3 ObjectRotation;
         internal float3 ObjectVelocity;
@@ -121,8 +122,7 @@ namespace Examples.TheGame.Networking
 
                 switch (packageType)
                 {
-                        case NetworkPackageTypes.KeepAlive:
-
+                    case NetworkPackageTypes.KeepAlive:
                         var keepAlivePackage = new NetworkPackageKeepAlive
                             {
                                 UserID = msgData[1],
