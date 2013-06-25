@@ -85,7 +85,14 @@ namespace Examples.TheGame.Networking
 
                 if (msg.Type == MessageType.Data)
                 {
-                    // TODO
+                    var decodedMessage = NetworkProtocol.MessageDecode(msg);
+
+                    switch (decodedMessage.PackageType)
+                    {
+                        case NetworkPackageTypes.KeepAlive:
+                            ReceiveKeepAlive((NetworkPackageKeepAlive) decodedMessage.Package);
+                            break;
+                    }
                 }
 
                 if (msg.Type == MessageType.DiscoveryRequest)
