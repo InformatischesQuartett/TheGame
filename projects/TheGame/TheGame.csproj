@@ -52,6 +52,7 @@
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="GameStates\InGameState.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\NetworkGUI.cs" />
     <Compile Include="Networking\NetworkGUIKeys.cs" />
     <Compile Include="Networking\NetworkHandler.cs" />

@@ -28,13 +28,22 @@ namespace Examples.TheGame.Networking
         {
             _networkGUI = networkGUI;
 
+            Network.Instance.Config.SysType = SysType.Server;
+            Network.Instance.Config.Discovery = true;
+            Network.Instance.Config.DefaultPort = 14242;
+
             _keepAliveRand = new Random();
             _keepAliveTimer = new Timer(KeepAliveTimeout);
             _keepAliveResponses = new List<bool>();
         }
 
+        internal void Startup()
+        {
+            Network.Instance.StartPeer();
+        }
+
         /// <summary>
-        /// Sends a keep alive package to every client and disconnects inactive clients.
+        /// Sends a keep alive packet to every client and disconnects inactive clients.
         /// </summary>
         internal void SendKeepAlive()
         {
@@ -47,9 +56,11 @@ namespace Examples.TheGame.Networking
                 }   
             }
 
-            // new KeepAlive messages to everyone
+            // new KeepAlive messages to all clients
             _keepAliveID = _keepAliveRand.Next(10000000, 100000000);
-            NetworkProtocol.MessageEncode(NetworkPackageTypes.KeepAlive, _keepAliveID);
+
+            var data = new NetworkPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
+            NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
 
             // Network.Instance.SendToAll();
             _keepAliveTimestamp = DateTime.Now.Ticks;
@@ -62,9 +73,9 @@ namespace Examples.TheGame.Networking
         }
 
         /// <summary>
-        /// Handles received keep alive packages.
+        /// Handles received keep alive packets.
         /// </summary>
-        void ReceiveKeepAlive(NetworkPackageKeepAlive keepAlive)
+        void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
         {
             var timeDiff = DateTime.Now.Ticks - _keepAliveTimestamp;
             Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", Zeit: " + timeDiff + ", ID: " +
@@ -96,10 +107,10 @@ namespace Examples.TheGame.Networking
                 {
                     var decodedMessage = NetworkProtocol.MessageDecode(msg);
 
-                    switch (decodedMessage.PackageType)
+                    switch (decodedMessage.PacketType)
                     {
-                        case NetworkPackageTypes.KeepAlive:
-                            ReceiveKeepAlive((NetworkPackageKeepAlive) decodedMessage.Package);
+                        case NetworkPacketTypes.KeepAlive:
+                            ReceiveKeepAlive((NetworkPacketKeepAlive) decodedMessage.Packet);
                             break;
                     }
                 }

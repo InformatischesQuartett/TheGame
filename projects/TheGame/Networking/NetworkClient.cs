@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Timers;
+﻿using System.Diagnostics;
 using Fusee.Engine;
 
 namespace Examples.TheGame.Networking
@@ -19,18 +14,38 @@ namespace Examples.TheGame.Networking
         internal NetworkClient(NetworkGUI networkGUI)
         {
             _networkGUI = networkGUI;
+
+            Network.Instance.Config.SysType = SysType.Client;
+            Network.Instance.Config.Discovery = true;
+            Network.Instance.Config.ConnectOnDiscovery = true;
+            Network.Instance.Config.DefaultPort = 54954;
+        }
+
+        internal void Startup()
+        {
+            Network.Instance.StartPeer();   
+        }
+
+        internal void ConnectTo(string ip)
+        {
+            Network.Instance.StartPeer();
+
+            if (ip.Length > 0 && ip != "Discovery?")
+                Network.Instance.OpenConnection(ip, 14242);
+            else
+                Network.Instance.SendDiscoveryMessage(14242);
         }
 
         /// <summary>
-        /// Handles received keep alive packages.
+        /// Handles received KeepAlive packets.
         /// </summary>
-        void ReceiveKeepAlive(NetworkPackageKeepAlive keepAlive)
+        internal void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
         {
             Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", ID: " +
                             keepAlive.KeepAliveID);
 
-            if (keepAlive.KeepAliveID == _keepAliveID)
-                _keepAliveResponses[keepAlive.UserID] = true;
+            var msg = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, keepAlive.KeepAliveID);
+            Network.Instance.SendMessage(msg);
         }
 
         /// <summary>
@@ -54,10 +69,10 @@ namespace Examples.TheGame.Networking
                 {
                     var decodedMessage = NetworkProtocol.MessageDecode(msg);
 
-                    switch (decodedMessage.PackageType)
+                    switch (decodedMessage.PacketType)
                     {
-                        case NetworkPackageTypes.KeepAlive:
-                            ReceiveKeepAlive((NetworkPackageKeepAlive)decodedMessage.Package);
+                        case NetworkPacketTypes.KeepAlive:
+                            ReceiveKeepAlive((NetworkPacketKeepAlive)decodedMessage.Packet);
                             break;
                     }
                 }

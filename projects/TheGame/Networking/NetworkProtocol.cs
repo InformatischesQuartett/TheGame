@@ -6,18 +6,18 @@ using Fusee.Math;
 namespace Examples.TheGame.Networking
 {
     /// <summary>
-    /// Struct for a network package.
+    /// Struct for a network packet.
     /// </summary>
-    internal struct NetworkPackage
+    internal struct NetworkPacket
     {
-        internal NetworkPackageTypes PackageType;
-        internal dynamic Package;
+        internal NetworkPacketTypes PacketType;
+        internal object Packet;
     }
 
     /// <summary>
-    /// Types of packages.
+    /// Types of packets.
     /// </summary>
-    internal enum NetworkPackageTypes
+    internal enum NetworkPacketTypes
     {
         KeepAlive,
         PlayerSpawn,
@@ -27,27 +27,27 @@ namespace Examples.TheGame.Networking
     }
 
     /// <summary>
-    /// Struct for a KeepAlive package.
+    /// Struct for a KeepAlive packet.
     /// </summary>
-    internal struct NetworkPackageKeepAlive
+    internal struct NetworkPacketKeepAlive
     {
         internal int UserID;
         internal int KeepAliveID;
     }
 
     /// <summary>
-    /// Struct for a PlayerSpawn package.
+    /// Struct for a PlayerSpawn packet.
     /// </summary>
-    internal struct NetworkPackagePlayerSpawn
+    internal struct NetworkPacketPlayerSpawn
     {
         internal int UserID;
         internal float3 SpawnPosition;
     }
 
     /// <summary>
-    /// Struct for a PlayerUpdate package.
+    /// Struct for a PlayerUpdate packet.
     /// </summary>
-    internal struct NetworkPackagePlayerUpdate
+    internal struct NetworkPacketPlayerUpdate
     {
         internal int UserID;
         internal float3 PlayerPosition;
@@ -57,9 +57,9 @@ namespace Examples.TheGame.Networking
     }
 
     /// <summary>
-    /// Struct for a ObjectSpawn package.
+    /// Struct for a ObjectSpawn packet.
     /// </summary>
-    internal struct NetworkPackageObjectSpawn
+    internal struct NetworkPacketObjectSpawn
     {
         internal int ObjectID;
         internal int UserID;
@@ -70,9 +70,9 @@ namespace Examples.TheGame.Networking
     }
 
     /// <summary>
-    /// Struct for a ObjectUpdate package.
+    /// Struct for a ObjectUpdate packet.
     /// </summary>
-    internal struct NetworkPackageObjectUpdate
+    internal struct NetworkPacketObjectUpdate
     {
         internal int ObjectID;
         internal bool ObjectRemoved;
@@ -87,19 +87,21 @@ namespace Examples.TheGame.Networking
         /// Encodes the message.
         /// </summary>
         /// <returns>An array of bytes to be sent via network.</returns>
-        internal static byte[] MessageEncode(NetworkPackageTypes msgType, int keepAliveID = 0)
+        internal static byte[] MessageEncode(NetworkPacketTypes msgType, object packetData)
         {
-            if (msgType == NetworkPackageTypes.KeepAlive)
+            // KeepAlive
+            if (msgType == NetworkPacketTypes.KeepAlive)
             {
-                var keepAliveIDBytes = BitConverter.GetBytes(keepAliveID);
+                var data = (NetworkPacketKeepAlive) packetData;
+                var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
                 
-                var package = new byte[keepAliveIDBytes.Length + 2];
-                Buffer.BlockCopy(keepAliveIDBytes, 0, package, 1, keepAliveIDBytes.Length);
+                var packet = new byte[keepAliveIDBytes.Length + 2];
+                Buffer.BlockCopy(keepAliveIDBytes, 0, packet, 1, keepAliveIDBytes.Length);
 
-                package[0] = (byte) msgType;    // PacketType
-                package[1] = 0;                 // UserID = 0 (Server)
+                packet[0] = (byte) msgType;                 // PacketType
+                packet[1] = (byte) (data.UserID & 255);     // UserID (0 = Server)
 
-                return package;
+                return packet;
             }
 
             return null;
@@ -109,27 +111,27 @@ namespace Examples.TheGame.Networking
         /// Decodes the message.
         /// </summary>
         /// <param name="msg"></param>
-        internal static NetworkPackage MessageDecode(INetworkMsg msg)
+        internal static NetworkPacket MessageDecode(INetworkMsg msg)
         {
-            var decodedMessage = new NetworkPackage();
+            var decodedMessage = new NetworkPacket();
             
             try
             {
                 var msgData = msg.Message.ReadBytes;
 
-                var packageType = (NetworkPackageTypes) msgData[0];
-                decodedMessage.PackageType = packageType;
+                var packetType = (NetworkPacketTypes) msgData[0];
+                decodedMessage.PacketType = packetType;
 
-                switch (packageType)
+                switch (packetType)
                 {
-                    case NetworkPackageTypes.KeepAlive:
-                        var keepAlivePackage = new NetworkPackageKeepAlive
+                    case NetworkPacketTypes.KeepAlive:
+                        var keepAlivePacket = new NetworkPacketKeepAlive
                             {
                                 UserID = msgData[1],
                                 KeepAliveID = BitConverter.ToInt32(msgData, 3)
                             };
 
-                        decodedMessage.Package = keepAlivePackage;
+                        decodedMessage.Packet = keepAlivePacket;
 
                         break;
                 }

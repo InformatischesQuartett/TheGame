@@ -5,9 +5,13 @@ namespace Examples.TheGame.Networking
 {
     class NetworkGUI
     {
+        private readonly NetworkHandler _networkHandler;
         private readonly RenderContext _renderContext;
-        private readonly Mesh _guiPlaneMesh;
 
+        private NetworkServer _networkServer;
+        private NetworkClient _networkClient;
+
+        private readonly Mesh _guiPlaneMesh;
         private readonly ShaderProgram _guiShader;
         private readonly IShaderParam _texParam;
 
@@ -19,10 +23,12 @@ namespace Examples.TheGame.Networking
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkGUI"/> class.
         /// </summary>
-        /// <param name="rc">The rc.</param>
-        internal NetworkGUI(RenderContext rc)
+        /// <param name="renderContext">Reference to the RenderContext</param>
+        /// <param name="networkHandler">Reference to the NetworkHandler</param>
+        internal NetworkGUI(RenderContext renderContext, NetworkHandler networkHandler)
         {
-            _renderContext = rc;
+            _renderContext = renderContext;
+            _networkHandler = networkHandler;
 
             // load GUIMesh
             _guiPlaneMesh = MeshReader.LoadMesh("Assets/guiPlane.obj.model");
@@ -71,21 +77,20 @@ namespace Examples.TheGame.Networking
         /// </summary>
         internal void StartupGUI()
         {
+            _renderContext.SetShader(_guiShader);
             _renderContext.SetShaderParamTexture(_texParam, _guiTex);
             _renderContext.ModelView = float4x4.LookAt(0, 0, 1000, 0, 0, 0, 0, 1, 0);
-            _renderContext.Render(_guiPlaneMesh);
 
+            _renderContext.Render(_guiPlaneMesh);
+            
             // none SysType chosen
             if (Network.Instance.Config.SysType == SysType.None)
             {
                 // --> Server
                 if (Input.Instance.IsKeyDown(KeyCodes.F1))
                 {
-                    Network.Instance.Config.SysType = SysType.Server;
-                    Network.Instance.Config.Discovery = true;
-                    Network.Instance.Config.DefaultPort = 14242;
-
-                    Network.Instance.StartPeer();
+                    _networkServer = _networkHandler.CreateServer();
+                    _networkServer.Startup();
 
                     RefreshGUITex(true);
                 }
@@ -93,11 +98,7 @@ namespace Examples.TheGame.Networking
                 // --> Client
                 if (Input.Instance.IsKeyDown(KeyCodes.F2))
                 {
-                    Network.Instance.Config.SysType = SysType.Client;
-                    Network.Instance.Config.Discovery = true;
-                    Network.Instance.Config.ConnectOnDiscovery = true;
-                    Network.Instance.Config.DefaultPort = 54954;
-
+                    _networkClient = _networkHandler.CreateClient();
                     RefreshGUITex(true);
                 }
             }
@@ -120,19 +121,16 @@ namespace Examples.TheGame.Networking
                 if (newIp != ConnectToIp)
                 {
                     var clear = newIp.Length < ConnectToIp.Length;
+
                     ConnectToIp = newIp;
                     RefreshGUITex(clear);
                 }
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
-                    Network.Instance.StartPeer();
-
-                    if (ConnectToIp.Length > 0 && ConnectToIp != "Discovery?")
-                        Network.Instance.OpenConnection(ConnectToIp, 14242);
-                    else
-                        Network.Instance.SendDiscoveryMessage(14242);
-
+                    _networkClient.Startup();
+                    _networkClient.ConnectTo(ConnectToIp);
+                    
                     RefreshGUITex(true);
                 }
             }
