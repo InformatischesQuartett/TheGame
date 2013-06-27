@@ -54,7 +54,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\NetworkGUI.cs" />
-    <Compile Include="Networking\NetworkGUIKeys.cs" />
     <Compile Include="Networking\NetworkHandler.cs" />
     <Compile Include="Networking\NetworkProtocol.cs" />
     <Compile Include="Networking\NetworkServer.cs" />

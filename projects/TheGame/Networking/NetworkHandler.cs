@@ -17,7 +17,7 @@ namespace Examples.TheGame.Networking
 
         internal void HandleNetwork()
         {
-            _networkGUI.StartupGUI();
+            _networkGUI.ShowNetworkGUI();
 
             if (Network.Instance.Config.SysType == SysType.Server)
                 _networkServer.HandleMessages();
