@@ -10,11 +10,13 @@ namespace Examples.TheGame.Entities
     class Bullet : GameEntity
     {
         private float4x4 _startPos;
-        private float maxDist;
+        private float _maxDist;
 
-        public Bullet(int id, Mesh mesh, float4x4 position, float speed, float impact, float4x4 startPos, float4x4 ) : base(id, mesh, position, speed, impact)
+
+        public Bullet(int id, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact, float4x4 startPos) : base(id, mesh, collisionRadius, position, speed, impact)
         {
-
+            this._startPos = startPos;
+            this._maxDist = 10;
         }
 
         public void Destroy()

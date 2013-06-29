@@ -47,6 +47,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\Bullet.cs" />
+    <Compile Include="Entities\HealthItem.cs" />
     <Compile Include="GameHandler.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Entities\GameEntity.cs" />
