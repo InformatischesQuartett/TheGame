@@ -47,16 +47,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GameEntity\AbstractGameEntity.cs" />
     <Compile Include="GameHandler.cs" />
-    <Compile Include="GameStates\AbstractGameState.cs" />
-    <Compile Include="GameStates\GameState.cs" />
-    <Compile Include="GameStates\InGameState.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
+    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
