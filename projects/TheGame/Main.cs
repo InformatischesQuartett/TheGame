@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using Examples.TheGame.Entities;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
@@ -40,6 +41,9 @@ namespace Examples.TheGame
 
             // Create game handler
             _gameHandler = new GameHandler(RC);
+
+
+
         }
 
         /// <summary>
@@ -50,8 +54,8 @@ namespace Examples.TheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Update game handler and render it
-            _gameHandler.UpdateStates();
-            _gameHandler.RenderAFrame();
+        //    _gameHandler.UpdateStates();
+         //   _gameHandler.RenderAFrame();
 
             Present();
         }

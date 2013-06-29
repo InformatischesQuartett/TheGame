@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
-using Fusee.SceneManagement;
-
-
 
 namespace Examples.TheGame.Entities
 {
@@ -47,6 +40,10 @@ namespace Examples.TheGame.Entities
             return _position;
         }
 
+        public float GetCollisionRadius()
+        {
+            return _collisionRadius;
+        }
 
         public void SetRotation(float2 rotation)
         {
