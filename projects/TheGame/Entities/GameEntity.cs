@@ -47,10 +47,5 @@ namespace Examples.TheGame.Entities
         {
             //rendern
         }
-
-
-
-
-
     }
 }

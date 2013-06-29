@@ -49,11 +49,11 @@
   <ItemGroup>
     <Compile Include="GameHandler.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\" />
-    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
