@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Examples.TheGame.Entities;
 using Examples.TheGame.GameStates;
 using Fusee.Engine;
 
@@ -13,6 +14,16 @@ namespace Examples.TheGame
         /// <summary>
         ///     A dictionary storing all game states that are known to the game
         /// </summary>
+ 
+        
+        /// <summary>
+        ///Disctionarires mit allen Items und Playern
+        /// </summary>
+        public Dictionary<int, GameEntity> _items;
+        public Dictionary<int, GameEntity> _players;
+
+
+
         private readonly Dictionary<GameState, AbstractGameState> _gameStates;
 
         /// <summary>
@@ -33,6 +44,8 @@ namespace Examples.TheGame
         {
             //pass RenderContext
             _rc = rc;
+            _items = new Dictionary<int, GameEntity> ();
+            _players = new Dictionary<int, GameEntity>();
 
             // TODO: NetworkManager initalize
 
