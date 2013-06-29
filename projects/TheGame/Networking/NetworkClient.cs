@@ -44,8 +44,10 @@ namespace Examples.TheGame.Networking
             Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", ID: " +
                             keepAlive.KeepAliveID);
 
-            var msg = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, keepAlive.KeepAliveID);
-            Network.Instance.SendMessage(msg);
+            var data = new NetworkPacketKeepAlive { KeepAliveID = keepAlive.KeepAliveID, UserID = 0 };
+            var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+            
+            Network.Instance.SendMessage(packet);
         }
 
         /// <summary>

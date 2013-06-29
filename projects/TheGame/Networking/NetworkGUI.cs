@@ -55,8 +55,9 @@ namespace Examples.TheGame.Networking
             else
             {
                 if (Network.Instance.Config.SysType == SysType.Server)
-                    msg += "Server-IP:            " + Network.Instance.LocalIP + "\n\n\n\n\n\n\t            [SPACE]";
-
+                    msg += "Server-IP:            " + Network.Instance.LocalIP + "\n\n\nPlayer: " +
+                           Network.Instance.Connections.Count + "\n\n\n\t            [SPACE]";
+                
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
                         msg += "Verbunden mit:      " + ConnectToIp + "\n\n\n\n\n\n\tWarte auf Spielbeginn";
@@ -142,7 +143,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="oldIp">The old ip.</param>
         /// <returns>The new ip.</returns>
-        public static string IPInput(string oldIp)
+        internal string IPInput(string oldIp)
         {
             var key = "";
 

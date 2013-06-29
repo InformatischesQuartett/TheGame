@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Timers;
 using Fusee.Engine;
 
@@ -10,15 +11,14 @@ namespace Examples.TheGame.Networking
     {
         private readonly NetworkGUI _networkGUI;
 
-        private int _connectionCount;
+        private readonly Dictionary<int, INetworkConnection> _userIDs; 
 
-        private Timer _keepAliveTimer;
-        private long _keepAliveTimestamp;
-        private List<bool> _keepAliveResponses;
-        private const int KeepAliveTimeout = 60000;
-
-        private Random _keepAliveRand;
+        private readonly Timer _keepAliveTimer;
+        private readonly Dictionary<INetworkConnection, bool> _keepAliveResponses;
+        private const int KeepAliveInterval = 5000;
         private int _keepAliveID;
+
+        private readonly Random _random;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkServer"/> class.
@@ -32,9 +32,15 @@ namespace Examples.TheGame.Networking
             Network.Instance.Config.Discovery = true;
             Network.Instance.Config.DefaultPort = 14242;
 
-            _keepAliveRand = new Random();
-            _keepAliveTimer = new Timer(KeepAliveTimeout);
-            _keepAliveResponses = new List<bool>();
+            _userIDs = new Dictionary<int, INetworkConnection>();
+            Network.Instance.OnConnectionUpdate += ConnectionUpdate;
+
+            _random = new Random();
+            _keepAliveResponses = new Dictionary<INetworkConnection, bool>();
+
+            _keepAliveTimer = new Timer(KeepAliveInterval);
+            _keepAliveTimer.Elapsed += SendKeepAlive;
+            _keepAliveTimer.Enabled = true;
         }
 
         internal void Startup()
@@ -45,31 +51,27 @@ namespace Examples.TheGame.Networking
         /// <summary>
         /// Sends a keep alive packet to every client and disconnects inactive clients.
         /// </summary>
-        internal void SendKeepAlive()
+        internal void SendKeepAlive(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            for (var i = 0; i < _keepAliveResponses.Count; i++)
-            {
-                if (!_keepAliveResponses[i])
-                {
-                    // DISCONNECT PLAYER #i
-                    Debug.WriteLine("Kein KeepAlive von Spieler " + i + " bekommen.");
-                }   
-            }
+            if (Network.Instance.Connections.Count == 0)
+                return;
+
+            foreach (var keepAliveResponse in _keepAliveResponses)
+                if (!keepAliveResponse.Value)
+                    keepAliveResponse.Key.Disconnect();
 
             // new KeepAlive messages to all clients
-            _keepAliveID = _keepAliveRand.Next(10000000, 100000000);
+            _keepAliveID = _random.Next(10000000, 100000000);
 
             var data = new NetworkPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
-            NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+            var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+            Network.Instance.SendMessage(packet);
 
-            // Network.Instance.SendToAll();
-            _keepAliveTimestamp = DateTime.Now.Ticks;
+            Debug.WriteLine("KeepAlive an alle Spieler gesendet.");
 
             _keepAliveResponses.Clear();
-            for (var i = 0; i < _connectionCount; i++)
-            {
-                _keepAliveResponses.Add(false);
-            }
+            foreach (var userID in _userIDs)
+                _keepAliveResponses.Add(userID.Value, false);
         }
 
         /// <summary>
@@ -77,13 +79,12 @@ namespace Examples.TheGame.Networking
         /// </summary>
         void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
         {
-            var timeDiff = DateTime.Now.Ticks - _keepAliveTimestamp;
-            Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", Zeit: " + timeDiff + ", ID: " +
-                            keepAlive.KeepAliveID + " (soll: " +
-                            _keepAliveID + ")");
+            Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", ID: " +
+                            keepAlive.KeepAliveID + " (soll: " + _keepAliveID + ")");
 
             if (keepAlive.KeepAliveID == _keepAliveID)
-                _keepAliveResponses[keepAlive.UserID] = true;
+                if (_userIDs.ContainsKey(keepAlive.UserID))
+                    _keepAliveResponses[_userIDs[keepAlive.UserID]] = true;
         }
 
         /// <summary>
@@ -124,6 +125,33 @@ namespace Examples.TheGame.Networking
                 {
                     // TODO
                 }
+            }
+        }
+
+        void ConnectionUpdate(ConnectionStatus connectionStatus, INetworkConnection senderConnection)
+        {
+            if (connectionStatus == ConnectionStatus.Connected)
+            {
+                var newUserID = _random.Next(1, 256);
+                while (_userIDs.ContainsKey(newUserID))
+                    newUserID = _random.Next(1, 256);
+
+                _userIDs.Add(newUserID, senderConnection);
+
+                // TODO: Inform GameHandle and ask for SpawnPosition
+                // --
+            }
+
+            if (connectionStatus == ConnectionStatus.Disconnected)
+            {
+                if (_userIDs.ContainsValue(senderConnection))
+                {
+                    var item = _userIDs.First(kvp => kvp.Value == senderConnection);
+                    _userIDs.Remove(item.Key);
+                }
+
+                // TODO: Inform other players.
+                // --
             }
         }
     }

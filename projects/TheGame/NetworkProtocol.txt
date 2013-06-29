@@ -39,14 +39,19 @@ Length:    ? Bytes
 Direction: Server -> Client
 
 ## UserID         ## int    ## A number greater than zero       ##
+## Spawn          ## bool   ## false if client just connected   ##
 ## SpawnPosition  ## float3 ## Coordinates within the 3D space  ##
 
-When the server starts the game or whenever a new client connects,
-the server sends out a PlayerSpawn packet to all clients or to the
-client which just connected. The clients get their fixed user ID
-to be identified by the server. The client has to set the player
-to the given coordinates in the SpawnPosition field before
-starting the game.
+Whenever a new client connects, the server sends out a PlayerSpawn
+packet to the corresponding client. In this case the Spawn field
+is false but the client gets its fixed user ID to be identified by
+the server.
+
+When the server starts the game or whenever a player dies, the
+server sends out a PlayerSpawn packet to all clients or to the
+corresponding client. In this case the Spawn field is true. The
+client has to set the player to the given coordinates in the
+SpawnPosition field.
 
 
 ## PLAYER UPDATE #################################################
@@ -57,6 +62,7 @@ Direction: Client -> Server -> Clients
 	   Server -> Clients
 
 ## UserID         ## int    ## A number greater than zero       ##
+## PlayerActive   ## bool   ## false if player disconnected     ##
 ## PlayerPosition ## float3 ## Coordinates within the 3D space  ##
 ## PlayerRotation ## float3 ## Coordinates within the 3D space  ##
 ## PlayerVelocity ## float3 ## Vector; Length is speed in px/f  ##
@@ -68,11 +74,10 @@ a PlayerUpdate packet to the server. The server then updates his
 own game state and sends a PlayerUpdate packet to all other
 clients.
 
-Whenever the server detects a collision or a hit, the server sends
-a PlayerUpdate packet to all clients. If the PlayerHealth field is
-zero the corresponding player is dead and the PlayerPosition field
-contains coordinates for the location where the client has to
-respawn the player's ship.
+The PlayerActive field is only used in packets from the server to
+the clients. If it is set to fals one client didn't respond to the
+last KeepAlive packet. The other clients have to ignore the player
+until any new information is available.
 
 
 ## OBJECT SPAWN ##################################################
@@ -99,7 +104,7 @@ sends an ObjectSpawn packet to all clients. In this case the
 UserID field is zero.
 
 
-## OBJECT UPATE ##################################################
+## OBJECT UPDATE #################################################
 
 Packet ID: 0x04
 Length:    5 Bytes

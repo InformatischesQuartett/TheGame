@@ -96,7 +96,7 @@ namespace Examples.TheGame.Networking
                 var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
                 
                 var packet = new byte[keepAliveIDBytes.Length + 2];
-                Buffer.BlockCopy(keepAliveIDBytes, 0, packet, 1, keepAliveIDBytes.Length);
+                Buffer.BlockCopy(keepAliveIDBytes, 0, packet, 2, keepAliveIDBytes.Length);
 
                 packet[0] = (byte) msgType;                 // PacketType
                 packet[1] = (byte) (data.UserID & 255);     // UserID (0 = Server)
@@ -121,14 +121,19 @@ namespace Examples.TheGame.Networking
 
                 var packetType = (NetworkPacketTypes) msgData[0];
                 decodedMessage.PacketType = packetType;
-
+                Debug.WriteLine("PacketType: " + packetType + " (" + msgData[0] + ")");
                 switch (packetType)
                 {
                     case NetworkPacketTypes.KeepAlive:
+                        foreach (var b in msgData)
+                        {
+                            Debug.WriteLine(b);
+                        }
+
                         var keepAlivePacket = new NetworkPacketKeepAlive
                             {
                                 UserID = msgData[1],
-                                KeepAliveID = BitConverter.ToInt32(msgData, 3)
+                                KeepAliveID = BitConverter.ToInt32(msgData, 2)
                             };
 
                         decodedMessage.Packet = keepAlivePacket;
