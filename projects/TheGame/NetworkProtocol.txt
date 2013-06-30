@@ -105,7 +105,7 @@ Direction: Client -> Server -> Clients
 
 ## ObjectID       ## int    ## A number greater than zero       ##
 ## UserID         ## int    ## A number greater than zero       ##
-## ObjectType     ## ?      ## Type of the Object (enum)        ##
+## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
 ## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
 ## ObjectVelocity ## float3 ## Vector; Length is speed in px/f  ##
@@ -130,7 +130,7 @@ Direction: Client -> Server -> Clients
            Server -> Client
 
 ## ObjectID       ## int    ## A number greater than zero       ##
-## ObjectType     ## ?      ## Type of the Object (enum)        ##
+## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##
 
 This packet is only used to remove objects (bullets, power-ups).

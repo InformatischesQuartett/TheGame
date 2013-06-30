@@ -29,18 +29,6 @@ namespace Examples.TheGame.Networking
     }
 
     /// <summary>
-    /// Communication channels for packet types.
-    /// </summary>
-    internal enum NetworkPacketTypesChannels
-    {
-        KeepAlive = 0,
-        PlayerSpawn = 1,
-        PlayerUpdate = 2,
-        ObjectSpawn = 3,
-        ObjectUpdate = 3,
-    }
-
-    /// <summary>
     /// Struct for a KeepAlive packet.
     /// </summary>
     internal struct NetworkPacketKeepAlive
@@ -114,9 +102,9 @@ namespace Examples.TheGame.Networking
     internal struct NetworkPacketObjectSpawn
     {
         // Data
-        internal int ObjectID;
         internal int UserID;
-        // internal ... ObjectType;
+        internal int ObjectID;
+        internal int ObjectType;
         internal float3 ObjectPosition;
         internal float3 ObjectRotation;
         internal float3 ObjectVelocity;
@@ -140,7 +128,7 @@ namespace Examples.TheGame.Networking
     {
         // Data
         internal int ObjectID;
-        // internal ... ObjectType;
+        internal int ObjectType;
         internal bool ObjectRemoved;
 
         // Settings
@@ -198,7 +186,7 @@ namespace Examples.TheGame.Networking
 
                 packet[0] = (byte) msgType;                 // PacketType
                 packet[1] = (byte) (data.UserID & 255);     // UserID
-                packet[2] = (byte) ((data.Spawn) ? 1 : 0);  // contains SpawnPosition
+                packet[2] = (byte) ((data.Spawn) ? 1 : 0);  // Contains SpawnPosition
 
                 return packet;
             }
@@ -211,7 +199,7 @@ namespace Examples.TheGame.Networking
                 byte[] encPlayerData;
                 using (var stream = new MemoryStream())
                 {
-                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerPosition, PrefixStyle.Base128); // Field? Mappen? Testcase!
+                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerPosition, PrefixStyle.Base128);
                     Serializer.SerializeWithLengthPrefix(stream, data.PlayerRotation, PrefixStyle.Base128);
                     Serializer.SerializeWithLengthPrefix(stream, data.PlayerVelocity, PrefixStyle.Base128);
 
@@ -223,7 +211,7 @@ namespace Examples.TheGame.Networking
 
                 packet[0] = (byte) msgType;                         // PacketType
                 packet[1] = (byte) (data.UserID & 255);             // UserID
-                packet[2] = (byte) ((data.PlayerActive) ? 1 : 0);   // if Player is still active
+                packet[2] = (byte) ((data.PlayerActive) ? 1 : 0);   // If Player is still active
                 packet[3] = (byte) (data.PlayerHealth & 255);       // Health of player
                 
                 return packet;
@@ -232,13 +220,45 @@ namespace Examples.TheGame.Networking
             // ObjectSpawn
             if (msgType == NetworkPacketTypes.ObjectSpawn)
             {
-                
+                var data = (NetworkPacketObjectSpawn)packetData;
+
+                byte[] encObjectData;
+                using (var stream = new MemoryStream())
+                {
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectPosition, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectRotation, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectVelocity, PrefixStyle.Base128);
+
+                    encObjectData = stream.ToArray();
+                }
+
+                var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
+
+                var packet = new byte[objectIDBytes.Length + encObjectData.Length + 7];
+                Buffer.BlockCopy(objectIDBytes, 0, packet, 2, objectIDBytes.Length);
+                Buffer.BlockCopy(encObjectData, 0, packet, 7, encObjectData.Length);
+
+                packet[0] = (byte) msgType;                       // PacketType
+                packet[1] = (byte) (data.UserID & 255);           // UserID
+                packet[6] = (byte) (data.ObjectType & 255);       // Type of Object
+
+                return packet;
             }
 
             // ObjectUpdate
             if (msgType == NetworkPacketTypes.ObjectUpdate)
             {
-                
+                var data = (NetworkPacketObjectUpdate)packetData;
+                var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
+
+                var packet = new byte[objectIDBytes.Length + 3];
+                Buffer.BlockCopy(objectIDBytes, 0, packet, 1, objectIDBytes.Length);
+
+                packet[0] = (byte) msgType;                         // PacketType
+                packet[5] = (byte) (data.ObjectType & 255);         // Type of Object
+                packet[6] = (byte)((data.ObjectRemoved) ? 1 : 0);   // If object has been removed
+
+                return packet;
             }
 
             return null;
@@ -309,17 +329,60 @@ namespace Examples.TheGame.Networking
                         decPlayerVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
                     }
 
-                    var playerUpdatePacket = new NetworkPacketPlayerUpdate()
-                    {
-                        UserID = msgData[1],
-                        PlayerActive = (msgData[2] == 1),
-                        PlayerHealth = msgData[3],
-                        PlayerPosition = decPlayerPosition,
-                        PlayerRotation = decPlayerRotation,
-                        PlayerVelocity = decPlayerVelocity
-                    };
+                    var playerUpdatePacket = new NetworkPacketPlayerUpdate
+                                                 {
+                                                     UserID = msgData[1],
+                                                     PlayerActive = (msgData[2] == 1),
+                                                     PlayerHealth = msgData[3],
+                                                     PlayerPosition = decPlayerPosition,
+                                                     PlayerRotation = decPlayerRotation,
+                                                     PlayerVelocity = decPlayerVelocity
+                                                 };
 
                     decodedMessage.Packet = playerUpdatePacket;
+                }
+
+                // ObjectSpawn
+                if (packetType == NetworkPacketTypes.ObjectSpawn)
+                {
+                    float3 decObjectPosition;
+                    float3 decObjectRotation;
+                    float3 decObjectVelocity;
+
+                    using (var ms = new MemoryStream())
+                    {
+                        ms.Write(msgData, 7, msgData.Length - 7);
+                        ms.Position = 0;
+
+                        decObjectPosition = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decObjectRotation = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decObjectVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                    }
+
+                    var objectSpawnPacket = new NetworkPacketObjectSpawn
+                                                {
+                                                    UserID = msgData[1],
+                                                    ObjectID = BitConverter.ToInt32(msgData, 2),
+                                                    ObjectType = msgData[6],
+                                                    ObjectPosition = decObjectPosition,
+                                                    ObjectRotation = decObjectRotation,
+                                                    ObjectVelocity = decObjectVelocity
+                                                };
+
+                    decodedMessage.Packet = objectSpawnPacket;
+                }
+
+                // ObjectUpdate
+                if (packetType == NetworkPacketTypes.ObjectUpdate)
+                {
+                    var objectUpdatePacket = new NetworkPacketObjectUpdate
+                                              {
+                                                  ObjectID = BitConverter.ToInt32(msgData, 1),
+                                                  ObjectType = msgData[5],
+                                                  ObjectRemoved = (msgData[6] == 1)
+                                              };
+
+                    decodedMessage.Packet = objectUpdatePacket;
                 }
             }
             catch (Exception e)

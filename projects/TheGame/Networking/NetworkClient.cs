@@ -106,6 +106,18 @@ namespace Examples.TheGame.Networking
                             }
 
                             break;
+
+                        case NetworkPacketTypes.PlayerUpdate:
+                            // TODO: Inform GameHandler
+                            break;
+
+                        case NetworkPacketTypes.ObjectSpawn:
+                            // TODO: Inform GameHandler
+                            break;
+
+                        case NetworkPacketTypes.ObjectUpdate:
+                            // TODO: Inform GameHandler
+                            break;
                     }
                 }
 

@@ -112,6 +112,18 @@ namespace Examples.TheGame.Networking
                         case NetworkPacketTypes.KeepAlive:
                             ReceiveKeepAlive((NetworkPacketKeepAlive) decodedMessage.Packet);
                             break;
+
+                        case NetworkPacketTypes.PlayerUpdate:
+                            // TODO: Inform GameHandler and other players
+                            break;
+
+                        case NetworkPacketTypes.ObjectSpawn:
+                            // TODO: Inform GameHandler and other players
+                            break;
+
+                        case NetworkPacketTypes.ObjectUpdate:
+                            // TODO: Inform GameHandler and other players
+                            break;
                     }
                 }
 
