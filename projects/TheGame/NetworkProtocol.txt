@@ -4,12 +4,18 @@
 ##################################################################
 
 This is the documentation of the network protocol which is used
-for The Game. It is based on the protocol used by Minecraft*. The
-Lidgren library used in FUSEE communicates via UDP but is able to
-assure (sequenced and non-sequenced) delivery of any packet. In
-this case all packets must be delivered in the order they were
-sent. Packets arriving later than newer packets of the same type
-have to be rejected by the clients or server.
+for The Game. It is based on the protocol used by Minecraft*.
+
+The Lidgren library used in FUSEE communicates via UDP but is able
+to ensure (ordered, sequenced or non-sequenced) delivery of any
+packet. The packet types KeepAlive, PlayerSpawn and PlayerUpdate
+are sent as "reliable and sequenced" which means older packets are
+dropped if they arrive after newer packets. To avoid dropping of
+packets of different types, different communication channels are
+necessary. ObjectSpawn and ObjectUpdate can be sent on the same
+channel as they are sent as "realiable and ordered" which means
+that they will always arrive in the order they were sent and no
+packet will be dropped.
 
 The first byte of every packet identifies the type of the packet.
 The length of each packet might be variable because protobuf-net
@@ -24,6 +30,8 @@ fields are always the last few bytes of a packet.
 
 Packet ID: 0x00
 Length:    6 Bytes
+Method:	   Reliable, Sequenced
+Channel:   0
 Direction: Server -> Clients
 
 ## UserID         ## int    ## 0 as UserID is the server        ##
@@ -38,6 +46,8 @@ same random ID. Otherwise the server disconnects the client.
 
 Packet ID: 0x01
 Length:    3 - 15 Bytes
+Method:	   Reliable, Sequenced
+Channel:   1
 Direction: Server -> Client
 
 ## UserID         ## int    ## A number greater than zero       ##
@@ -60,6 +70,8 @@ SpawnPosition field.
 
 Packet ID: 0x02
 Length:    7 - 52 Bytes
+Method:	   Reliable, Sequenced
+Channel:   2
 Direction: Client -> Server -> Clients
 	   Server -> Clients
 
@@ -86,6 +98,8 @@ until any new information is available.
 
 Packet ID: 0x03
 Length:    ? Bytes
+Method:	   Reliable, Ordered
+Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
@@ -109,11 +123,14 @@ UserID field is zero.
 ## OBJECT UPDATE #################################################
 
 Packet ID: 0x04
-Length:    5 Bytes
+Length:    ? Bytes
+Method:	   Reliable, Ordered
+Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
 ## ObjectID       ## int    ## A number greater than zero       ##
+## ObjectType     ## ?      ## Type of the Object (enum)        ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##
 
 This packet is only used to remove objects (bullets, power-ups).
