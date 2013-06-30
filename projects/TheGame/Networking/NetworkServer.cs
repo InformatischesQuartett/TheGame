@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using Fusee.Engine;
+using Fusee.Math;
 
 namespace Examples.TheGame.Networking
 {
@@ -43,6 +44,9 @@ namespace Examples.TheGame.Networking
             _keepAliveTimer.Enabled = true;
         }
 
+        /// <summary>
+        /// Startups the server.
+        /// </summary>
         internal void Startup()
         {
             Network.Instance.StartPeer();
@@ -67,8 +71,6 @@ namespace Examples.TheGame.Networking
             var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
             Network.Instance.SendMessage(packet);
 
-            Debug.WriteLine("KeepAlive an alle Spieler gesendet.");
-
             _keepAliveResponses.Clear();
             foreach (var userID in _userIDs)
                 _keepAliveResponses.Add(userID.Value, false);
@@ -79,9 +81,6 @@ namespace Examples.TheGame.Networking
         /// </summary>
         void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
         {
-            Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", ID: " +
-                            keepAlive.KeepAliveID + " (soll: " + _keepAliveID + ")");
-
             if (keepAlive.KeepAliveID == _keepAliveID)
                 if (_userIDs.ContainsKey(keepAlive.UserID))
                     _keepAliveResponses[_userIDs[keepAlive.UserID]] = true;
@@ -120,14 +119,14 @@ namespace Examples.TheGame.Networking
                 {
                     // TODO
                 }
-
-                if (msg.Type == MessageType.DiscoveryResponse)
-                {
-                    // TODO
-                }
             }
         }
 
+        /// <summary>
+        /// EventHandler for updates on connections.
+        /// </summary>
+        /// <param name="connectionStatus">The connection status.</param>
+        /// <param name="senderConnection">The corresponding connection.</param>
         void ConnectionUpdate(ConnectionStatus connectionStatus, INetworkConnection senderConnection)
         {
             if (connectionStatus == ConnectionStatus.Connected)
@@ -138,8 +137,16 @@ namespace Examples.TheGame.Networking
 
                 _userIDs.Add(newUserID, senderConnection);
 
-                // TODO: Inform GameHandle and ask for SpawnPosition
-                // --
+                // Inform client about his UserID
+                var data = new NetworkPacketPlayerSpawn
+                    {
+                        UserID = newUserID,
+                        Spawn = false,
+                        SpawnPosition = new float3(0, 0, 0)
+                    };
+
+                var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.PlayerSpawn, data);
+                senderConnection.SendMessage(packet);
             }
 
             if (connectionStatus == ConnectionStatus.Disconnected)

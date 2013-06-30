@@ -12,8 +12,10 @@ sent. Packets arriving later than newer packets of the same type
 have to be rejected by the clients or server.
 
 The first byte of every packet identifies the type of the packet.
-The length is fixed per packet type so it is not necessary to add
-an additional field for the packet length. 
+The length of each packet might be variable because protobuf-net
+as the serializer compresses its data as good as possible. Though,
+it is not necessary to include the packet length as the variable
+fields are always the last few bytes of a packet.
 
 * http://mc.kev009.com/Protocol
 
@@ -35,7 +37,7 @@ same random ID. Otherwise the server disconnects the client.
 ## PLAYER SPAWN ##################################################
 
 Packet ID: 0x01
-Length:    ? Bytes
+Length:    3 - 15 Bytes
 Direction: Server -> Client
 
 ## UserID         ## int    ## A number greater than zero       ##
@@ -57,16 +59,16 @@ SpawnPosition field.
 ## PLAYER UPDATE #################################################
 
 Packet ID: 0x02
-Length:    ? Bytes
+Length:    7 - 52 Bytes
 Direction: Client -> Server -> Clients
 	   Server -> Clients
 
 ## UserID         ## int    ## A number greater than zero       ##
 ## PlayerActive   ## bool   ## false if player disconnected     ##
+## PlayerHealth   ## int    ## A number between 0 and 100       ##
 ## PlayerPosition ## float3 ## Coordinates within the 3D space  ##
 ## PlayerRotation ## float3 ## Coordinates within the 3D space  ##
 ## PlayerVelocity ## float3 ## Vector; Length is speed in px/f  ##
-## PlayerHealth   ## int    ## A number between 0 and 100       ##
 
 Whenever a player changes the direction or speed of his ship by
 pressing a key (respectively by releasing a key) the client sends
@@ -89,10 +91,10 @@ Direction: Client -> Server -> Clients
 
 ## ObjectID       ## int    ## A number greater than zero       ##
 ## UserID         ## int    ## A number greater than zero       ##
+## ObjectType     ## ?      ## Type of the Object (enum)        ##
 ## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
 ## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
 ## ObjectVelocity ## float3 ## Vector; Length is speed in px/f  ##
-## ObjectType     ## ?      ## Type of the Object (enum)        ##
 
 Whenever a player shoots a bullet, the client sends an ObjectSpawn
 packet. The server then updates his own game state and sends an

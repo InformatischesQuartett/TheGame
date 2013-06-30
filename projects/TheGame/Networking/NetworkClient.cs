@@ -7,6 +7,8 @@ namespace Examples.TheGame.Networking
     {
         private readonly NetworkGUI _networkGUI;
 
+        private int _userID;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkClient"/> class.
         /// </summary>
@@ -19,13 +21,22 @@ namespace Examples.TheGame.Networking
             Network.Instance.Config.Discovery = true;
             Network.Instance.Config.ConnectOnDiscovery = true;
             Network.Instance.Config.DefaultPort = 54954;
+
+            _userID = -1;
         }
 
+        /// <summary>
+        /// Startups the client.
+        /// </summary>
         internal void Startup()
         {
             Network.Instance.StartPeer();   
         }
 
+        /// <summary>
+        /// Connects to the given ip.
+        /// </summary>
+        /// <param name="ip">The ip.</param>
         internal void ConnectTo(string ip)
         {
             Network.Instance.StartPeer();
@@ -41,13 +52,17 @@ namespace Examples.TheGame.Networking
         /// </summary>
         internal void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
         {
-            Debug.WriteLine("KeepAlive von Spieler " + keepAlive.UserID + ", ID: " +
-                            keepAlive.KeepAliveID);
+            Debug.WriteLine("KeepAlive bekommen. ID: " + keepAlive.KeepAliveID);
 
-            var data = new NetworkPacketKeepAlive { KeepAliveID = keepAlive.KeepAliveID, UserID = 0 };
-            var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
-            
-            Network.Instance.SendMessage(packet);
+            if (_userID != -1)
+            {
+                var data = new NetworkPacketKeepAlive {KeepAliveID = keepAlive.KeepAliveID, UserID = _userID};
+                var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+
+                Network.Instance.SendMessage(packet);
+            }
+            else
+                Debug.WriteLine("Warnung: Keine UserID vom Server bekommen!");
         }
 
         /// <summary>
@@ -74,14 +89,24 @@ namespace Examples.TheGame.Networking
                     switch (decodedMessage.PacketType)
                     {
                         case NetworkPacketTypes.KeepAlive:
-                            ReceiveKeepAlive((NetworkPacketKeepAlive)decodedMessage.Packet);
+                            ReceiveKeepAlive((NetworkPacketKeepAlive) decodedMessage.Packet);
+                            break;
+
+                        case NetworkPacketTypes.PlayerSpawn:
+                            var packetPlayerSpawn = (NetworkPacketPlayerSpawn) decodedMessage.Packet;
+
+                            if (!packetPlayerSpawn.Spawn)
+                            {
+                                Debug.WriteLine("UserID wurde zugewiesen: " + packetPlayerSpawn.UserID);
+                                _userID = packetPlayerSpawn.UserID;
+                            }
+                            else
+                            {
+                                // TODO: Inform GameHandler about Spawning Position                              
+                            }
+
                             break;
                     }
-                }
-
-                if (msg.Type == MessageType.DiscoveryRequest)
-                {
-                    // TODO
                 }
 
                 if (msg.Type == MessageType.DiscoveryResponse)
