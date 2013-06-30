@@ -11,7 +11,8 @@ namespace Examples.TheGame.Entities
     {
         private readonly int _health;
 
-        public HealthItem(int id, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact, int health) : base(id, mesh, collisionRadius, position, speed, impact)
+        public HealthItem(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact, int health)
+            : base(nwHandler, mesh, collisionRadius, position, speed, impact)
         {
             this._health = health;
         }

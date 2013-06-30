@@ -13,7 +13,8 @@ namespace Examples.TheGame.Entities
         private float _maxDist;
 
 
-        public Bullet(int id, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact, float4x4 startPos) : base(id, mesh, collisionRadius, position, speed, impact)
+        public Bullet(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact, float4x4 startPos)
+            : base(nwHandler, mesh, collisionRadius, position, speed, impact)
         {
             this._startPos = startPos;
             this._maxDist = 10;

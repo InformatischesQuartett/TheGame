@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
 
+
 namespace Examples.TheGame.Entities
 {
     public class Player : GameEntity
@@ -9,8 +10,8 @@ namespace Examples.TheGame.Entities
         private Time _lastShotTime;
 
 
-        public Player(int id, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
-            : base(id, mesh, collisionRadius, position, speed, impact)
+        public Player(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
+            : base(nwHandler, mesh, collisionRadius, position, speed, impact)
         {
         }
 
@@ -34,7 +35,11 @@ namespace Examples.TheGame.Entities
         }
         public void Shoot()
         {
-
+            // new Bullet
+            // Bullet bullet = new Bullet(NetworkHandler.AssignId(), ....
+            Bullet bullet = new Bullet(this.GetNWHandler(), null, 4, this.GetPosition(), 10, 5,this.GetPosition() );
+            GameHandler.Items.Add(bullet.GetId(), bullet);
+            // add Bullet to ItemDict
         }
     }
 

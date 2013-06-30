@@ -14,8 +14,18 @@ namespace Examples.TheGame
         /// <summary>
         ///Disctionarires mit allen Items und Playern
         /// </summary>
-        public Dictionary<int, GameEntity> Items;
+        public static Dictionary<int, GameEntity> Items;
         public static Dictionary<int, Player> Players;
+
+        /// <summary>
+        ///State Object, contains the current State the Game is in
+        /// </summary>
+        private GameState _gameState;
+
+        /// <summary>
+        ///GameHandler Object, connectioen between Network and GameHandler
+        /// </summary>
+        private NetworkHandler _networkHandler;
 
         /// <summary>
         ///     RenderContext
@@ -28,6 +38,8 @@ namespace Examples.TheGame
             _rc = rc;
             Items = new Dictionary<int, GameEntity>();
             Players = new Dictionary<int, Player>();
+            _gameState = new GameState(GameState.State.StartMenu);
+            _networkHandler = new NetworkHandler();
         }
     }
 }

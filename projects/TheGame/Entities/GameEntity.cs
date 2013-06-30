@@ -5,8 +5,8 @@ namespace Examples.TheGame.Entities
 {
     public class GameEntity
     {
-        private readonly int _id;
-      
+        private int _id;
+        private NetworkHandler _nwHandler;
         private readonly Mesh _mesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
@@ -14,10 +14,11 @@ namespace Examples.TheGame.Entities
         private float _speed;
         private float _impact ;
 
-        public GameEntity (int id, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
+        public GameEntity(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
         {
             //Attribute initialisieren
-            this._id = id;
+            this._nwHandler = nwHandler;
+            this._id = _nwHandler.AssignId();
             this._mesh = mesh;
             this._collisionRadius = collisionRadius;
             this._position = position;
@@ -30,7 +31,13 @@ namespace Examples.TheGame.Entities
              */
         }
 
-        public int GetId ()
+
+        public NetworkHandler GetNWHandler()
+        {
+            return _nwHandler;
+        }
+
+        public int GetId()
         {
             return _id;
         }
@@ -48,6 +55,11 @@ namespace Examples.TheGame.Entities
         public void SetRotation(float2 rotation)
         {
             this._rotation += rotation;
+        }
+
+        public void DestroyEnity()
+        {
+            //remove this from Dictionary
         }
 
         public virtual void Update ()
