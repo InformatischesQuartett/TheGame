@@ -1,4 +1,5 @@
-﻿using Examples.TheGame.Entities;
+﻿using System.IO;
+using Examples.TheGame.Shader;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -11,8 +12,18 @@ namespace Examples.TheGame
     {
         private static float _red, _green, _blue;
         protected ShaderMaterial M;
+        protected Mesh Mesh;
         protected IShaderParam[] Param;
+        protected IShaderParam ReceiveShadowsShaderParam;
+        protected IShaderParam LightDirShaderParam;
+        protected IShaderParam LightColorShaderParam;
+        protected IShaderParam AmbientLightShaderParam;
         protected ShaderProgram Sp;
+
+        // Shader stuff
+        protected ImageData Texture;
+        protected ITexture TextureHandle;
+        protected IShaderParam TextureShaderParam;
 
         /// <summary>
         ///     The main game handler
@@ -24,15 +35,8 @@ namespace Examples.TheGame
         /// </summary>
         public override void Init()
         {
-            Sp = MoreShaders.GetShader("bump", RC);
+            Sp = RC.CreateShader(ShaderCode.GetVertexShader(), ShaderCode.GetFragmentShader());
             RC.SetShader(Sp);
-            _red = _green = _blue = 0.1f;
-            RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(_red, _green, _blue, 1));
-            RC.SetLightDirection(0, new float3(-1, 0, 0));
 
 
             M = new ShaderMaterial(Sp);
@@ -43,7 +47,28 @@ namespace Examples.TheGame
             _gameHandler = new GameHandler(RC);
 
 
+            // Load mesh
+            Geometry geo = MeshReader.ReadWavefrontObj(new StreamReader("Assets/SpaceShip.obj.model"));
+            Mesh = geo.ToMesh();
 
+            // Create shader and store handle
+            TextureShaderParam = Sp.GetShaderParam("texture1");
+            ReceiveShadowsShaderParam = Sp.GetShaderParam("receiveShadows");
+
+            // Load texture
+            Texture = RC.LoadImage("Assets/SpaceShip_Diffuse.jpg");
+            TextureHandle = RC.CreateTexture(Texture);
+
+            // Init shader
+            LightDirShaderParam = Sp.GetShaderParam("lightDir");
+            LightColorShaderParam = Sp.GetShaderParam("lightColor");
+            AmbientLightShaderParam = Sp.GetShaderParam("ambientLight");
+            ReceiveShadowsShaderParam = Sp.GetShaderParam("receiveShadows");
+            // Hardcoded lights, I should feel really bad
+            RC.SetShaderParam(LightDirShaderParam, new float3(-1, 0.5f, 0));
+            RC.SetShaderParam(LightColorShaderParam, new float4(0.8f, 0.8f, 1, 1));
+            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.3f, 0.3f, 0.4f, 1));
+            RC.SetShaderParam(ReceiveShadowsShaderParam, 1);
         }
 
         /// <summary>
@@ -54,8 +79,19 @@ namespace Examples.TheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Update game handler and render it
-        //    _gameHandler.UpdateStates();
-         //   _gameHandler.RenderAFrame();
+            //    _gameHandler.UpdateStates();
+            //   _gameHandler.RenderAFrame();
+
+            float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(45) * float4x4.CreateRotationX(45);
+            float4x4 mtxCam = float4x4.Identity;
+            float4x4 mtxScale = float4x4.Scale(1, 1, 1);
+            float4x4 mtxPos = float4x4.CreateTranslation(0, 0, -1000);
+
+            RC.ModelView = mtxScale * mtxRot * mtxPos * mtxCam;
+
+            RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
+            RC.Render(Mesh);
+            RC.SetShaderParam(ReceiveShadowsShaderParam, 1);
 
             Present();
         }
