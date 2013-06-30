@@ -14,9 +14,9 @@ namespace Examples.TheGame
         protected ShaderMaterial M;
         protected Mesh Mesh;
         protected IShaderParam[] Param;
-        protected IShaderParam ReceiveShadowsShaderParam;
-        protected IShaderParam LightDirShaderParam;
-        protected IShaderParam LightColorShaderParam;
+        protected IShaderParam CalcLightingShaderParam;
+        protected IShaderParam MaterialShaderParam;
+        protected IShaderParam LightsShaderParam;
         protected IShaderParam AmbientLightShaderParam;
         protected ShaderProgram Sp;
 
@@ -53,22 +53,22 @@ namespace Examples.TheGame
 
             // Create shader and store handle
             TextureShaderParam = Sp.GetShaderParam("texture1");
-            ReceiveShadowsShaderParam = Sp.GetShaderParam("receiveShadows");
+            CalcLightingShaderParam = Sp.GetShaderParam("receiveShadows");
 
             // Load texture
             Texture = RC.LoadImage("Assets/SpaceShip_Diffuse.jpg");
             TextureHandle = RC.CreateTexture(Texture);
 
             // Init shader
-            LightDirShaderParam = Sp.GetShaderParam("lightDir");
-            LightColorShaderParam = Sp.GetShaderParam("lightColor");
-            AmbientLightShaderParam = Sp.GetShaderParam("ambientLight");
-            ReceiveShadowsShaderParam = Sp.GetShaderParam("receiveShadows");
+            MaterialShaderParam = Sp.GetShaderParam("surfaceMat");
+            LightsShaderParam = Sp.GetShaderParam("lights");
+            AmbientLightShaderParam = Sp.GetShaderParam("ambient");
+            CalcLightingShaderParam = Sp.GetShaderParam("calcLighting");
             // Hardcoded lights, I should feel really bad
-            RC.SetShaderParam(LightDirShaderParam, new float3(-1, 0.5f, 0));
-            RC.SetShaderParam(LightColorShaderParam, new float4(0.8f, 0.8f, 1, 1));
+            RC.SetShaderParam(MaterialShaderParam, new float3(-1, 0.5f, 0));
+            RC.SetShaderParam(LightsShaderParam, new float4(0.8f, 0.8f, 1, 1));
             RC.SetShaderParam(AmbientLightShaderParam, new float4(0.3f, 0.3f, 0.4f, 1));
-            RC.SetShaderParam(ReceiveShadowsShaderParam, 1);
+            RC.SetShaderParam(CalcLightingShaderParam, 1);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Examples.TheGame
 
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
             RC.Render(Mesh);
-            RC.SetShaderParam(ReceiveShadowsShaderParam, 1);
+            RC.SetShaderParam(CalcLightingShaderParam, 1);
 
             Present();
         }
