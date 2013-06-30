@@ -51,8 +51,10 @@
     <Compile Include="Entities\HealthItem.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="GameHandler.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Entities\GameEntity.cs" />
+    <Compile Include="NetworkHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -19,11 +19,5 @@ namespace Examples.TheGame.Entities
             this._startPos = startPos;
             this._maxDist = 10;
         }
-
-        public void Destroy()
-        {
-            //destroy.this;
-        }
-
     }
 }
