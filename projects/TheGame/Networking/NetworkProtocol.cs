@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Examples.TheGame.GameStates;
 using Fusee.Engine;
 using Fusee.Math;
 using ProtoBuf;
@@ -30,12 +29,36 @@ namespace Examples.TheGame.Networking
     }
 
     /// <summary>
+    /// Communication channels for packet types.
+    /// </summary>
+    internal enum NetworkPacketTypesChannels
+    {
+        KeepAlive = 0,
+        PlayerSpawn = 1,
+        PlayerUpdate = 2,
+        ObjectSpawn = 3,
+        ObjectUpdate = 3,
+    }
+
+    /// <summary>
     /// Struct for a KeepAlive packet.
     /// </summary>
     internal struct NetworkPacketKeepAlive
     {
+        // Data
         internal int UserID;
         internal int KeepAliveID;
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 0; }
+        }
+        
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
     }
 
     /// <summary>
@@ -43,9 +66,21 @@ namespace Examples.TheGame.Networking
     /// </summary>
     internal struct NetworkPacketPlayerSpawn
     {
+        // Data
         internal int UserID;
         internal bool Spawn;
         internal float3 SpawnPosition;
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 1; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
     }
 
     /// <summary>
@@ -53,12 +88,24 @@ namespace Examples.TheGame.Networking
     /// </summary>
     internal struct NetworkPacketPlayerUpdate
     {
+        // Data
         internal int UserID;
         internal bool PlayerActive;
         internal int PlayerHealth;
         internal float3 PlayerPosition;
         internal float3 PlayerRotation;
         internal float3 PlayerVelocity;
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 2; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
     }
 
     /// <summary>
@@ -66,12 +113,24 @@ namespace Examples.TheGame.Networking
     /// </summary>
     internal struct NetworkPacketObjectSpawn
     {
+        // Data
         internal int ObjectID;
         internal int UserID;
+        // internal ... ObjectType;
         internal float3 ObjectPosition;
         internal float3 ObjectRotation;
         internal float3 ObjectVelocity;
-        // internal ... ObjectType
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 3; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableOrdered; }
+        }
     }
 
     /// <summary>
@@ -79,8 +138,21 @@ namespace Examples.TheGame.Networking
     /// </summary>
     internal struct NetworkPacketObjectUpdate
     {
+        // Data
         internal int ObjectID;
+        // internal ... ObjectType;
         internal bool ObjectRemoved;
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 3; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableOrdered; }
+        }
     }
 
     /// <summary>
@@ -155,6 +227,18 @@ namespace Examples.TheGame.Networking
                 packet[3] = (byte) (data.PlayerHealth & 255);       // Health of player
                 
                 return packet;
+            }
+
+            // ObjectSpawn
+            if (msgType == NetworkPacketTypes.ObjectSpawn)
+            {
+                
+            }
+
+            // ObjectUpdate
+            if (msgType == NetworkPacketTypes.ObjectUpdate)
+            {
+                
             }
 
             return null;

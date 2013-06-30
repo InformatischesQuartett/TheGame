@@ -69,7 +69,7 @@ namespace Examples.TheGame.Networking
 
             var data = new NetworkPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
             var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
-            Network.Instance.SendMessage(packet);
+            Network.Instance.SendMessage(packet, data.MsgDelivery, data.ChannelID);
 
             _keepAliveResponses.Clear();
             foreach (var userID in _userIDs)
@@ -146,7 +146,7 @@ namespace Examples.TheGame.Networking
                     };
 
                 var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.PlayerSpawn, data);
-                senderConnection.SendMessage(packet);
+                senderConnection.SendMessage(packet, data.MsgDelivery, data.ChannelID);
             }
 
             if (connectionStatus == ConnectionStatus.Disconnected)
