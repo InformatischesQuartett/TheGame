@@ -63,7 +63,6 @@ namespace Examples.TheGame
             // _gameHandler.RenderAFrame();
 
             _networkHandler.HandleNetwork();
-            Debug.WriteLine(_mediator.GetObjectId());
 
             Present();
         }

@@ -30,7 +30,7 @@ namespace Examples.TheGame
         /// </summary>
         internal Mediator()
         {
-            UserID = 1;
+            UserID = 0;
             _objectID = -1;
         }
 
@@ -40,9 +40,6 @@ namespace Examples.TheGame
         /// <returns></returns>
         internal int GetObjectId()
         {
-            if (UserID == -1)
-                return -1;
-
             if (_objectID == -1 || _objectID == ((UserID + 1)*Range) - 1)
                 return _objectID = UserID*Range;
 
