@@ -68,6 +68,9 @@ namespace Examples.TheGame
         protected ITexture TextureHandle;
         protected IShaderParam TextureShaderParam;
 
+        private float3 _cameraPos = new float3(0, 0, 1000);
+        private float _light1Falloff = 10000;
+
         /// <summary>
         ///     The main game handler
         /// </summary>
@@ -149,20 +152,20 @@ namespace Examples.TheGame
             TextureHandle = RC.CreateTexture(Texture);
 
             // Init shader
-            RC.SetShaderParam(CalcLightingShaderParam, 1);
-            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.3f, 0.3f, 0.4f, 1.0f));
+            RC.SetShaderParam(CalcLightingShaderParam, 0);
+            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(MaterialDiffuseShaderParam, new float3(1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(MaterialSpecularShaderParam, new float3(1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(MaterialShininessShaderParam, 1.0f);
+            RC.SetShaderParam(MaterialDiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(MaterialSpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(MaterialShininessShaderParam, 1.0f);
 
             RC.SetShaderParam(AmountOfLightsShaderParam, 1);
 
-            RC.SetShaderParam(Light1PositionShaderParam, new float4(10, 0, 0, 0));
-            RC.SetShaderParam(Light1DirectionShaderParam, new float3(-1, 0, 0));
+            RC.SetShaderParam(Light1PositionShaderParam, new float4(-1000, 0, -1000, 1));
+            RC.SetShaderParam(Light1DirectionShaderParam, new float3(0, 1, 1));
             RC.SetShaderParam(Light1DiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(Light1SpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(Light1FalloffShaderParam, 1);
+            RC.SetShaderParam(Light1FalloffShaderParam, _light1Falloff);
 
         }
 
@@ -177,13 +180,29 @@ namespace Examples.TheGame
             //    _gameHandler.UpdateStates();
             //   _gameHandler.RenderAFrame();
 
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                _cameraPos.x -= 500 * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+                _cameraPos.x += 500 * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+                _cameraPos.z -= 500 * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+                _cameraPos.z += 500 * (float)Time.Instance.DeltaTime;
+
+            if (Input.Instance.IsKeyDown(KeyCodes.PageDown))
+                _light1Falloff -= 5000 * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKeyDown(KeyCodes.PageUp))
+                _light1Falloff += 5000 * (float)Time.Instance.DeltaTime;
+
+
             float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(45) * float4x4.CreateRotationX(45);
-            float4x4 mtxCam = float4x4.Identity;
-            float4x4 mtxScale = float4x4.Scale(1, 1, 1);
-            float4x4 mtxPos = float4x4.CreateTranslation(0, 0, -1000);
+            float4x4 mtxCam = float4x4.LookAt(_cameraPos, new float3(0, 0, 0), new float3(0, 1, 0));
+            float4x4 mtxScale = float4x4.Scale(1f, 1f, 1f);
+            float4x4 mtxPos = float4x4.CreateTranslation(0, 0, 0);
 
             RC.ModelView = mtxScale * mtxRot * mtxPos * mtxCam;
 
+            RC.SetShaderParam(Light1FalloffShaderParam, _light1Falloff);
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
             RC.Render(Mesh);
 

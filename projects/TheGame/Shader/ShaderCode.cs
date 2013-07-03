@@ -20,8 +20,7 @@
             // uniforms
             uniform mat4 FUSEE_M; // model matrix
             uniform mat4 FUSEE_MVP; // model-view-projection matrix
-            uniform mat4 FUSEE_ITMV; // inverse transpose model view
-            uniform mat4 FUSEE_IT; // inverse transpose matrix
+            uniform mat4 FUSEE_ITMV; // inverse transpose model view matrix
 
             // attributes
             attribute vec4 fuColor; // vertex albedo
@@ -32,7 +31,6 @@
             // varyings
             varying vec4 worldVertexPos; // vertex position in world space
             varying vec3 worldVertexNormal; // vertex normal in world space
-            varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
             varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
@@ -41,12 +39,12 @@
             void main()
             {
 	            // calculate vertex position and normal in world space
-	            worldVertexPos = FUSEE_M * vec4(fuVertex, 1.0);
-	            worldVertexNormal = normalize(mat3(FUSEE_IT) * fuNormal);
+	            worldVertexPos = vec4(fuVertex, 1.0);
+	            worldVertexNormal = fuNormal;
 
 	            // calculate vertex position and normal in screen space
-	            vertexPos = FUSEE_MVP * vec4(fuVertex, 1.0);
-	            vertexNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+	            gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                vertexNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
 	
 	            // Pass color and UV to fragment shader
 	            vertexColor = fuColor;
@@ -131,7 +129,6 @@
             // varyings
             varying vec4 worldVertexPos; // vertex position in world space
             varying vec3 worldVertexNormal; // vertex normal in world space
-            varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
             varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
@@ -189,10 +186,10 @@
             // diffuse light calculation for a single light
             vec4 calcDiffuse(in spotlight light)
             {
-	            float variance = max(0.0, dot(light.direction, vertexNormal));
+	            float variance = max(0.0, dot(light.direction, worldVertexNormal));
 		
 	            float dist = length(light.position - worldVertexPos);
-	            float falloff = max(0.0, dist / light.falloff);
+	            float falloff = max(0.0, (-dist / light.falloff) + 1);
 		
 	            return matDiffuse * light.diffuse * variance * falloff;
             }
@@ -216,6 +213,10 @@
 			            {
 				            totalLighting += calcDiffuse(lights[i]);
 			            }
+                        else
+                        {
+                            break;
+                        }
 		            }
 	            }
 	
