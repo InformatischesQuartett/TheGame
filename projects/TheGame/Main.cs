@@ -1,26 +1,26 @@
-﻿using Fusee.Engine;
+﻿using Examples.TheGame.Entities;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
 {
     /// <summary>
-    /// This class contains the main entry point of the game
+    ///     This class contains the main entry point of the game
     /// </summary>
     public class TheGame : RenderCanvas
     {
-        protected ShaderProgram Sp;
-        protected IShaderParam[] Param;
-        protected ShaderMaterial M;
-
         private static float _red, _green, _blue;
+        protected ShaderMaterial M;
+        protected IShaderParam[] Param;
+        protected ShaderProgram Sp;
 
         /// <summary>
-        /// The main game handler
+        ///     The main game handler
         /// </summary>
         private GameHandler _gameHandler;
 
         /// <summary>
-        /// Initialize FUSEE
+        ///     Initialize FUSEE
         /// </summary>
         public override void Init()
         {
@@ -38,39 +38,42 @@ namespace Examples.TheGame
             M = new ShaderMaterial(Sp);
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
-            
+
             // Create game handler
             _gameHandler = new GameHandler(RC);
+
+
+
         }
 
         /// <summary>
-        /// Renders everything 
+        ///     Renders everything
         /// </summary>
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Update game handler and render it
-            _gameHandler.UpdateStates();
-            _gameHandler.RenderAFrame();
+        //    _gameHandler.UpdateStates();
+         //   _gameHandler.RenderAFrame();
 
             Present();
         }
 
         /// <summary>
-        /// Resizes the game window.
+        ///     Resizes the game window.
         /// </summary>
         public override void Resize()
         {
             // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width/(float) Height;
+            float aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 
         /// <summary>
-        /// Main entry point of the game
+        ///     Main entry point of the game
         /// </summary>
         public static void Main()
         {
