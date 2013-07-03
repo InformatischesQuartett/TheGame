@@ -5,6 +5,7 @@ namespace Examples.TheGame.Networking
 {
     class NetworkClient
     {
+        private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private int _userID;
@@ -13,8 +14,10 @@ namespace Examples.TheGame.Networking
         /// Initializes a new instance of the <see cref="NetworkClient"/> class.
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
-        internal NetworkClient(NetworkGUI networkGUI)
+        /// <param name="mediator"></param>
+        internal NetworkClient(NetworkGUI networkGUI, Mediator mediator)
         {
+            _mediator = mediator;
             _networkGUI = networkGUI;
 
             Network.Instance.Config.SysType = SysType.Client;

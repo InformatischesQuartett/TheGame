@@ -1,29 +1,31 @@
-﻿using Fusee.Engine;
+﻿using Examples.TheGame.Networking;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame.Entities
 {
-    public class GameEntity
+    internal class GameEntity
     {
-        private int _id;
-        private NetworkHandler _nwHandler;
+        private readonly int _id;
+        private readonly Mediator _mediator;
         private readonly Mesh _mesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
         private float2 _rotation; // x = Links Rechts, y = Hoch Runter
-        private float _speed;
-        private float _impact ;
+        private readonly float _speed;
+        private float _impact;
 
-        public GameEntity(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
+        internal GameEntity(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+                            float impact)
         {
             //Attribute initialisieren
-            this._nwHandler = nwHandler;
-            this._id = _nwHandler.AssignId();
-            this._mesh = mesh;
-            this._collisionRadius = collisionRadius;
-            this._position = position;
-            this._speed = speed;
-            this._impact = impact;
+            _mediator = mediator;
+            _id = _mediator.GetObjectId();
+            _mesh = mesh;
+            _collisionRadius = collisionRadius;
+            _position = position;
+            _speed = speed;
+            _impact = impact;
 
             //Position des Entitiesan an das Dictionary im GameHandeler geben
             /*
@@ -32,42 +34,43 @@ namespace Examples.TheGame.Entities
         }
 
 
-        public NetworkHandler GetNWHandler()
+        internal Mediator GetMediator()
         {
-            return _nwHandler;
+            return _mediator;
         }
 
-        public int GetId()
+        internal int GetId()
         {
             return _id;
         }
 
-        public float4x4 GetPosition()
+        internal float4x4 GetPosition()
         {
             return _position;
         }
 
-        public float GetCollisionRadius()
+        internal float GetCollisionRadius()
         {
             return _collisionRadius;
         }
 
-        public void SetRotation(float2 rotation)
+        internal void SetRotation(float2 rotation)
         {
-            this._rotation += rotation;
+            _rotation += rotation;
         }
 
-        public void DestroyEnity()
+        internal void DestroyEnity()
         {
             //remove this from Dictionary
         }
 
-        public virtual void Update ()
+        internal virtual void Update()
         {
-            _position *= float4x4.CreateRotationY(_rotation.y) * float4x4.CreateRotationX(_rotation.x) * float4x4.CreateTranslation(0,0,_speed);
+            _position *= float4x4.CreateRotationY(_rotation.y)*float4x4.CreateRotationX(_rotation.x)*
+                         float4x4.CreateTranslation(0, 0, _speed);
         }
 
-        public virtual void RenderUpdate(RenderContext rc)
+        internal virtual void RenderUpdate(RenderContext rc)
         {
             //rendern
         }

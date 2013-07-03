@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Examples.TheGame
+﻿namespace Examples.TheGame
 {
-    public class GameState
+    internal class GameState
     {
-        public enum State
+        internal enum State
         {
             StartMenu,
             InGame,
@@ -16,20 +11,19 @@ namespace Examples.TheGame
 
         private State _curState;
 
-        public GameState (State curState)
+        internal GameState(State curState)
         {
             _curState = curState;
         }
 
-        public State GetSate ()
+        private State GetSate()
         {
             return _curState;
         }
 
-        public void SetState(State newState)
+        private void SetState(State newState)
         {
             _curState = newState;
         }
-      
     }
 }

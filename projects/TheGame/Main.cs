@@ -1,4 +1,4 @@
-﻿using Examples.TheGame.Entities;
+﻿using Examples.TheGame.Networking;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -18,6 +18,10 @@ namespace Examples.TheGame
         ///     The main game handler
         /// </summary>
         private GameHandler _gameHandler;
+
+        private NetworkHandler _networkHandler;
+
+        private Mediator _mediator;
 
         /// <summary>
         ///     Initialize FUSEE
@@ -39,11 +43,11 @@ namespace Examples.TheGame
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
-            // Create game handler
-            _gameHandler = new GameHandler(RC);
+            
+            _mediator = new Mediator();
 
-
-
+            _gameHandler = new GameHandler(RC, _mediator);
+            _networkHandler = new NetworkHandler(RC, _mediator);
         }
 
         /// <summary>
@@ -54,8 +58,10 @@ namespace Examples.TheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Update game handler and render it
-        //    _gameHandler.UpdateStates();
-         //   _gameHandler.RenderAFrame();
+            // _gameHandler.UpdateStates();
+            // _gameHandler.RenderAFrame();
+
+            _networkHandler.HandleNetwork();
 
             Present();
         }
@@ -68,7 +74,7 @@ namespace Examples.TheGame
             // is called when the window is resized
             RC.Viewport(0, 0, Width, Height);
 
-            float aspectRatio = Width/(float) Height;
+            var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
 

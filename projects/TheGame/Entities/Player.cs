@@ -1,31 +1,37 @@
-﻿using Fusee.Engine;
+﻿using System;
+using Examples.TheGame.Networking;
+using Fusee.Engine;
 using Fusee.Math;
-
 
 namespace Examples.TheGame.Entities
 {
-    public class Player : GameEntity
+    internal class Player : GameEntity
     {
         private int _life;
         private Time _lastShotTime;
 
 
-        public Player(NetworkHandler nwHandler, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact)
-            : base(nwHandler, mesh, collisionRadius, position, speed, impact)
+        internal Player(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+                      float impact)
+            : base(mediator, mesh, collisionRadius, position, speed, impact)
         {
         }
 
-        public int GetLife()
+        internal int GetLife()
         {
             return _life;
         }
-        public void Collision()
+
+        internal void Collision()
         {
             foreach (var go in GameHandler.Players)
             {
-                float4x4 distanceMatrix = float4x4.Substract(go.Value.GetPosition(), this.GetPosition());
-                var distance = (float)System.Math.Sqrt((System.Math.Pow((double)distanceMatrix.M41, 2) + System.Math.Pow((double)distanceMatrix.M42, 2) + System.Math.Pow((double)distanceMatrix.M43, 2)));
-                var distancecoll = go.Value.GetCollisionRadius() + this.GetCollisionRadius();
+                var distanceMatrix = float4x4.Substract(go.Value.GetPosition(), GetPosition());
+                var distance =
+                    (float)
+                    Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
+                               Math.Pow(distanceMatrix.M43, 2)));
+                var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
 
                 if (distance < distancecoll)
                 {
@@ -33,14 +39,14 @@ namespace Examples.TheGame.Entities
                 }
             }
         }
-        public void Shoot()
+
+        internal void Shoot()
         {
             // new Bullet
             // Bullet bullet = new Bullet(NetworkHandler.AssignId(), ....
-            Bullet bullet = new Bullet(this.GetNWHandler(), null, 4, this.GetPosition(), 10, 5,this.GetPosition() );
+            var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
             GameHandler.Items.Add(bullet.GetId(), bullet);
             // add Bullet to ItemDict
         }
     }
-
 }

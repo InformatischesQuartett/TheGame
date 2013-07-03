@@ -10,6 +10,7 @@ namespace Examples.TheGame.Networking
 {
     class NetworkServer
     {
+        private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private readonly Dictionary<int, INetworkConnection> _userIDs; 
@@ -25,8 +26,10 @@ namespace Examples.TheGame.Networking
         /// Initializes a new instance of the <see cref="NetworkServer"/> class.
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
-        internal NetworkServer(NetworkGUI networkGUI)
+        /// <param name="mediator"></param>
+        internal NetworkServer(NetworkGUI networkGUI, Mediator mediator)
         {
+            _mediator = mediator;
             _networkGUI = networkGUI;
 
             Network.Instance.Config.SysType = SysType.Server;

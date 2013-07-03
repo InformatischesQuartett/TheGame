@@ -47,11 +47,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities\Bullet.cs" />
+    <Compile Include="Entities\GameEntity.cs" />
+    <Compile Include="Entities\HealthItem.cs" />
+    <Compile Include="Entities\Player.cs" />
     <Compile Include="GameHandler.cs" />
-    <Compile Include="GameStates\AbstractGameState.cs" />
-    <Compile Include="GameStates\GameState.cs" />
-    <Compile Include="GameStates\InGameState.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Mediator.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\NetworkGUI.cs" />
     <Compile Include="Networking\NetworkHandler.cs" />

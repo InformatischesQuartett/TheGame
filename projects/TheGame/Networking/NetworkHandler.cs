@@ -4,6 +4,8 @@ namespace Examples.TheGame.Networking
 {
     class NetworkHandler
     {
+        private readonly Mediator _mediator;
+
         // private RenderContext _renderContext;
         private readonly NetworkGUI _networkGUI;
 
@@ -14,8 +16,10 @@ namespace Examples.TheGame.Networking
         /// Initializes a new instance of the <see cref="NetworkHandler"/> class.
         /// </summary>
         /// <param name="rc">The rc.</param>
-        public NetworkHandler(RenderContext rc)
+        /// <param name="mediator"></param>
+        public NetworkHandler(RenderContext rc, Mediator mediator)
         {
+            _mediator = mediator;
             _networkGUI = new NetworkGUI(rc, this);
         }
 
@@ -39,7 +43,7 @@ namespace Examples.TheGame.Networking
         /// <returns></returns>
         internal NetworkServer CreateServer()
         {
-            _networkServer = new NetworkServer(_networkGUI);
+            _networkServer = new NetworkServer(_networkGUI, _mediator);
             return _networkServer;
         }
 
@@ -49,7 +53,7 @@ namespace Examples.TheGame.Networking
         /// <returns></returns>
         internal NetworkClient CreateClient()
         {
-            _networkClient = new NetworkClient(_networkGUI);
+            _networkClient = new NetworkClient(_networkGUI, _mediator);
             return _networkClient;
         }
     }
