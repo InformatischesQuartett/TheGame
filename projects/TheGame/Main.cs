@@ -1,4 +1,5 @@
-﻿using Examples.TheGame.Networking;
+﻿using System.Diagnostics;
+using Examples.TheGame.Networking;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -62,6 +63,7 @@ namespace Examples.TheGame
             // _gameHandler.RenderAFrame();
 
             _networkHandler.HandleNetwork();
+            Debug.WriteLine(_mediator.GetObjectId());
 
             Present();
         }

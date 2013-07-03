@@ -103,7 +103,7 @@ namespace Examples.TheGame.Networking
     {
         // Data
         internal int UserID;
-        internal int ObjectID;
+        internal uint ObjectID;
         internal int ObjectType;
         internal float3 ObjectPosition;
         internal float3 ObjectRotation;
@@ -127,7 +127,7 @@ namespace Examples.TheGame.Networking
     internal struct NetworkPacketObjectUpdate
     {
         // Data
-        internal int ObjectID;
+        internal uint ObjectID;
         internal int ObjectType;
         internal bool ObjectRemoved;
 
@@ -362,7 +362,7 @@ namespace Examples.TheGame.Networking
                     var objectSpawnPacket = new NetworkPacketObjectSpawn
                                                 {
                                                     UserID = msgData[1],
-                                                    ObjectID = BitConverter.ToInt32(msgData, 2),
+                                                    ObjectID = BitConverter.ToUInt32(msgData, 2),
                                                     ObjectType = msgData[6],
                                                     ObjectPosition = decObjectPosition,
                                                     ObjectRotation = decObjectRotation,
@@ -377,7 +377,7 @@ namespace Examples.TheGame.Networking
                 {
                     var objectUpdatePacket = new NetworkPacketObjectUpdate
                                               {
-                                                  ObjectID = BitConverter.ToInt32(msgData, 1),
+                                                  ObjectID = BitConverter.ToUInt32(msgData, 1),
                                                   ObjectType = msgData[5],
                                                   ObjectRemoved = (msgData[6] == 1)
                                               };

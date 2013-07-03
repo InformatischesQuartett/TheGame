@@ -103,7 +103,7 @@ Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
-## ObjectID       ## int    ## A number greater than zero       ##
+## ObjectID       ## uint   ## A number in a specific range     ##
 ## UserID         ## int    ## A number greater than zero       ##
 ## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
@@ -114,6 +114,11 @@ Whenever a player shoots a bullet, the client sends an ObjectSpawn
 packet. The server then updates his own game state and sends an
 ObjectSpawn packet to all other clients. The UserID field might be
 used to identify the bullet's owner when a player is hit.
+
+The ObjectID is based on the UserID. It would be too complicated
+to ask the server for an ID everytime a player wants to create a
+new object (like a bullet). The formula is simple: 
+UserID*16,500,000 <= ObjectID < (UserID+1)*16,500,000
 
 Whenever the server spawns a new object (e.g. power-up) the server
 sends an ObjectSpawn packet to all clients. In this case the
@@ -129,7 +134,7 @@ Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
-## ObjectID       ## int    ## A number greater than zero       ##
+## ObjectID       ## uint   ## A number in a specific range     ##
 ## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##
 
