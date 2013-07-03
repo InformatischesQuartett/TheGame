@@ -9,6 +9,8 @@
         ///     The vertex shader
         /// </summary>
         private const string VertexShader = @"
+            #version 120
+
             /* Vertex shader
              * Calculates vertex position and normal in screen space
              * and passes vertex albedo and the UV coordinates
@@ -32,7 +34,7 @@
             varying vec3 worldVertexNormal; // vertex normal in world space
             varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
-            varying vec3 vertexColor; // vertex albedo
+            varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
 
             // main entry point
@@ -55,6 +57,8 @@
         ///     The fragment shader
         /// </summary>
         private const string FragmentShader = @"
+            #version 120
+
             /* Fragment shader
              * Calculates the diffuse component for up to 8 spot lights.
              * Supports material characteristics and can also switch off
@@ -69,30 +73,67 @@
 	            vec4 diffuse; // diffuse color of the light
 	            vec4 specular; // specular color of the light
 	            float falloff; // light attenuation
-	            bool active = false; // switch to activate this light
-            };
-
-            struct material
-            {
-	            vec3 ambient; // material ambient color
-	            vec3 diffuse; // material diffuse color
-	            vec3 specular; // material specular color
-	            float shininess; // specular shininess
             };
  
             // uniforms
             uniform sampler2D tex; // model texture
             uniform int calcLighting = 0; // specifies if the lighting calculation
 							              // should be executed or not
-            uniform vec3 ambient; // ambient light
-            uniform material surfaceMat; // material characteristics
+            uniform vec4 ambientLight; // ambient light
+            uniform vec4 matAmbient; // material ambient color
+            uniform vec4 matDiffuse; // material diffuse color
+            uniform vec4 matSpecular; // material specular color
+            uniform float matShininess; // specular shininess
+
+            uniform int amountOfLights = 8; // Amount of lights to calculate
+
+            uniform vec4 light1Position; // light position in world space
+            uniform vec3 light1Direction; // spot direction
+            uniform vec4 light1Diffuse; // diffuse color of the light
+            uniform vec4 light1Specular; // specular color of the light
+            uniform float light1Falloff; // light attenuation
+            uniform vec4 light2Position; // light position in world space
+            uniform vec3 light2Direction; // spot direction
+            uniform vec4 light2Diffuse; // diffuse color of the light
+            uniform vec4 light2Specular; // specular color of the light
+            uniform float light2Falloff; // light attenuation
+            uniform vec4 light3Position; // light position in world space
+            uniform vec3 light3Direction; // spot direction
+            uniform vec4 light3Diffuse; // diffuse color of the light
+            uniform vec4 light3Specular; // specular color of the light
+            uniform float light3Falloff; // light attenuation
+            uniform vec4 light4Position; // light position in world space
+            uniform vec3 light4Direction; // spot direction
+            uniform vec4 light4Diffuse; // diffuse color of the light
+            uniform vec4 light4Specular; // specular color of the light
+            uniform float light4Falloff; // light attenuation
+            uniform vec4 light5Position; // light position in world space
+            uniform vec3 light5Direction; // spot direction
+            uniform vec4 light5Diffuse; // diffuse color of the light
+            uniform vec4 light5Specular; // specular color of the light
+            uniform float light5Falloff; // light attenuation
+            uniform vec4 light6Position; // light position in world space
+            uniform vec3 light6Direction; // spot direction
+            uniform vec4 light6Diffuse; // diffuse color of the light
+            uniform vec4 light6Specular; // specular color of the light
+            uniform float light6Falloff; // light attenuation
+            uniform vec4 light7Position; // light position in world space
+            uniform vec3 light7Direction; // spot direction
+            uniform vec4 light7Diffuse; // diffuse color of the light
+            uniform vec4 light7Specular; // specular color of the light
+            uniform float light7Falloff; // light attenuation
+            uniform vec4 light8Position; // light position in world space
+            uniform vec3 light8Direction; // spot direction
+            uniform vec4 light8Diffuse; // diffuse color of the light
+            uniform vec4 light8Specular; // specular color of the light
+            uniform float light8Falloff; // light attenuation
 					
             // varyings
             varying vec4 worldVertexPos; // vertex position in world space
             varying vec3 worldVertexNormal; // vertex normal in world space
             varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
-            varying vec3 vertexColor; // vertex albedo
+            varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
 
             // constants
@@ -101,18 +142,77 @@
             spotlight lights[maxLights];
 
 
+            // initializes the light array with all necessary lights
+            void initLights()
+            {
+	            for (int i = 0; i < maxLights; i++)
+	            {
+		            if(i < amountOfLights)
+		            {
+			            // This is awful :(
+			            if(i == 0)
+			            {
+				            lights[i] = spotlight(light1Position, light1Direction, light1Diffuse, light1Specular, light1Falloff);
+			            }
+			            if(i == 1)
+			            {
+				            lights[i] = spotlight(light2Position, light2Direction, light2Diffuse, light2Specular, light2Falloff);
+			            }
+			            if(i == 2)
+			            {
+				            lights[i] = spotlight(light3Position, light3Direction, light3Diffuse, light3Specular, light3Falloff);
+			            }
+			            if(i == 3)
+			            {
+				            lights[i] = spotlight(light4Position, light4Direction, light4Diffuse, light4Specular, light4Falloff);
+			            }
+			            if(i == 4)
+			            {
+				            lights[i] = spotlight(light5Position, light5Direction, light5Diffuse, light5Specular, light5Falloff);
+			            }
+			            if(i == 5)
+			            {
+				            lights[i] = spotlight(light6Position, light6Direction, light6Diffuse, light6Specular, light6Falloff);
+			            }
+			            if(i == 6)
+			            {
+				            lights[i] = spotlight(light7Position, light7Direction, light7Diffuse, light7Specular, light7Falloff);
+			            }
+			            if(i == 7)
+			            {
+				            lights[i] = spotlight(light8Position, light8Direction, light8Diffuse, light8Specular, light8Falloff);
+			            }
+		            }
+	            }
+            }
+
+            // diffuse light calculation for a single light
+            vec4 calcDiffuse(in spotlight light)
+            {
+	            float variance = max(0.0, dot(light.direction, vertexNormal));
+		
+	            float dist = length(light.position - worldVertexPos);
+	            float falloff = max(0.0, dist / light.falloff);
+		
+	            return matDiffuse * light.diffuse * variance * falloff;
+            }
+
             // main entry point
             void main()
             {
 	            // initialize lighting with ambient light
-	            vec3 totalLighting = ambient * surfaceMat.ambient;
+	            vec4 totalLighting = ambientLight * matAmbient;
 	
 	            // iterate over all lights
 	            if(calcLighting == 0)
 	            {
+		            // add all available lights into the array
+		            initLights();
+		
+		            // Calculate lighting
 		            for (int i = 0; i < maxLights; i++)
 		            {
-			            if(lights[i].active)
+			            if(i < amountOfLights)
 			            {
 				            totalLighting += calcDiffuse(lights[i]);
 			            }
@@ -120,18 +220,7 @@
 	            }
 	
 	            // calculate fragment color
-	            gl_FragColor = texture2D(tex, vUV) * totalLighting;
-            }
-
-            // diffuse light calculation for a single light
-            vec3 calcDiffuse(in spotlight light)
-            {
-	            float variance = max(0.0, dot(light.direction, vertexNormal));
-		
-	            float dist = length(light.position - worldVertexPos);
-	            float falloff = max(0.0, dist / light.falloff);
-		
-	            surfaceMat.diffuse * light.diffuse * variance * falloff;
+	            gl_FragColor = texture2D(tex, vertexUV) * totalLighting;
             }";
 
         /// <summary>

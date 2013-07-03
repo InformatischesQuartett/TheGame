@@ -15,9 +15,52 @@ namespace Examples.TheGame
         protected Mesh Mesh;
         protected IShaderParam[] Param;
         protected IShaderParam CalcLightingShaderParam;
-        protected IShaderParam MaterialShaderParam;
-        protected IShaderParam LightsShaderParam;
         protected IShaderParam AmbientLightShaderParam;
+        protected IShaderParam MaterialAmbientShaderParam;
+        protected IShaderParam MaterialDiffuseShaderParam;
+        protected IShaderParam MaterialSpecularShaderParam;
+        protected IShaderParam MaterialShininessShaderParam;
+        protected IShaderParam AmountOfLightsShaderParam;
+        protected IShaderParam Light1PositionShaderParam;
+        protected IShaderParam Light1DirectionShaderParam;
+        protected IShaderParam Light1DiffuseShaderParam;
+        protected IShaderParam Light1SpecularShaderParam;
+        protected IShaderParam Light1FalloffShaderParam;
+        protected IShaderParam Light2PositionShaderParam;
+        protected IShaderParam Light2DirectionShaderParam;
+        protected IShaderParam Light2DiffuseShaderParam;
+        protected IShaderParam Light2SpecularShaderParam;
+        protected IShaderParam Light2FalloffShaderParam;
+        protected IShaderParam Light3PositionShaderParam;
+        protected IShaderParam Light3DirectionShaderParam;
+        protected IShaderParam Light3DiffuseShaderParam;
+        protected IShaderParam Light3SpecularShaderParam;
+        protected IShaderParam Light3FalloffShaderParam;
+        protected IShaderParam Light4PositionShaderParam;
+        protected IShaderParam Light4DirectionShaderParam;
+        protected IShaderParam Light4DiffuseShaderParam;
+        protected IShaderParam Light4SpecularShaderParam;
+        protected IShaderParam Light4FalloffShaderParam;
+        protected IShaderParam Light5PositionShaderParam;
+        protected IShaderParam Light5DirectionShaderParam;
+        protected IShaderParam Light5DiffuseShaderParam;
+        protected IShaderParam Light5SpecularShaderParam;
+        protected IShaderParam Light5FalloffShaderParam;
+        protected IShaderParam Light6PositionShaderParam;
+        protected IShaderParam Light6DirectionShaderParam;
+        protected IShaderParam Light6DiffuseShaderParam;
+        protected IShaderParam Light6SpecularShaderParam;
+        protected IShaderParam Light6FalloffShaderParam;
+        protected IShaderParam Light7PositionShaderParam;
+        protected IShaderParam Light7DirectionShaderParam;
+        protected IShaderParam Light7DiffuseShaderParam;
+        protected IShaderParam Light7SpecularShaderParam;
+        protected IShaderParam Light7FalloffShaderParam;
+        protected IShaderParam Light8PositionShaderParam;
+        protected IShaderParam Light8DirectionShaderParam;
+        protected IShaderParam Light8DiffuseShaderParam;
+        protected IShaderParam Light8SpecularShaderParam;
+        protected IShaderParam Light8FalloffShaderParam;
         protected ShaderProgram Sp;
 
         // Shader stuff
@@ -31,7 +74,7 @@ namespace Examples.TheGame
         private GameHandler _gameHandler;
 
         /// <summary>
-        ///     Initialize FUSEE
+        /// Initialize FUSEE
         /// </summary>
         public override void Init()
         {
@@ -52,23 +95,75 @@ namespace Examples.TheGame
             Mesh = geo.ToMesh();
 
             // Create shader and store handle
-            TextureShaderParam = Sp.GetShaderParam("texture1");
-            CalcLightingShaderParam = Sp.GetShaderParam("receiveShadows");
+            TextureShaderParam = Sp.GetShaderParam("tex");
+            CalcLightingShaderParam = Sp.GetShaderParam("calcLighting");
+            AmbientLightShaderParam = Sp.GetShaderParam("ambientLight");
+            MaterialAmbientShaderParam = Sp.GetShaderParam("matAmbient");
+            MaterialDiffuseShaderParam = Sp.GetShaderParam("matDiffuse");
+            MaterialSpecularShaderParam = Sp.GetShaderParam("matSpecular");
+            MaterialShininessShaderParam = Sp.GetShaderParam("matShininess");
+            AmountOfLightsShaderParam = Sp.GetShaderParam("amountOfLights");
+            Light1PositionShaderParam = Sp.GetShaderParam("light1Position");
+            Light1DirectionShaderParam = Sp.GetShaderParam("light1Direction");
+            Light1DiffuseShaderParam = Sp.GetShaderParam("light1Diffuse");
+            Light1SpecularShaderParam = Sp.GetShaderParam("light1Specular");
+            Light1FalloffShaderParam = Sp.GetShaderParam("light1Falloff");
+            Light2PositionShaderParam = Sp.GetShaderParam("light2Position");
+            Light2DirectionShaderParam = Sp.GetShaderParam("light2Direction");
+            Light2DiffuseShaderParam = Sp.GetShaderParam("light2Diffuse");
+            Light2SpecularShaderParam = Sp.GetShaderParam("light2Specular");
+            Light2FalloffShaderParam = Sp.GetShaderParam("light2Falloff");
+            Light3PositionShaderParam = Sp.GetShaderParam("light3Position");
+            Light3DirectionShaderParam = Sp.GetShaderParam("light3Direction");
+            Light3DiffuseShaderParam = Sp.GetShaderParam("light3Diffuse");
+            Light3SpecularShaderParam = Sp.GetShaderParam("light3Specular");
+            Light3FalloffShaderParam = Sp.GetShaderParam("light3Falloff");
+            Light4PositionShaderParam = Sp.GetShaderParam("light4Position");
+            Light4DirectionShaderParam = Sp.GetShaderParam("light4Direction");
+            Light4DiffuseShaderParam = Sp.GetShaderParam("light4Diffuse");
+            Light4SpecularShaderParam = Sp.GetShaderParam("light4Specular");
+            Light4FalloffShaderParam = Sp.GetShaderParam("light4Falloff");
+            Light5PositionShaderParam = Sp.GetShaderParam("light5Position");
+            Light5DirectionShaderParam = Sp.GetShaderParam("light5Direction");
+            Light5DiffuseShaderParam = Sp.GetShaderParam("light5Diffuse");
+            Light5SpecularShaderParam = Sp.GetShaderParam("light5Specular");
+            Light5FalloffShaderParam = Sp.GetShaderParam("light5Falloff");
+            Light6PositionShaderParam = Sp.GetShaderParam("light6Position");
+            Light6DirectionShaderParam = Sp.GetShaderParam("light6Direction");
+            Light6DiffuseShaderParam = Sp.GetShaderParam("light6Diffuse");
+            Light6SpecularShaderParam = Sp.GetShaderParam("light6Specular");
+            Light6FalloffShaderParam = Sp.GetShaderParam("light6Falloff");
+            Light7PositionShaderParam = Sp.GetShaderParam("light7Position");
+            Light7DirectionShaderParam = Sp.GetShaderParam("light7Direction");
+            Light7DiffuseShaderParam = Sp.GetShaderParam("light7Diffuse");
+            Light7SpecularShaderParam = Sp.GetShaderParam("light7Specular");
+            Light7FalloffShaderParam = Sp.GetShaderParam("light7Falloff");
+            Light8PositionShaderParam = Sp.GetShaderParam("light8Position");
+            Light8DirectionShaderParam = Sp.GetShaderParam("light8Direction");
+            Light8DiffuseShaderParam = Sp.GetShaderParam("light8Diffuse");
+            Light8SpecularShaderParam = Sp.GetShaderParam("light8Specular");
+            Light8FalloffShaderParam = Sp.GetShaderParam("light8Falloff");
 
             // Load texture
             Texture = RC.LoadImage("Assets/SpaceShip_Diffuse.jpg");
             TextureHandle = RC.CreateTexture(Texture);
 
             // Init shader
-            MaterialShaderParam = Sp.GetShaderParam("surfaceMat");
-            LightsShaderParam = Sp.GetShaderParam("lights");
-            AmbientLightShaderParam = Sp.GetShaderParam("ambient");
-            CalcLightingShaderParam = Sp.GetShaderParam("calcLighting");
-            // Hardcoded lights, I should feel really bad
-            RC.SetShaderParam(MaterialShaderParam, new float3(-1, 0.5f, 0));
-            RC.SetShaderParam(LightsShaderParam, new float4(0.8f, 0.8f, 1, 1));
-            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.3f, 0.3f, 0.4f, 1));
             RC.SetShaderParam(CalcLightingShaderParam, 1);
+            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.3f, 0.3f, 0.4f, 1.0f));
+            RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            RC.SetShaderParam(MaterialDiffuseShaderParam, new float3(1.0f, 1.0f, 1.0f));
+            RC.SetShaderParam(MaterialSpecularShaderParam, new float3(1.0f, 1.0f, 1.0f));
+            RC.SetShaderParam(MaterialShininessShaderParam, 1.0f);
+
+            RC.SetShaderParam(AmountOfLightsShaderParam, 1);
+
+            RC.SetShaderParam(Light1PositionShaderParam, new float4(10, 0, 0, 0));
+            RC.SetShaderParam(Light1DirectionShaderParam, new float3(-1, 0, 0));
+            RC.SetShaderParam(Light1DiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            RC.SetShaderParam(Light1SpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            RC.SetShaderParam(Light1FalloffShaderParam, 1);
+
         }
 
         /// <summary>
@@ -91,7 +186,6 @@ namespace Examples.TheGame
 
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
             RC.Render(Mesh);
-            RC.SetShaderParam(CalcLightingShaderParam, 1);
 
             Present();
         }
