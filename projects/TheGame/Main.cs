@@ -25,41 +25,49 @@ namespace Examples.TheGame
         protected IShaderParam Light1DirectionShaderParam;
         protected IShaderParam Light1DiffuseShaderParam;
         protected IShaderParam Light1SpecularShaderParam;
+        protected IShaderParam Light1ApertureShaderParam;
         protected IShaderParam Light1FalloffShaderParam;
         protected IShaderParam Light2PositionShaderParam;
         protected IShaderParam Light2DirectionShaderParam;
         protected IShaderParam Light2DiffuseShaderParam;
         protected IShaderParam Light2SpecularShaderParam;
+        protected IShaderParam Light2ApertureShaderParam;
         protected IShaderParam Light2FalloffShaderParam;
         protected IShaderParam Light3PositionShaderParam;
         protected IShaderParam Light3DirectionShaderParam;
         protected IShaderParam Light3DiffuseShaderParam;
         protected IShaderParam Light3SpecularShaderParam;
+        protected IShaderParam Light3ApertureShaderParam;
         protected IShaderParam Light3FalloffShaderParam;
         protected IShaderParam Light4PositionShaderParam;
         protected IShaderParam Light4DirectionShaderParam;
         protected IShaderParam Light4DiffuseShaderParam;
         protected IShaderParam Light4SpecularShaderParam;
+        protected IShaderParam Light4ApertureShaderParam;
         protected IShaderParam Light4FalloffShaderParam;
         protected IShaderParam Light5PositionShaderParam;
         protected IShaderParam Light5DirectionShaderParam;
         protected IShaderParam Light5DiffuseShaderParam;
         protected IShaderParam Light5SpecularShaderParam;
+        protected IShaderParam Light5ApertureShaderParam;
         protected IShaderParam Light5FalloffShaderParam;
         protected IShaderParam Light6PositionShaderParam;
         protected IShaderParam Light6DirectionShaderParam;
         protected IShaderParam Light6DiffuseShaderParam;
         protected IShaderParam Light6SpecularShaderParam;
+        protected IShaderParam Light6ApertureShaderParam;
         protected IShaderParam Light6FalloffShaderParam;
         protected IShaderParam Light7PositionShaderParam;
         protected IShaderParam Light7DirectionShaderParam;
         protected IShaderParam Light7DiffuseShaderParam;
         protected IShaderParam Light7SpecularShaderParam;
+        protected IShaderParam Light7ApertureShaderParam;
         protected IShaderParam Light7FalloffShaderParam;
         protected IShaderParam Light8PositionShaderParam;
         protected IShaderParam Light8DirectionShaderParam;
         protected IShaderParam Light8DiffuseShaderParam;
         protected IShaderParam Light8SpecularShaderParam;
+        protected IShaderParam Light8ApertureShaderParam;
         protected IShaderParam Light8FalloffShaderParam;
         protected ShaderProgram Sp;
 
@@ -70,6 +78,7 @@ namespace Examples.TheGame
 
         private float3 _cameraPos = new float3(0, 0, 1000);
         private float _light1Falloff = 10000;
+        private float _light1Aperture = 0.1f;
 
         /// <summary>
         ///     The main game handler
@@ -110,6 +119,7 @@ namespace Examples.TheGame
             Light1DirectionShaderParam = Sp.GetShaderParam("light1Direction");
             Light1DiffuseShaderParam = Sp.GetShaderParam("light1Diffuse");
             Light1SpecularShaderParam = Sp.GetShaderParam("light1Specular");
+            Light1ApertureShaderParam = Sp.GetShaderParam("light1Aperture");
             Light1FalloffShaderParam = Sp.GetShaderParam("light1Falloff");
             Light2PositionShaderParam = Sp.GetShaderParam("light2Position");
             Light2DirectionShaderParam = Sp.GetShaderParam("light2Direction");
@@ -145,6 +155,7 @@ namespace Examples.TheGame
             Light8DirectionShaderParam = Sp.GetShaderParam("light8Direction");
             Light8DiffuseShaderParam = Sp.GetShaderParam("light8Diffuse");
             Light8SpecularShaderParam = Sp.GetShaderParam("light8Specular");
+            //Light8ApertureShaderParam = Sp.GetShaderParam("light8Aperture");
             Light8FalloffShaderParam = Sp.GetShaderParam("light8Falloff");
 
             // Load texture
@@ -153,7 +164,7 @@ namespace Examples.TheGame
 
             // Init shader
             RC.SetShaderParam(CalcLightingShaderParam, 0);
-            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.0f, 0.0f, 0.0f, 1.0f));
+            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.1f, 0.1f, 0.1f, 1.0f));
             RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(MaterialDiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             //RC.SetShaderParam(MaterialSpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -161,8 +172,8 @@ namespace Examples.TheGame
 
             RC.SetShaderParam(AmountOfLightsShaderParam, 1);
 
-            RC.SetShaderParam(Light1PositionShaderParam, new float4(-1000, 0, -1000, 1));
-            RC.SetShaderParam(Light1DirectionShaderParam, new float3(0, 1, 1));
+            RC.SetShaderParam(Light1PositionShaderParam, new float4(1000, -1000, -1000, 1));
+            RC.SetShaderParam(Light1DirectionShaderParam, new float3(-1, 1, 1));
             RC.SetShaderParam(Light1DiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(Light1SpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(Light1FalloffShaderParam, _light1Falloff);
@@ -194,6 +205,11 @@ namespace Examples.TheGame
             if (Input.Instance.IsKeyDown(KeyCodes.PageUp))
                 _light1Falloff += 5000 * (float)Time.Instance.DeltaTime;
 
+            if (Input.Instance.IsKeyDown(KeyCodes.End))
+                _light1Aperture += 0.1f * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKeyDown(KeyCodes.Home))
+                _light1Aperture -= 0.1f * (float)Time.Instance.DeltaTime;
+
 
             float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(45) * float4x4.CreateRotationX(45);
             float4x4 mtxCam = float4x4.LookAt(_cameraPos, new float3(0, 0, 0), new float3(0, 1, 0));
@@ -203,6 +219,7 @@ namespace Examples.TheGame
             RC.ModelView = mtxScale * mtxRot * mtxPos * mtxCam;
 
             RC.SetShaderParam(Light1FalloffShaderParam, _light1Falloff);
+            RC.SetShaderParam(Light1ApertureShaderParam, _light1Aperture);
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
             RC.Render(Mesh);
 

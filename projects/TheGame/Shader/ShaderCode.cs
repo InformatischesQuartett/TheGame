@@ -62,6 +62,8 @@
              * Supports material characteristics and can also switch off
              * the light calculation completely.
              */
+ 
+             #define M_PI 3.1415926535897932384626433832795
 
             // structs
             struct spotlight
@@ -70,6 +72,9 @@
 	            vec3 direction; // spot direction
 	            vec4 diffuse; // diffuse color of the light
 	            vec4 specular; // specular color of the light
+	            float aperture; // aperture of the cone of light (i.e. the angle 
+					            // between the vector from apex to the middle of 
+					            // basement and the cone's surface) in radians
 	            float falloff; // light attenuation
             };
  
@@ -89,41 +94,49 @@
             uniform vec3 light1Direction; // spot direction
             uniform vec4 light1Diffuse; // diffuse color of the light
             uniform vec4 light1Specular; // specular color of the light
+            uniform float light1Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light1Falloff; // light attenuation
             uniform vec4 light2Position; // light position in world space
             uniform vec3 light2Direction; // spot direction
             uniform vec4 light2Diffuse; // diffuse color of the light
             uniform vec4 light2Specular; // specular color of the light
+            uniform float light2Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light2Falloff; // light attenuation
             uniform vec4 light3Position; // light position in world space
             uniform vec3 light3Direction; // spot direction
             uniform vec4 light3Diffuse; // diffuse color of the light
             uniform vec4 light3Specular; // specular color of the light
+            uniform float light3Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light3Falloff; // light attenuation
             uniform vec4 light4Position; // light position in world space
             uniform vec3 light4Direction; // spot direction
             uniform vec4 light4Diffuse; // diffuse color of the light
             uniform vec4 light4Specular; // specular color of the light
+            uniform float light4Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light4Falloff; // light attenuation
             uniform vec4 light5Position; // light position in world space
             uniform vec3 light5Direction; // spot direction
             uniform vec4 light5Diffuse; // diffuse color of the light
             uniform vec4 light5Specular; // specular color of the light
+            uniform float light5Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light5Falloff; // light attenuation
             uniform vec4 light6Position; // light position in world space
             uniform vec3 light6Direction; // spot direction
             uniform vec4 light6Diffuse; // diffuse color of the light
             uniform vec4 light6Specular; // specular color of the light
+            uniform float light6Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light6Falloff; // light attenuation
             uniform vec4 light7Position; // light position in world space
             uniform vec3 light7Direction; // spot direction
             uniform vec4 light7Diffuse; // diffuse color of the light
             uniform vec4 light7Specular; // specular color of the light
+            uniform float light7Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light7Falloff; // light attenuation
             uniform vec4 light8Position; // light position in world space
             uniform vec3 light8Direction; // spot direction
             uniform vec4 light8Diffuse; // diffuse color of the light
             uniform vec4 light8Specular; // specular color of the light
+            uniform float light8Aperture = M_PI / 6; // aperture of the cone of light
             uniform float light8Falloff; // light attenuation
 					
             // varyings
@@ -149,38 +162,45 @@
 			            // This is awful :(
 			            if(i == 0)
 			            {
-				            lights[i] = spotlight(light1Position, light1Direction, light1Diffuse, light1Specular, light1Falloff);
+				            lights[i] = spotlight(light1Position, light1Direction, light1Diffuse, light1Specular, light1Aperture, light1Falloff);
 			            }
 			            if(i == 1)
 			            {
-				            lights[i] = spotlight(light2Position, light2Direction, light2Diffuse, light2Specular, light2Falloff);
+				            lights[i] = spotlight(light2Position, light2Direction, light2Diffuse, light2Specular, light2Aperture, light2Falloff);
 			            }
 			            if(i == 2)
 			            {
-				            lights[i] = spotlight(light3Position, light3Direction, light3Diffuse, light3Specular, light3Falloff);
+				            lights[i] = spotlight(light3Position, light3Direction, light3Diffuse, light3Specular, light3Aperture, light3Falloff);
 			            }
 			            if(i == 3)
 			            {
-				            lights[i] = spotlight(light4Position, light4Direction, light4Diffuse, light4Specular, light4Falloff);
+				            lights[i] = spotlight(light4Position, light4Direction, light4Diffuse, light4Specular, light4Aperture, light4Falloff);
 			            }
 			            if(i == 4)
 			            {
-				            lights[i] = spotlight(light5Position, light5Direction, light5Diffuse, light5Specular, light5Falloff);
+				            lights[i] = spotlight(light5Position, light5Direction, light5Diffuse, light5Specular, light5Aperture, light5Falloff);
 			            }
 			            if(i == 5)
 			            {
-				            lights[i] = spotlight(light6Position, light6Direction, light6Diffuse, light6Specular, light6Falloff);
+				            lights[i] = spotlight(light6Position, light6Direction, light6Diffuse, light6Specular, light6Aperture, light6Falloff);
 			            }
 			            if(i == 6)
 			            {
-				            lights[i] = spotlight(light7Position, light7Direction, light7Diffuse, light7Specular, light7Falloff);
+				            lights[i] = spotlight(light7Position, light7Direction, light7Diffuse, light7Specular, light7Aperture, light7Falloff);
 			            }
 			            if(i == 7)
 			            {
-				            lights[i] = spotlight(light8Position, light8Direction, light8Diffuse, light8Specular, light8Falloff);
+				            lights[i] = spotlight(light8Position, light8Direction, light8Diffuse, light8Specular, light8Aperture, light8Falloff);
 			            }
 		            }
 	            }
+            }
+
+            // Checks if a point is inside the cone of light
+            bool isInConeOfLight(in vec3 point, in spotlight light)
+            {
+	            vec3 apexToPoint = normalize(point - vec3(light.position));
+	            return dot(apexToPoint, light.direction) / length(apexToPoint) / length(light.direction) > cos(light.aperture);
             }
 
             // diffuse light calculation for a single light
@@ -188,7 +208,7 @@
             {
 	            float variance = max(0.0, dot(light.direction, worldVertexNormal));
 		
-	            float dist = length(light.position - worldVertexPos);
+	            float dist = length(worldVertexPos - light.position);
 	            float falloff = max(0.0, (-dist / light.falloff) + 1);
 		
 	            return matDiffuse * light.diffuse * variance * falloff;
@@ -211,12 +231,15 @@
 		            {
 			            if(i < amountOfLights)
 			            {
-				            totalLighting += calcDiffuse(lights[i]);
+				            if(isInConeOfLight(vec3(worldVertexPos), lights[i]))
+				            {
+					            totalLighting += calcDiffuse(lights[i]);
+				            }
 			            }
-                        else
-                        {
-                            break;
-                        }
+			            else
+			            {
+				            break;
+			            }
 		            }
 	            }
 	
