@@ -88,6 +88,8 @@
             uniform vec4 matSpecular; // material specular color
             uniform float matShininess; // specular shininess
 
+            uniform vec4 camPosition; // camera position in world space
+
             uniform int amountOfLights = 8; // Amount of lights to calculate
 
             uniform vec4 light1Position; // light position in world space
@@ -204,14 +206,29 @@
             }
 
             // diffuse light calculation for a single light
-            vec4 calcDiffuse(in spotlight light)
+            vec4 calcDiffuse(in spotlight light, float falloff)
             {
 	            float variance = max(0.0, dot(light.direction, worldVertexNormal));
 		
-	            float dist = length(worldVertexPos - light.position);
-	            float falloff = max(0.0, (-dist / light.falloff) + 1);
-		
 	            return matDiffuse * light.diffuse * variance * falloff;
+            }
+
+            // specular reflection calculation
+            vec4 calcSpecular(in spotlight light, float falloff)
+            {
+	            vec4 specular;
+	            if(dot(worldVertexNormal, light.direction) < 0.0)
+	            {
+		            // light source is on the wrong side so there is no specular component
+		            specular = vec4(0.0, 0.0, 0.0, 0.0);
+	            }
+	            else
+	            {
+		            vec3 viewDirection = vec3(normalize(worldVertexPos - camPosition));
+		            vec3 normalDirection = normalize(worldVertexNormal);
+		            specular = falloff * light.specular * matSpecular * pow(max(0.0, dot(reflect(-light.direction, normalDirection), viewDirection)), matShininess);
+	            }
+	            return specular;
             }
 
             // main entry point
@@ -233,7 +250,12 @@
 			            {
 				            if(isInConeOfLight(vec3(worldVertexPos), lights[i]))
 				            {
-					            totalLighting += calcDiffuse(lights[i]);
+					            // calculate falloff
+					            float dist = length(worldVertexPos - lights[i].position);
+					            float falloff = max(0.0, (-dist / lights[i].falloff) + 1);
+	
+					            totalLighting += calcDiffuse(lights[i], falloff);
+					            totalLighting += calcSpecular(lights[i], falloff);
 				            }
 			            }
 			            else

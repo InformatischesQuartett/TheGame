@@ -20,6 +20,7 @@ namespace Examples.TheGame
         protected IShaderParam MaterialDiffuseShaderParam;
         protected IShaderParam MaterialSpecularShaderParam;
         protected IShaderParam MaterialShininessShaderParam;
+        protected IShaderParam CamPositionShaderParam;
         protected IShaderParam AmountOfLightsShaderParam;
         protected IShaderParam Light1PositionShaderParam;
         protected IShaderParam Light1DirectionShaderParam;
@@ -114,6 +115,7 @@ namespace Examples.TheGame
             MaterialDiffuseShaderParam = Sp.GetShaderParam("matDiffuse");
             MaterialSpecularShaderParam = Sp.GetShaderParam("matSpecular");
             MaterialShininessShaderParam = Sp.GetShaderParam("matShininess");
+            CamPositionShaderParam = Sp.GetShaderParam("camPosition");
             AmountOfLightsShaderParam = Sp.GetShaderParam("amountOfLights");
             Light1PositionShaderParam = Sp.GetShaderParam("light1Position");
             Light1DirectionShaderParam = Sp.GetShaderParam("light1Direction");
@@ -167,8 +169,10 @@ namespace Examples.TheGame
             RC.SetShaderParam(AmbientLightShaderParam, new float4(0.1f, 0.1f, 0.1f, 1.0f));
             RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(MaterialDiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            //RC.SetShaderParam(MaterialSpecularShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            //RC.SetShaderParam(MaterialShininessShaderParam, 1.0f);
+            RC.SetShaderParam(MaterialSpecularShaderParam, new float4(0.1f, 0.1f, 0.2f, 1.0f));
+            RC.SetShaderParam(MaterialShininessShaderParam, 5.0f);
+
+            RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
 
             RC.SetShaderParam(AmountOfLightsShaderParam, 1);
 
@@ -218,6 +222,7 @@ namespace Examples.TheGame
 
             RC.ModelView = mtxScale * mtxRot * mtxPos * mtxCam;
 
+            RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
             RC.SetShaderParam(Light1FalloffShaderParam, _light1Falloff);
             RC.SetShaderParam(Light1ApertureShaderParam, _light1Aperture);
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
