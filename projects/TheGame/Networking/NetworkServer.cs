@@ -45,6 +45,8 @@ namespace Examples.TheGame.Networking
             _keepAliveTimer = new Timer(KeepAliveInterval);
             _keepAliveTimer.Elapsed += SendKeepAlive;
             _keepAliveTimer.Enabled = true;
+
+            _mediator.UserID = 0;
         }
 
         /// <summary>
@@ -106,9 +108,18 @@ namespace Examples.TheGame.Networking
                     // TODO
                 }
 
+                if (msg.Type == MessageType.DiscoveryRequest)
+                {
+                    // TODO
+                }
+
                 if (msg.Type == MessageType.Data)
                 {
                     var decodedMessage = NetworkProtocol.MessageDecode(msg);
+
+                    int userID;
+                    MessageDelivery msgDelivery;
+                    int channelID;
 
                     switch (decodedMessage.PacketType)
                     {
@@ -117,22 +128,45 @@ namespace Examples.TheGame.Networking
                             break;
 
                         case NetworkPacketTypes.PlayerUpdate:
-                            // TODO: Inform GameHandler and other players
+                            userID = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).UserID;
+
+                            // TODO: Inform GameHandler
+
+                            // forward packet to all other clients
+                            msgDelivery = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).MsgDelivery;
+                            channelID = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).ChannelID;
+
+                            foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                                connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
+
                             break;
 
                         case NetworkPacketTypes.ObjectSpawn:
-                            // TODO: Inform GameHandler and other players
+                            userID = ((NetworkPacketObjectSpawn) decodedMessage.Packet).UserID;
+
+                            // TODO: Inform GameHandler
+
+                            // forward packet to all other clients
+                            msgDelivery = ((NetworkPacketObjectSpawn) decodedMessage.Packet).MsgDelivery;
+                            channelID = ((NetworkPacketObjectSpawn) decodedMessage.Packet).ChannelID;
+
+                            foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                                connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
                             break;
 
                         case NetworkPacketTypes.ObjectUpdate:
-                            // TODO: Inform GameHandler and other players
+                            userID = ((NetworkPacketObjectUpdate) decodedMessage.Packet).UserID;
+
+                            // TODO: Inform GameHandler
+
+                            // forward packet to all other clients
+                            msgDelivery = ((NetworkPacketObjectUpdate)decodedMessage.Packet).MsgDelivery;
+                            channelID = ((NetworkPacketObjectUpdate)decodedMessage.Packet).ChannelID;
+
+                            foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                                connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
                             break;
                     }
-                }
-
-                if (msg.Type == MessageType.DiscoveryRequest)
-                {
-                    // TODO
                 }
             }
         }

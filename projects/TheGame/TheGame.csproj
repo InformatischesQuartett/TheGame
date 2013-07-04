@@ -54,7 +54,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Entities\GameEntity.cs" />
-    <Compile Include="Mediator.cs" />
+    <Compile Include="Mediator\Mediator.cs" />
     <Compile Include="Networking\NetworkClient.cs" />
     <Compile Include="Networking\NetworkGUI.cs" />
     <Compile Include="Networking\NetworkHandler.cs" />

@@ -1,36 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Examples.TheGame.Networking;
+﻿using Examples.TheGame.Networking;
 using Fusee.Engine;
 
 namespace Examples.TheGame
 {
     internal class Mediator
     {
-        /// <summary>
-        /// The main game handler
-        /// </summary>
         private readonly GameHandler _gameHandler;
-
-        /// <summary>
-        /// The NetworkHandler
-        /// </summary>
         private readonly NetworkHandler _networkHandler;
 
-        /// <summary>
-        /// Network is only used if set to <c>true</c>.
-        /// </summary>
-        private bool _networkActive;
+        private readonly bool _networkActive;
 
-        /// <summary>
-        /// Gets or sets the UserID.
-        /// </summary>
-        /// <value>
-        /// The UserID.
-        /// </value>
-        internal int UserID { get; set; }
+        private int _userID;
+
+        internal int UserID
+        {
+            get { return _userID; }
+            set
+            {
+                _userID = value;
+                _gameHandler.UserID = value;
+            }
+        }
 
         /// <summary>
         /// The last assigned objectID.
@@ -38,10 +28,9 @@ namespace Examples.TheGame
         private int _objectID;
 
         /// <summary>
-        /// Every client is able to spawn 16,500,000 objects.
+        /// Amount of objects a client can spawn.
         /// </summary>
-        private const int Range = 16500000;
-
+        private const int ObjectRange = 16500000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Mediator" /> class.
@@ -56,7 +45,7 @@ namespace Examples.TheGame
             if (networkActive)
                 _networkHandler = new NetworkHandler(rc, this);
 
-            UserID = 0;
+            UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
         }
 
@@ -66,16 +55,19 @@ namespace Examples.TheGame
         /// <returns></returns>
         internal int GetObjectId()
         {
-            if (_objectID == -1 || _objectID == ((UserID + 1)*Range) - 1)
-                return _objectID = UserID*Range;
+            if (UserID == -1)
+                return -1;
+
+            if (_objectID == -1 || _objectID == ((UserID + 1)*ObjectRange) - 1)
+                return _objectID = UserID*ObjectRange;
 
             return ++_objectID;
         }
 
         /// <summary>
-        /// Updates this instance.
+        /// Updates this instance once a frame.
         /// </summary>
-        public void Update()
+        internal void Update()
         {
             // specific GUI if network is used
             if (_gameHandler.GameState.CurState == GameState.State.StartMenu)

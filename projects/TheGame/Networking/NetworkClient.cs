@@ -100,12 +100,12 @@ namespace Examples.TheGame.Networking
 
                             if (!packetPlayerSpawn.Spawn)
                             {
-                                Debug.WriteLine("UserID wurde zugewiesen: " + packetPlayerSpawn.UserID);
                                 _userID = packetPlayerSpawn.UserID;
+                                _mediator.UserID = _userID;
                             }
                             else
                             {
-                                // TODO: Inform GameHandler about Spawning Position                              
+                                // TODO: Inform GameHandler about Spawning Position
                             }
 
                             break;

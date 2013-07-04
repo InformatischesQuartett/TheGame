@@ -97,14 +97,14 @@ until any new information is available.
 ## OBJECT SPAWN ##################################################
 
 Packet ID: 0x03
-Length:    ? Bytes
+Length:    10 - 55 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
-## ObjectID       ## uint   ## A number in a specific range     ##
 ## UserID         ## int    ## A number greater than zero       ##
+## ObjectID       ## uint   ## A number in a specific range     ##
 ## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
 ## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
@@ -128,12 +128,13 @@ UserID field is zero.
 ## OBJECT UPDATE #################################################
 
 Packet ID: 0x04
-Length:    ? Bytes
+Length:    7 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Client
 
+## UserID         ## int    ## A number greater than zero       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##
 ## ObjectType     ## int    ## A number greater than zero       ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##

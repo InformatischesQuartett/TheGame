@@ -22,6 +22,8 @@ namespace Examples.TheGame
         /// </summary>
         internal GameState GameState { get; set; }
 
+        internal int UserID { get; set; }
+
         private readonly Mediator _mediator;
 
         /// <summary>

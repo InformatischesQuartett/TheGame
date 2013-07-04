@@ -127,6 +127,7 @@ namespace Examples.TheGame.Networking
     internal struct NetworkPacketObjectUpdate
     {
         // Data
+        internal int UserID;
         internal uint ObjectID;
         internal int ObjectType;
         internal bool ObjectRemoved;
@@ -251,12 +252,13 @@ namespace Examples.TheGame.Networking
                 var data = (NetworkPacketObjectUpdate)packetData;
                 var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
 
-                var packet = new byte[objectIDBytes.Length + 3];
-                Buffer.BlockCopy(objectIDBytes, 0, packet, 1, objectIDBytes.Length);
+                var packet = new byte[objectIDBytes.Length + 4];
+                Buffer.BlockCopy(objectIDBytes, 0, packet, 2, objectIDBytes.Length);
 
                 packet[0] = (byte) msgType;                         // PacketType
-                packet[5] = (byte) (data.ObjectType & 255);         // Type of Object
-                packet[6] = (byte)((data.ObjectRemoved) ? 1 : 0);   // If object has been removed
+                packet[2] = (byte) (data.UserID & 255);             // UserID
+                packet[6] = (byte) (data.ObjectType & 255);         // Type of Object
+                packet[7] = (byte) ((data.ObjectRemoved) ? 1 : 0);  // If object has been removed
 
                 return packet;
             }
@@ -377,9 +379,10 @@ namespace Examples.TheGame.Networking
                 {
                     var objectUpdatePacket = new NetworkPacketObjectUpdate
                                               {
-                                                  ObjectID = BitConverter.ToUInt32(msgData, 1),
-                                                  ObjectType = msgData[5],
-                                                  ObjectRemoved = (msgData[6] == 1)
+                                                  UserID = msgData[1],
+                                                  ObjectID = BitConverter.ToUInt32(msgData, 2),
+                                                  ObjectType = msgData[6],
+                                                  ObjectRemoved = (msgData[7] == 1)
                                               };
 
                     decodedMessage.Packet = objectUpdatePacket;
