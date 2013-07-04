@@ -15,13 +15,6 @@ namespace Examples.TheGame
         protected IShaderParam[] Param;
         protected ShaderProgram Sp;
 
-        /// <summary>
-        ///     The main game handler
-        /// </summary>
-        private GameHandler _gameHandler;
-
-        private NetworkHandler _networkHandler;
-
         private Mediator _mediator;
 
         /// <summary>
@@ -39,16 +32,13 @@ namespace Examples.TheGame
             RC.SetLightDiffuse(0, new float4(_red, _green, _blue, 1));
             RC.SetLightDirection(0, new float3(-1, 0, 0));
 
-
             M = new ShaderMaterial(Sp);
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
-            
-            _mediator = new Mediator();
-
-            _gameHandler = new GameHandler(RC, _mediator);
-            _networkHandler = new NetworkHandler(RC, _mediator);
+            // Mediator for GameHandler and NetworkHandler
+            const bool networkActive = true;
+            _mediator = new Mediator(RC, networkActive);
         }
 
         /// <summary>
@@ -58,11 +48,7 @@ namespace Examples.TheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            // Update game handler and render it
-            // _gameHandler.UpdateStates();
-            // _gameHandler.RenderAFrame();
-
-            _networkHandler.HandleNetwork();
+            _mediator.Update();
 
             Present();
         }

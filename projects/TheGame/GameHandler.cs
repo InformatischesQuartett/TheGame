@@ -20,7 +20,7 @@ namespace Examples.TheGame
         /// <summary>
         ///State Object, contains the current State the Game is in
         /// </summary>
-        private GameState _gameState;
+        internal GameState GameState { get; set; }
 
         private readonly Mediator _mediator;
 
@@ -37,7 +37,7 @@ namespace Examples.TheGame
 
             Items = new Dictionary<int, GameEntity>();
             Players = new Dictionary<int, Player>();
-            _gameState = new GameState(GameState.State.StartMenu);
+            GameState = new GameState(GameState.State.StartMenu);
         }
     }
 }
