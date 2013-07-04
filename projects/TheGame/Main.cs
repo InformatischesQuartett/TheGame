@@ -31,6 +31,9 @@ namespace Examples.TheGame
         protected IShaderParam MaterialShininessShaderParam;
         protected IShaderParam CamPositionShaderParam;
         protected IShaderParam AmountOfLightsShaderParam;
+        protected IShaderParam NoiseStrengthShaderParam;
+        protected IShaderParam NoiseTimeShaderParam;
+        protected IShaderParam NoiseOffsetShaderParam;
         protected ShaderProgram Sp;
 
         // Shader stuff
@@ -41,6 +44,7 @@ namespace Examples.TheGame
         private float3 _cameraPos = new float3(0, 0, 1000);
         private float _light1Falloff = 10000;
         private float _light1Aperture = 0.1f;
+        private float _noiseTime = 0.0f;
 
         /// <summary>
         ///     The main game handler
@@ -87,6 +91,9 @@ namespace Examples.TheGame
                 LightShaderParams[i-1].Aperture = Sp.GetShaderParam("light" + i + "Aperture");
                 LightShaderParams[i-1].Falloff = Sp.GetShaderParam("light" + i + "Falloff");
             }
+            NoiseStrengthShaderParam = Sp.GetShaderParam("noiseStrength");
+            NoiseTimeShaderParam = Sp.GetShaderParam("noiseTime");
+            NoiseOffsetShaderParam = Sp.GetShaderParam("noiseOffset");
 
             // Load texture
             Texture = RC.LoadImage("Assets/SpaceShip_Diffuse.jpg");
@@ -111,6 +118,9 @@ namespace Examples.TheGame
             RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
             RC.SetShaderParam(LightShaderParams[0].Falloff, _light1Falloff);
 
+            RC.SetShaderParam(NoiseStrengthShaderParam, 0.5f);
+            RC.SetShaderParam(NoiseTimeShaderParam, 0.0f);
+            RC.SetShaderParam(NoiseOffsetShaderParam, new float2(0, 0));
         }
 
         /// <summary>
@@ -143,6 +153,15 @@ namespace Examples.TheGame
             if (Input.Instance.IsKeyDown(KeyCodes.Home))
                 _light1Aperture -= 0.1f * (float)Time.Instance.DeltaTime;
 
+            if (Input.Instance.IsKeyDown(KeyCodes.Add))
+            {
+                _noiseTime += 0.1f * (float)Time.Instance.DeltaTime;
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.Subtract))
+            {
+                _noiseTime -= 0.1f * (float)Time.Instance.DeltaTime;
+            }
+
 
             float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(45) * float4x4.CreateRotationX(45);
             float4x4 mtxCam = float4x4.LookAt(_cameraPos, new float3(0, 0, 0), new float3(0, 1, 0));
@@ -155,6 +174,7 @@ namespace Examples.TheGame
             RC.SetShaderParam(LightShaderParams[0].Falloff, _light1Falloff);
             RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
+            RC.SetShaderParam(NoiseTimeShaderParam, _noiseTime);
             RC.Render(Mesh);
 
             Present();
