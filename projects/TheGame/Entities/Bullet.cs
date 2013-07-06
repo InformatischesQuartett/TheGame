@@ -8,7 +8,7 @@ namespace Examples.TheGame.Entities
         private float4x4 _startPos;
         private float _maxDist;
 
-        internal Bullet(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact,
+        internal Bullet(Mediator.Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed, float impact,
                       float4x4 startPos)
             : base(mediator, mesh, collisionRadius, position, speed, impact)
         {

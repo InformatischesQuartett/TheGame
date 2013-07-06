@@ -4,7 +4,7 @@ namespace Examples.TheGame.Networking
 {
     class NetworkHandler
     {
-        private readonly Mediator _mediator;
+        private readonly Mediator.Mediator _mediator;
 
         // private RenderContext _renderContext;
         private readonly NetworkGUI _networkGUI;
@@ -17,7 +17,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="rc">The rc.</param>
         /// <param name="mediator"></param>
-        public NetworkHandler(RenderContext rc, Mediator mediator)
+        public NetworkHandler(RenderContext rc, Mediator.Mediator mediator)
         {
             _mediator = mediator;
             _networkGUI = new NetworkGUI(rc, this);

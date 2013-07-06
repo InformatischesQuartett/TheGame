@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using Examples.TheGame.Networking;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
@@ -15,7 +13,7 @@ namespace Examples.TheGame
         protected IShaderParam[] Param;
         protected ShaderProgram Sp;
 
-        private Mediator _mediator;
+        private Mediator.Mediator _mediator;
 
         /// <summary>
         ///     Initialize FUSEE
@@ -38,7 +36,7 @@ namespace Examples.TheGame
 
             // Mediator for GameHandler and NetworkHandler
             const bool networkActive = true;
-            _mediator = new Mediator(RC, networkActive);
+            _mediator = new Mediator.Mediator(RC, networkActive);
         }
 
         /// <summary>

@@ -1,12 +1,17 @@
-﻿using Examples.TheGame.Networking;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Examples.TheGame.Networking;
 using Fusee.Engine;
 
-namespace Examples.TheGame
+namespace Examples.TheGame.Mediator
 {
     internal class Mediator
     {
         private readonly GameHandler _gameHandler;
         private readonly NetworkHandler _networkHandler;
+
+        private readonly List<DataPacket> _sendingBuffer;
+        private readonly List<DataPacket> _recevingBuffer;
 
         private readonly bool _networkActive;
 
@@ -39,6 +44,9 @@ namespace Examples.TheGame
         /// <param name="networkActive">Network is only used if set to <c>true</c>.</param>
         internal Mediator(RenderContext rc, bool networkActive)
         {
+            _sendingBuffer = new List<DataPacket>();
+            _recevingBuffer = new List<DataPacket>();
+
             _gameHandler = new GameHandler(rc, this);
 
             _networkActive = networkActive;
@@ -82,6 +90,26 @@ namespace Examples.TheGame
 
             if (_networkActive)
                 _networkHandler.HandleNetwork();
+        }
+
+        internal void AddToSendingBuffer(DataPacket data)
+        {
+            _sendingBuffer.Add(data);
+        }
+
+        internal DataPacket GetFromSendingBuffer()
+        {
+            return _sendingBuffer.FirstOrDefault();
+        }
+
+        internal void AddToReceivingBuffer(DataPacket data)
+        {
+            _recevingBuffer.Add(data);
+        }
+
+        internal DataPacket GetFromReceivingBuffer()
+        {
+            return _recevingBuffer.FirstOrDefault();
         }
     }
 }

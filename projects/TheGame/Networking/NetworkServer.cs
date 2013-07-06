@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using Examples.TheGame.Mediator;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -10,7 +10,7 @@ namespace Examples.TheGame.Networking
 {
     class NetworkServer
     {
-        private readonly Mediator _mediator;
+        private readonly Mediator.Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private readonly Dictionary<int, INetworkConnection> _userIDs; 
@@ -27,7 +27,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
-        internal NetworkServer(NetworkGUI networkGUI, Mediator mediator)
+        internal NetworkServer(NetworkGUI networkGUI, Mediator.Mediator mediator)
         {
             _mediator = mediator;
             _networkGUI = networkGUI;
@@ -72,8 +72,8 @@ namespace Examples.TheGame.Networking
             // new KeepAlive messages to all clients
             _keepAliveID = _random.Next(10000000, 100000000);
 
-            var data = new NetworkPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
-            var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+            var data = new DataPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
+            var packet = NetworkProtocol.MessageEncode(DataPacketTypes.KeepAlive, data);
             Network.Instance.SendMessage(packet, data.MsgDelivery, data.ChannelID);
 
             _keepAliveResponses.Clear();
@@ -84,7 +84,7 @@ namespace Examples.TheGame.Networking
         /// <summary>
         /// Handles received keep alive packets.
         /// </summary>
-        void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
+        void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
         {
             if (keepAlive.KeepAliveID == _keepAliveID)
                 if (_userIDs.ContainsKey(keepAlive.UserID))
@@ -123,45 +123,48 @@ namespace Examples.TheGame.Networking
 
                     switch (decodedMessage.PacketType)
                     {
-                        case NetworkPacketTypes.KeepAlive:
-                            ReceiveKeepAlive((NetworkPacketKeepAlive) decodedMessage.Packet);
+                        case DataPacketTypes.KeepAlive:
+                            ReceiveKeepAlive((DataPacketKeepAlive) decodedMessage.Packet);
                             break;
 
-                        case NetworkPacketTypes.PlayerUpdate:
-                            userID = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).UserID;
+                        case DataPacketTypes.PlayerUpdate:
+                            userID = ((DataPacketPlayerUpdate) decodedMessage.Packet).UserID;
 
-                            // TODO: Inform GameHandler
+                            // inform GameHandler
+                            _mediator.AddToReceivingBuffer(decodedMessage);
 
                             // forward packet to all other clients
-                            msgDelivery = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).MsgDelivery;
-                            channelID = ((NetworkPacketPlayerUpdate) decodedMessage.Packet).ChannelID;
+                            msgDelivery = ((DataPacketPlayerUpdate) decodedMessage.Packet).MsgDelivery;
+                            channelID = ((DataPacketPlayerUpdate) decodedMessage.Packet).ChannelID;
 
                             foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
                                 connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
 
                             break;
 
-                        case NetworkPacketTypes.ObjectSpawn:
-                            userID = ((NetworkPacketObjectSpawn) decodedMessage.Packet).UserID;
+                        case DataPacketTypes.ObjectSpawn:
+                            userID = ((DataPacketObjectSpawn) decodedMessage.Packet).UserID;
 
-                            // TODO: Inform GameHandler
+                            // inform GameHandler
+                            _mediator.AddToReceivingBuffer(decodedMessage);
 
                             // forward packet to all other clients
-                            msgDelivery = ((NetworkPacketObjectSpawn) decodedMessage.Packet).MsgDelivery;
-                            channelID = ((NetworkPacketObjectSpawn) decodedMessage.Packet).ChannelID;
+                            msgDelivery = ((DataPacketObjectSpawn) decodedMessage.Packet).MsgDelivery;
+                            channelID = ((DataPacketObjectSpawn) decodedMessage.Packet).ChannelID;
 
                             foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
                                 connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
                             break;
 
-                        case NetworkPacketTypes.ObjectUpdate:
-                            userID = ((NetworkPacketObjectUpdate) decodedMessage.Packet).UserID;
+                        case DataPacketTypes.ObjectUpdate:
+                            userID = ((DataPacketObjectUpdate) decodedMessage.Packet).UserID;
 
-                            // TODO: Inform GameHandler
+                            // inform GameHandler
+                            _mediator.AddToReceivingBuffer(decodedMessage);
 
                             // forward packet to all other clients
-                            msgDelivery = ((NetworkPacketObjectUpdate)decodedMessage.Packet).MsgDelivery;
-                            channelID = ((NetworkPacketObjectUpdate)decodedMessage.Packet).ChannelID;
+                            msgDelivery = ((DataPacketObjectUpdate)decodedMessage.Packet).MsgDelivery;
+                            channelID = ((DataPacketObjectUpdate)decodedMessage.Packet).ChannelID;
 
                             foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
                                 connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
@@ -187,14 +190,14 @@ namespace Examples.TheGame.Networking
                 _userIDs.Add(newUserID, senderConnection);
 
                 // Inform client about his UserID
-                var data = new NetworkPacketPlayerSpawn
+                var data = new DataPacketPlayerSpawn
                     {
                         UserID = newUserID,
                         Spawn = false,
                         SpawnPosition = new float3(0, 0, 0)
                     };
 
-                var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.PlayerSpawn, data);
+                var packet = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerSpawn, data);
                 senderConnection.SendMessage(packet, data.MsgDelivery, data.ChannelID);
             }
 

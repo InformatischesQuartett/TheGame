@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
+using Examples.TheGame.Mediator;
 using Fusee.Engine;
 
 namespace Examples.TheGame.Networking
 {
     class NetworkClient
     {
-        private readonly Mediator _mediator;
+        private readonly Mediator.Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private int _userID;
@@ -15,7 +16,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
-        internal NetworkClient(NetworkGUI networkGUI, Mediator mediator)
+        internal NetworkClient(NetworkGUI networkGUI, Mediator.Mediator mediator)
         {
             _mediator = mediator;
             _networkGUI = networkGUI;
@@ -53,14 +54,14 @@ namespace Examples.TheGame.Networking
         /// <summary>
         /// Handles received KeepAlive packets.
         /// </summary>
-        internal void ReceiveKeepAlive(NetworkPacketKeepAlive keepAlive)
+        internal void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
         {
             Debug.WriteLine("KeepAlive bekommen. ID: " + keepAlive.KeepAliveID);
 
             if (_userID != -1)
             {
-                var data = new NetworkPacketKeepAlive {KeepAliveID = keepAlive.KeepAliveID, UserID = _userID};
-                var packet = NetworkProtocol.MessageEncode(NetworkPacketTypes.KeepAlive, data);
+                var data = new DataPacketKeepAlive {KeepAliveID = keepAlive.KeepAliveID, UserID = _userID};
+                var packet = NetworkProtocol.MessageEncode(DataPacketTypes.KeepAlive, data);
 
                 Network.Instance.SendMessage(packet);
             }
@@ -91,12 +92,12 @@ namespace Examples.TheGame.Networking
 
                     switch (decodedMessage.PacketType)
                     {
-                        case NetworkPacketTypes.KeepAlive:
-                            ReceiveKeepAlive((NetworkPacketKeepAlive) decodedMessage.Packet);
+                        case DataPacketTypes.KeepAlive:
+                            ReceiveKeepAlive((DataPacketKeepAlive) decodedMessage.Packet);
                             break;
 
-                        case NetworkPacketTypes.PlayerSpawn:
-                            var packetPlayerSpawn = (NetworkPacketPlayerSpawn) decodedMessage.Packet;
+                        case DataPacketTypes.PlayerSpawn:
+                            var packetPlayerSpawn = (DataPacketPlayerSpawn) decodedMessage.Packet;
 
                             if (!packetPlayerSpawn.Spawn)
                             {
@@ -104,22 +105,14 @@ namespace Examples.TheGame.Networking
                                 _mediator.UserID = _userID;
                             }
                             else
-                            {
-                                // TODO: Inform GameHandler about Spawning Position
-                            }
+                                _mediator.AddToReceivingBuffer(decodedMessage);
 
                             break;
 
-                        case NetworkPacketTypes.PlayerUpdate:
-                            // TODO: Inform GameHandler
-                            break;
-
-                        case NetworkPacketTypes.ObjectSpawn:
-                            // TODO: Inform GameHandler
-                            break;
-
-                        case NetworkPacketTypes.ObjectUpdate:
-                            // TODO: Inform GameHandler
+                        case DataPacketTypes.PlayerUpdate:
+                        case DataPacketTypes.ObjectSpawn:
+                        case DataPacketTypes.ObjectUpdate:
+                            _mediator.AddToReceivingBuffer(decodedMessage);
                             break;
                     }
                 }

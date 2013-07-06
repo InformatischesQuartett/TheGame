@@ -1,149 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Examples.TheGame.Mediator;
 using Fusee.Engine;
 using Fusee.Math;
 using ProtoBuf;
 
 namespace Examples.TheGame.Networking
 {
-    /// <summary>
-    /// Struct for a network packet.
-    /// </summary>
-    internal struct NetworkPacket
-    {
-        internal NetworkPacketTypes PacketType;
-        internal object Packet;
-    }
-
-    /// <summary>
-    /// Types of packets.
-    /// </summary>
-    internal enum NetworkPacketTypes
-    {
-        KeepAlive,
-        PlayerSpawn,
-        PlayerUpdate,
-        ObjectSpawn,
-        ObjectUpdate,
-    }
-
-    /// <summary>
-    /// Struct for a KeepAlive packet.
-    /// </summary>
-    internal struct NetworkPacketKeepAlive
-    {
-        // Data
-        internal int UserID;
-        internal int KeepAliveID;
-
-        // Settings
-        internal int ChannelID
-        {
-            get { return 0; }
-        }
-        
-        internal MessageDelivery MsgDelivery
-        {
-            get { return MessageDelivery.ReliableSequenced; }
-        }
-    }
-
-    /// <summary>
-    /// Struct for a PlayerSpawn packet.
-    /// </summary>
-    internal struct NetworkPacketPlayerSpawn
-    {
-        // Data
-        internal int UserID;
-        internal bool Spawn;
-        internal float3 SpawnPosition;
-
-        // Settings
-        internal int ChannelID
-        {
-            get { return 1; }
-        }
-
-        internal MessageDelivery MsgDelivery
-        {
-            get { return MessageDelivery.ReliableSequenced; }
-        }
-    }
-
-    /// <summary>
-    /// Struct for a PlayerUpdate packet.
-    /// </summary>
-    internal struct NetworkPacketPlayerUpdate
-    {
-        // Data
-        internal int UserID;
-        internal bool PlayerActive;
-        internal int PlayerHealth;
-        internal float3 PlayerPosition;
-        internal float3 PlayerRotation;
-        internal float3 PlayerVelocity;
-
-        // Settings
-        internal int ChannelID
-        {
-            get { return 2; }
-        }
-
-        internal MessageDelivery MsgDelivery
-        {
-            get { return MessageDelivery.ReliableSequenced; }
-        }
-    }
-
-    /// <summary>
-    /// Struct for a ObjectSpawn packet.
-    /// </summary>
-    internal struct NetworkPacketObjectSpawn
-    {
-        // Data
-        internal int UserID;
-        internal uint ObjectID;
-        internal int ObjectType;
-        internal float3 ObjectPosition;
-        internal float3 ObjectRotation;
-        internal float3 ObjectVelocity;
-
-        // Settings
-        internal int ChannelID
-        {
-            get { return 3; }
-        }
-
-        internal MessageDelivery MsgDelivery
-        {
-            get { return MessageDelivery.ReliableOrdered; }
-        }
-    }
-
-    /// <summary>
-    /// Struct for a ObjectUpdate packet.
-    /// </summary>
-    internal struct NetworkPacketObjectUpdate
-    {
-        // Data
-        internal int UserID;
-        internal uint ObjectID;
-        internal int ObjectType;
-        internal bool ObjectRemoved;
-
-        // Settings
-        internal int ChannelID
-        {
-            get { return 3; }
-        }
-
-        internal MessageDelivery MsgDelivery
-        {
-            get { return MessageDelivery.ReliableOrdered; }
-        }
-    }
-
     /// <summary>
     /// Handles the encoding and decoding of messages.
     /// </summary>
@@ -153,12 +17,12 @@ namespace Examples.TheGame.Networking
         /// Encodes the message.
         /// </summary>
         /// <returns>An array of bytes to be sent via network.</returns>
-        internal static byte[] MessageEncode(NetworkPacketTypes msgType, object packetData)
+        internal static byte[] MessageEncode(DataPacketTypes msgType, object packetData)
         {
             // KeepAlive
-            if (msgType == NetworkPacketTypes.KeepAlive)
+            if (msgType == DataPacketTypes.KeepAlive)
             {
-                var data = (NetworkPacketKeepAlive) packetData;
+                var data = (DataPacketKeepAlive) packetData;
                 var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
                 
                 var packet = new byte[keepAliveIDBytes.Length + 2];
@@ -171,9 +35,9 @@ namespace Examples.TheGame.Networking
             }
 
             // PlayerSpawn
-            if (msgType == NetworkPacketTypes.PlayerSpawn)
+            if (msgType == DataPacketTypes.PlayerSpawn)
             {
-                var data = (NetworkPacketPlayerSpawn) packetData;           
+                var data = (DataPacketPlayerSpawn) packetData;           
 
                 byte[] encodedSpawnPosition;
                 using (var stream = new MemoryStream())
@@ -193,9 +57,9 @@ namespace Examples.TheGame.Networking
             }
 
             // PlayerUpdate
-            if (msgType == NetworkPacketTypes.PlayerUpdate)
+            if (msgType == DataPacketTypes.PlayerUpdate)
             {
-                var data = (NetworkPacketPlayerUpdate)packetData;
+                var data = (DataPacketPlayerUpdate)packetData;
 
                 byte[] encPlayerData;
                 using (var stream = new MemoryStream())
@@ -219,9 +83,9 @@ namespace Examples.TheGame.Networking
             }
 
             // ObjectSpawn
-            if (msgType == NetworkPacketTypes.ObjectSpawn)
+            if (msgType == DataPacketTypes.ObjectSpawn)
             {
-                var data = (NetworkPacketObjectSpawn)packetData;
+                var data = (DataPacketObjectSpawn)packetData;
 
                 byte[] encObjectData;
                 using (var stream = new MemoryStream())
@@ -247,9 +111,9 @@ namespace Examples.TheGame.Networking
             }
 
             // ObjectUpdate
-            if (msgType == NetworkPacketTypes.ObjectUpdate)
+            if (msgType == DataPacketTypes.ObjectUpdate)
             {
-                var data = (NetworkPacketObjectUpdate)packetData;
+                var data = (DataPacketObjectUpdate)packetData;
                 var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
 
                 var packet = new byte[objectIDBytes.Length + 4];
@@ -270,21 +134,21 @@ namespace Examples.TheGame.Networking
         /// Decodes the message.
         /// </summary>
         /// <param name="msg"></param>
-        internal static NetworkPacket MessageDecode(INetworkMsg msg)
+        internal static DataPacket MessageDecode(INetworkMsg msg)
         {
-            var decodedMessage = new NetworkPacket();
+            var decodedMessage = new DataPacket();
             
             try
             {
                 var msgData = msg.Message.ReadBytes;
 
-                var packetType = (NetworkPacketTypes) msgData[0];
+                var packetType = (DataPacketTypes) msgData[0];
                 decodedMessage.PacketType = packetType;
 
                 // KeepAlive
-                if (packetType == NetworkPacketTypes.KeepAlive)
+                if (packetType == DataPacketTypes.KeepAlive)
                 {
-                    var keepAlivePacket = new NetworkPacketKeepAlive
+                    var keepAlivePacket = new DataPacketKeepAlive
                                               {
                                                   UserID = msgData[1],
                                                   KeepAliveID = BitConverter.ToInt32(msgData, 2)
@@ -294,7 +158,7 @@ namespace Examples.TheGame.Networking
                 }
 
                 // PlayerSpawn
-                if (packetType == NetworkPacketTypes.PlayerSpawn)
+                if (packetType == DataPacketTypes.PlayerSpawn)
                 {
                     float3 decodedSpawnPosition;
                     using (var ms = new MemoryStream())
@@ -304,7 +168,7 @@ namespace Examples.TheGame.Networking
                         decodedSpawnPosition = Serializer.Deserialize<float3>(ms);
                     }
 
-                    var playerSpawnPacket = new NetworkPacketPlayerSpawn
+                    var playerSpawnPacket = new DataPacketPlayerSpawn
                                                 {
                                                     UserID = msgData[1],
                                                     Spawn = (msgData[2] == 1),
@@ -315,7 +179,7 @@ namespace Examples.TheGame.Networking
                 }
 
                 // PlayerUpdate
-                if (packetType == NetworkPacketTypes.PlayerUpdate)
+                if (packetType == DataPacketTypes.PlayerUpdate)
                 {
                     float3 decPlayerPosition;
                     float3 decPlayerRotation;
@@ -331,7 +195,7 @@ namespace Examples.TheGame.Networking
                         decPlayerVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
                     }
 
-                    var playerUpdatePacket = new NetworkPacketPlayerUpdate
+                    var playerUpdatePacket = new DataPacketPlayerUpdate
                                                  {
                                                      UserID = msgData[1],
                                                      PlayerActive = (msgData[2] == 1),
@@ -345,7 +209,7 @@ namespace Examples.TheGame.Networking
                 }
 
                 // ObjectSpawn
-                if (packetType == NetworkPacketTypes.ObjectSpawn)
+                if (packetType == DataPacketTypes.ObjectSpawn)
                 {
                     float3 decObjectPosition;
                     float3 decObjectRotation;
@@ -361,7 +225,7 @@ namespace Examples.TheGame.Networking
                         decObjectVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
                     }
 
-                    var objectSpawnPacket = new NetworkPacketObjectSpawn
+                    var objectSpawnPacket = new DataPacketObjectSpawn
                                                 {
                                                     UserID = msgData[1],
                                                     ObjectID = BitConverter.ToUInt32(msgData, 2),
@@ -375,9 +239,9 @@ namespace Examples.TheGame.Networking
                 }
 
                 // ObjectUpdate
-                if (packetType == NetworkPacketTypes.ObjectUpdate)
+                if (packetType == DataPacketTypes.ObjectUpdate)
                 {
-                    var objectUpdatePacket = new NetworkPacketObjectUpdate
+                    var objectUpdatePacket = new DataPacketObjectUpdate
                                               {
                                                   UserID = msgData[1],
                                                   ObjectID = BitConverter.ToUInt32(msgData, 2),
