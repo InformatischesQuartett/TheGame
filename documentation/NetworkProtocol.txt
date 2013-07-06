@@ -128,7 +128,7 @@ UserID field is zero.
 ## OBJECT UPDATE #################################################
 
 Packet ID: 0x04
-Length:    7 Bytes
+Length:    8 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
