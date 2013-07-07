@@ -42,7 +42,7 @@ namespace Examples.TheGame
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Mediator for GameHandler and NetworkHandler
-            const bool networkActive = true;
+            const bool networkActive = false;
             _mediator = new Mediator(RC, networkActive);
         }
 

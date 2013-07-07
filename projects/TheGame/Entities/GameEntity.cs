@@ -85,7 +85,7 @@ namespace Examples.TheGame.Entities
 
         internal virtual void Update()
         {
-            _position *= float4x4.CreateRotationY(_rotation.y)*float4x4.CreateRotationX(_rotation.x)*
+            _position *= float4x4.CreateRotationY(_rotation.y) * float4x4.CreateRotationX(_rotation.x) *
                          float4x4.CreateTranslation(0, 0, _speed);
         }
 

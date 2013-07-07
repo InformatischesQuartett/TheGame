@@ -9,7 +9,7 @@ namespace Examples.TheGame.Entities
     internal class Player : GameEntity
     {
         private int _life;
-        private Time _lastShotTime;
+        private float _shotTimer;
 
 
 
@@ -49,13 +49,24 @@ namespace Examples.TheGame.Entities
 
         internal void Shoot()
         {
-            // new Bullet
-            var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
-            // add Bullet to ItemDict
-            GameHandler.Bullets.Add(bullet.GetId(), bullet);
+            if (_shotTimer >= 0.25f)
+            {
+                // new Bullet
+                var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
+                // add Bullet to ItemDict
+                GameHandler.Bullets.Add(bullet.GetId(), bullet);
+                _shotTimer = 0;
+            }
         }
 
+        internal override void Update()
+        {
+            base.Update();
+            PlayerInput();
+            CheckCollision();
+            _shotTimer += (float)Time.Instance.DeltaTime;
 
+        }
 
         private void PlayerInput()
         {
