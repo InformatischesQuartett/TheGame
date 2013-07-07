@@ -41,6 +41,7 @@ namespace Examples.TheGame
 
             GameState = new GameState(GameState.State.StartMenu);
         }
+
         internal void Update()
         {
             foreach (var go in HealthItems)
