@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2010
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheGame", "projects\TheGame\TheGame.csproj", "{DCC33087-00C7-4807-8E98-C8401221C134}"
 EndProject
 Global

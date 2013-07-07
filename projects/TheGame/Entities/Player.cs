@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Examples.TheGame.Networking;
 using Fusee.Engine;
 using Fusee.Math;
@@ -11,10 +12,12 @@ namespace Examples.TheGame.Entities
         private Time _lastShotTime;
 
 
+
         internal Player(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
                       float impact)
             : base(mediator, mesh, collisionRadius, position, speed, impact)
         {
+            this._life = 3;
         }
 
         internal int GetLife()
@@ -43,10 +46,44 @@ namespace Examples.TheGame.Entities
         internal void Shoot()
         {
             // new Bullet
-            // Bullet bullet = new Bullet(NetworkHandler.AssignId(), ....
             var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
-            GameHandler.Items.Add(bullet.GetId(), bullet);
             // add Bullet to ItemDict
+            GameHandler.Items.Add(bullet.GetId(), bullet);
+        }
+
+
+
+        private void PlayerInput()
+        {
+
+           // move forward Shift
+            this.SetSpeed(Input.Instance.IsKeyDown(KeyCodes.Shift) ? 1 : 0);
+            //Up  Down
+            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            {
+                var f = new float2(1,0);
+                this.SetRotation(f);
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            {
+                var f = new float2(-1,0);
+                this.SetRotation(f);
+            }
+            //Left Right
+            if (Input.Instance.IsKeyDown(KeyCodes.A))
+            {
+                var f = new float2(0,-1);
+                this.SetRotation(f);
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.D))
+            {
+                var f = new float2(0, 1);
+                this.SetRotation(f);
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.Space))
+            {
+                this.Shoot();
+            }
         }
     }
 }

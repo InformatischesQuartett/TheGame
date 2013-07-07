@@ -12,7 +12,8 @@ namespace Examples.TheGame.Entities
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
         private float2 _rotation; // x = Links Rechts, y = Hoch Runter
-        private readonly float _speed;
+        private float _speed;
+        private float _speedMax;
         private float _impact;
 
         internal GameEntity(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
@@ -26,11 +27,8 @@ namespace Examples.TheGame.Entities
             _position = position;
             _speed = speed;
             _impact = impact;
+            _speedMax = 10;
 
-            //Position des Entitiesan an das Dictionary im GameHandeler geben
-            /*
-             * gh->insert();
-             */
         }
 
 
@@ -56,8 +54,21 @@ namespace Examples.TheGame.Entities
 
         internal void SetRotation(float2 rotation)
         {
-            _rotation += rotation;
+            _rotation += rotation * (float)Time.Instance.DeltaTime;
         }
+
+        internal void SetSpeed(int speed)
+        {
+            if (_speed < _speedMax)
+            {
+                _speed += speed * (float)Time.Instance.DeltaTime;
+            }
+            else
+            {
+                _speed = _speedMax;
+            }
+        }
+
 
         internal void DestroyEnity()
         {
@@ -73,6 +84,8 @@ namespace Examples.TheGame.Entities
         internal virtual void RenderUpdate(RenderContext rc)
         {
             //rendern
+            rc.ModelView = _position;
+            rc.Render(_mesh);
         }
     }
 }
