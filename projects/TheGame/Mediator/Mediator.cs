@@ -59,21 +59,6 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        ///     Gets a new ObjectID which is based on the UserID
-        /// </summary>
-        /// <returns></returns>
-        internal int GetObjectId()
-        {
-            if (UserID == -1)
-                return -1;
-
-            if (_objectID == -1 || _objectID == ((UserID + 1)*ObjectRange) - 1)
-                return _objectID = UserID*ObjectRange;
-
-            return ++_objectID;
-        }
-
-        /// <summary>
         ///     Updates this instance once a frame.
         /// </summary>
         internal void Update()
@@ -94,11 +79,26 @@ namespace Examples.TheGame
         }
 
         /// <summary>
+        ///     Gets a new ObjectID which is based on the UserID
+        /// </summary>
+        /// <returns></returns>
+        internal int GetObjectId()
+        {
+            if (UserID == -1)
+                return -1;
+
+            if (_objectID == -1 || _objectID == ((UserID + 1)*ObjectRange) - 1)
+                return _objectID = UserID*ObjectRange;
+
+            return ++_objectID;
+        }
+
+        /// <summary>
         ///     Adds data to the sending buffer.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="server">
-        ///     if set to <c>true</c> [server].
+        ///     Contains server specific data if set to <c>true</c>.
         /// </param>
         internal void AddToSendingBuffer(DataPacket data, bool server)
         {
@@ -108,7 +108,10 @@ namespace Examples.TheGame
         /// <summary>
         ///     Gets data from the sending buffer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///     A KeyValuePair with the data packet and a bool
+        ///     if the packet contains server specific data.
+        /// </returns>
         internal KeyValuePair<DataPacket, bool> GetFromSendingBuffer()
         {
             var firstOrDefault = _sendingBuffer.FirstOrDefault();
@@ -122,7 +125,7 @@ namespace Examples.TheGame
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="server">
-        ///     if set to <c>true</c> [server].
+        ///     Contains server specific data if set to <c>true</c>.
         /// </param>
         internal void AddToReceivingBuffer(DataPacket data, bool server)
         {
@@ -132,7 +135,10 @@ namespace Examples.TheGame
         /// <summary>
         ///     Gets data from the receiving buffer.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///     A KeyValuePair with the data packet and a bool
+        ///     if the packet contains server specific data.
+        /// </returns>
         internal KeyValuePair<DataPacket, bool> GetFromReceivingBuffer()
         {
             var firstOrDefault = _recevingBuffer.FirstOrDefault();
