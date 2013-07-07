@@ -61,7 +61,15 @@ namespace Examples.TheGame.Entities
 
         internal void DestroyEnity()
         {
-            //remove this from Dictionary
+            if (this.GetType() == typeof (Player) || this.GetType() == typeof (HealthItem))
+            {
+                //Respawn stuff
+            }
+            if (this.GetType() == typeof (Bullet))
+            {
+                //remove Bullet from Dict
+            }
+
         }
 
         internal virtual void Update()

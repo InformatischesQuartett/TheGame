@@ -3,6 +3,8 @@ using Examples.TheGame.Networking;
 using Fusee.Engine;
 using Fusee.Math;
 
+
+
 namespace Examples.TheGame
 {
     /// <summary>
@@ -10,6 +12,9 @@ namespace Examples.TheGame
     /// </summary>
     public class TheGame : RenderCanvas
     {
+        public const int GameSize = 10;
+
+
         private static float _red, _green, _blue;
         protected ShaderMaterial M;
         protected IShaderParam[] Param;

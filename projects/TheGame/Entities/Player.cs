@@ -15,6 +15,7 @@ namespace Examples.TheGame.Entities
                       float impact)
             : base(mediator, mesh, collisionRadius, position, speed, impact)
         {
+            collisionRadius = 10;
         }
 
         internal int GetLife()
@@ -22,7 +23,7 @@ namespace Examples.TheGame.Entities
             return _life;
         }
 
-        internal void Collision()
+        internal void CheckCollision()
         {
             foreach (var go in GameHandler.Players)
             {
@@ -35,7 +36,10 @@ namespace Examples.TheGame.Entities
 
                 if (distance < distancecoll)
                 {
-                    //BOOOOM
+                    if (go.GetType() == typeof (Player))
+                        this.DestroyEnity();
+                    
+                    go.Value.DestroyEnity();
                 }
             }
         }
@@ -45,7 +49,7 @@ namespace Examples.TheGame.Entities
             // new Bullet
             // Bullet bullet = new Bullet(NetworkHandler.AssignId(), ....
             var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
-            GameHandler.Items.Add(bullet.GetId(), bullet);
+            GameHandler.Bullets.Add(bullet.GetId(), bullet);
             // add Bullet to ItemDict
         }
     }

@@ -85,8 +85,8 @@ namespace Examples.TheGame
                     return;
                 }
 
-            // _gameHandler.Update();
-            // _gameHandler.Render();
+            _gameHandler.Update();
+            _gameHandler.Render();
 
             if (_networkActive)
                 _networkHandler.HandleNetwork();
