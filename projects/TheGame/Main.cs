@@ -21,7 +21,7 @@ namespace Examples.TheGame
         protected ShaderProgram Sp;
 
         private Mediator _mediator;
-
+        //private Mesh TheMesh;
         /// <summary>
         ///     Initialize FUSEE
         /// </summary>
@@ -44,6 +44,7 @@ namespace Examples.TheGame
             // Mediator for GameHandler and NetworkHandler
             const bool networkActive = false;
             _mediator = new Mediator(RC, networkActive);
+           // this.TheMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
         }
 
         /// <summary>
@@ -52,8 +53,17 @@ namespace Examples.TheGame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
+       
             _mediator.Update();
+
+
+            //rendern
+           // ShaderProgram sp = MoreShaders.GetShader("simple", RC);
+           //RC.SetShader(sp);
+           // IShaderParam _vColorParam = sp.GetShaderParam("vColor");
+           // RC.SetShaderParam(_vColorParam, new float4(0.2f, 0.5f, 0.5f, 1));
+            //RC.ModelView = float4x4.Identity;
+            //RC.Render(TheMesh);
 
             Present();
         }

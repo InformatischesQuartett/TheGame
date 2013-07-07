@@ -13,12 +13,14 @@ namespace Examples.TheGame.Entities
 
 
 
-        internal Player(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+        internal Player(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
                       float impact)
-            : base(mediator, mesh, collisionRadius, position, speed, impact)
+            : base(mediator, rc, collisionRadius, position, speed, impact)
         {
             this._life = 3;
             collisionRadius = 10;
+            this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+
         }
 
         internal int GetLife()
@@ -52,7 +54,7 @@ namespace Examples.TheGame.Entities
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
+                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), 10, 5, GetPosition());
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
@@ -71,34 +73,45 @@ namespace Examples.TheGame.Entities
         private void PlayerInput()
         {
 
+            var f = new float2(0, 0);
+            
            // move forward Shift
-            this.SetSpeed(Input.Instance.IsKeyDown(KeyCodes.Shift) ? 1 : 0);
+            switch (Input.Instance.IsKeyPressed(KeyCodes.P))
+            {
+                case true:
+                    SetSpeed(true);
+                    break;
+                case false:
+                    SetSpeed(false);
+                    break;
+                default:
+                    break;
+            }
+
+
             //Up  Down
-            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKeyPressed(KeyCodes.W))
             {
-                var f = new float2(1,0);
-                this.SetRotation(f);
+                f += new float2(-1,0);
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.W))
+            if (Input.Instance.IsKeyPressed(KeyCodes.S))
             {
-                var f = new float2(-1,0);
-                this.SetRotation(f);
+                f += new float2(1,0);
             }
-            //Left Right
-            if (Input.Instance.IsKeyDown(KeyCodes.A))
+            if (Input.Instance.IsKeyPressed(KeyCodes.A))
             {
-                var f = new float2(0,-1);
-                this.SetRotation(f);
+                f += new float2(0,1);
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.D))
+
+            if (Input.Instance.IsKeyPressed(KeyCodes.D))
             {
-                var f = new float2(0, 1);
-                this.SetRotation(f);
+                f += new float2(0, -1);
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.Space))
+            if (Input.Instance.IsKeyPressed(KeyCodes.Space))
             {
                 this.Shoot();
             }
+            this.SetRotation(f);
         }
     }
 }

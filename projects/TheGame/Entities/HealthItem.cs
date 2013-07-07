@@ -7,9 +7,9 @@ namespace Examples.TheGame.Entities
     {
         private readonly int _health;
 
-        public HealthItem(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+        public HealthItem(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
                           float impact, int health)
-            : base(mediator, mesh, collisionRadius, position, speed, impact)
+            : base(mediator, rc, collisionRadius, position, speed, impact)
         {
             _health = health;
         }
