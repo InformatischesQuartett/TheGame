@@ -1,5 +1,4 @@
-﻿using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Math;
 
 namespace Examples.TheGame
 {

@@ -7,12 +7,12 @@ using Fusee.Math;
 
 namespace Examples.TheGame
 {
-    class NetworkServer
+    internal class NetworkServer
     {
         private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
-        private readonly Dictionary<int, INetworkConnection> _userIDs; 
+        private readonly Dictionary<int, INetworkConnection> _userIDs;
 
         private readonly Timer _keepAliveTimer;
         private readonly Dictionary<INetworkConnection, bool> _keepAliveResponses;
@@ -22,7 +22,7 @@ namespace Examples.TheGame
         private readonly Random _random;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkServer"/> class.
+        ///     Initializes a new instance of the <see cref="NetworkServer" /> class.
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
@@ -49,7 +49,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Startups the server.
+        ///     Startups the server.
         /// </summary>
         internal void Startup()
         {
@@ -57,7 +57,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Sends a keep alive packet to every client and disconnects inactive clients.
+        ///     Sends a keep alive packet to every client and disconnects inactive clients.
         /// </summary>
         internal void SendKeepAlive(object sender, ElapsedEventArgs elapsedEventArgs)
         {
@@ -81,9 +81,9 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles received keep alive packets.
+        ///     Handles received keep alive packets.
         /// </summary>
-        void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
+        private void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
         {
             if (keepAlive.KeepAliveID == _keepAliveID)
                 if (_userIDs.ContainsKey(keepAlive.UserID))
@@ -91,16 +91,82 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles incoming messages.
+        ///     Handles incoming messages.
         /// </summary>
         internal void HandleMessages()
         {
+            MessageDelivery msgDelivery;
+            int channelID;
+
             // OUTGOING
-            DataPacket sendingPacket;
-            while ((sendingPacket = _mediator.GetFromSendingBuffer()).Packet != null)
+            KeyValuePair<DataPacket, bool> sendingPacket;
+            while ((sendingPacket = _mediator.GetFromSendingBuffer()).Key.Packet != null)
             {
-                switch (sendingPacket.PacketType)
+                int userID;
+
+                switch (sendingPacket.Key.PacketType)
                 {
+                    case DataPacketTypes.PlayerSpawn:
+                        var playerSpawnData = (DataPacketPlayerSpawn) sendingPacket.Key.Packet;
+
+                        if (sendingPacket.Value)
+                        {
+                            userID = playerSpawnData.UserID;
+                            msgDelivery = playerSpawnData.MsgDelivery;
+                            channelID = playerSpawnData.ChannelID;
+
+                            var playerSpawnPacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerSpawn,
+                                                                                  playerSpawnData);
+
+                            _userIDs[userID].SendMessage(playerSpawnPacket, msgDelivery, channelID);
+                        }
+
+                        break;
+
+                    case DataPacketTypes.PlayerUpdate:
+                        var playerUpdateData = (DataPacketPlayerUpdate) sendingPacket.Key.Packet;
+
+                        userID = playerUpdateData.UserID;
+                        msgDelivery = playerUpdateData.MsgDelivery;
+                        channelID = playerUpdateData.ChannelID;
+
+                        var playerUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                                                                               playerUpdateData);
+
+                        foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                            connection.Value.SendMessage(playerUpdatePacket, msgDelivery, channelID);
+
+                        break;
+
+                    case DataPacketTypes.ObjectSpawn:
+                        var objectSpawnData = (DataPacketObjectSpawn) sendingPacket.Key.Packet;
+
+                        userID = objectSpawnData.UserID;
+                        msgDelivery = objectSpawnData.MsgDelivery;
+                        channelID = objectSpawnData.ChannelID;
+
+                        var objectSpawnPacket = NetworkProtocol.MessageEncode(DataPacketTypes.ObjectSpawn,
+                                                                              objectSpawnData);
+
+                        foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                            connection.Value.SendMessage(objectSpawnPacket, msgDelivery, channelID);
+
+                        break;
+
+                    case DataPacketTypes.ObjectUpdate:
+                        var objectUpdateData = (DataPacketObjectUpdate) sendingPacket.Key.Packet;
+
+                        userID = objectUpdateData.UserID;
+                        msgDelivery = objectUpdateData.MsgDelivery;
+                        channelID = objectUpdateData.ChannelID;
+
+                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                                                                               objectUpdateData);
+
+                        foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
+                            connection.Value.SendMessage(objectUpdatePacket, msgDelivery, channelID);
+
+                        break;
                 }
             }
 
@@ -124,11 +190,8 @@ namespace Examples.TheGame
 
                 if (msg.Type == MessageType.Data)
                 {
-                    var decodedMessage = NetworkProtocol.MessageDecode(msg);
-
                     int userID;
-                    MessageDelivery msgDelivery;
-                    int channelID;
+                    var decodedMessage = NetworkProtocol.MessageDecode(msg);
 
                     switch (decodedMessage.PacketType)
                     {
@@ -140,7 +203,7 @@ namespace Examples.TheGame
                             userID = ((DataPacketPlayerUpdate) decodedMessage.Packet).UserID;
 
                             // inform GameHandler
-                            _mediator.AddToReceivingBuffer(decodedMessage);
+                            _mediator.AddToReceivingBuffer(decodedMessage, false);
 
                             // forward packet to all other clients
                             msgDelivery = ((DataPacketPlayerUpdate) decodedMessage.Packet).MsgDelivery;
@@ -155,7 +218,7 @@ namespace Examples.TheGame
                             userID = ((DataPacketObjectSpawn) decodedMessage.Packet).UserID;
 
                             // inform GameHandler
-                            _mediator.AddToReceivingBuffer(decodedMessage);
+                            _mediator.AddToReceivingBuffer(decodedMessage, false);
 
                             // forward packet to all other clients
                             msgDelivery = ((DataPacketObjectSpawn) decodedMessage.Packet).MsgDelivery;
@@ -169,11 +232,11 @@ namespace Examples.TheGame
                             userID = ((DataPacketObjectUpdate) decodedMessage.Packet).UserID;
 
                             // inform GameHandler
-                            _mediator.AddToReceivingBuffer(decodedMessage);
+                            _mediator.AddToReceivingBuffer(decodedMessage, false);
 
                             // forward packet to all other clients
-                            msgDelivery = ((DataPacketObjectUpdate)decodedMessage.Packet).MsgDelivery;
-                            channelID = ((DataPacketObjectUpdate)decodedMessage.Packet).ChannelID;
+                            msgDelivery = ((DataPacketObjectUpdate) decodedMessage.Packet).MsgDelivery;
+                            channelID = ((DataPacketObjectUpdate) decodedMessage.Packet).ChannelID;
 
                             foreach (var connection in _userIDs.Where(connection => connection.Key != userID))
                                 connection.Value.SendMessage(msg.Message.ReadBytes, msgDelivery, channelID);
@@ -184,11 +247,11 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// EventHandler for updates on connections.
+        ///     EventHandler for updates on connections.
         /// </summary>
         /// <param name="connectionStatus">The connection status.</param>
         /// <param name="senderConnection">The corresponding connection.</param>
-        void ConnectionUpdate(ConnectionStatus connectionStatus, INetworkConnection senderConnection)
+        private void ConnectionUpdate(ConnectionStatus connectionStatus, INetworkConnection senderConnection)
         {
             if (connectionStatus == ConnectionStatus.Connected)
             {
@@ -198,7 +261,7 @@ namespace Examples.TheGame
 
                 _userIDs.Add(newUserID, senderConnection);
 
-                // Inform client about his UserID
+                // inform client about his UserID
                 var data = new DataPacketPlayerSpawn
                     {
                         UserID = newUserID,
@@ -208,6 +271,10 @@ namespace Examples.TheGame
 
                 var packet = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerSpawn, data);
                 senderConnection.SendMessage(packet, data.MsgDelivery, data.ChannelID);
+
+                // inform GameHandler and ask for SpawnPosition
+                var gameHandlerPacket = new DataPacket {PacketType = DataPacketTypes.PlayerSpawn, Packet = data};
+                _mediator.AddToReceivingBuffer(gameHandlerPacket, true);
             }
 
             if (connectionStatus == ConnectionStatus.Disconnected)

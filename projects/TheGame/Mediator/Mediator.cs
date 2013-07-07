@@ -9,8 +9,8 @@ namespace Examples.TheGame
         private readonly GameHandler _gameHandler;
         private readonly NetworkHandler _networkHandler;
 
-        private readonly List<DataPacket> _sendingBuffer;
-        private readonly List<DataPacket> _recevingBuffer;
+        private readonly Dictionary<DataPacket, bool> _sendingBuffer;
+        private readonly Dictionary<DataPacket, bool> _recevingBuffer;
 
         private readonly bool _networkActive;
 
@@ -43,8 +43,8 @@ namespace Examples.TheGame
         /// <param name="networkActive">Network is only used if set to <c>true</c>.</param>
         internal Mediator(RenderContext rc, bool networkActive)
         {
-            _sendingBuffer = new List<DataPacket>();
-            _recevingBuffer = new List<DataPacket>();
+            _sendingBuffer = new Dictionary<DataPacket, bool>();
+            _recevingBuffer = new Dictionary<DataPacket, bool>();
 
             _gameHandler = new GameHandler(rc, this);
 
@@ -91,24 +91,30 @@ namespace Examples.TheGame
                 _networkHandler.HandleNetwork();
         }
 
-        internal void AddToSendingBuffer(DataPacket data)
+        internal void AddToSendingBuffer(DataPacket data, bool server)
         {
-            _sendingBuffer.Add(data);
+            _sendingBuffer.Add(data, server);
         }
 
-        internal DataPacket GetFromSendingBuffer()
+        internal KeyValuePair<DataPacket,bool> GetFromSendingBuffer()
         {
-            return _sendingBuffer.FirstOrDefault();
+            var firstOrDefault = _sendingBuffer.FirstOrDefault();
+            _sendingBuffer.Remove(_sendingBuffer.Keys.First());
+
+            return firstOrDefault;
         }
 
-        internal void AddToReceivingBuffer(DataPacket data)
+        internal void AddToReceivingBuffer(DataPacket data, bool server)
         {
-            _recevingBuffer.Add(data);
+            _recevingBuffer.Add(data, server);
         }
 
-        internal DataPacket GetFromReceivingBuffer()
+        internal KeyValuePair<DataPacket, bool> GetFromReceivingBuffer()
         {
-            return _recevingBuffer.FirstOrDefault();
+            var firstOrDefault = _recevingBuffer.FirstOrDefault();
+            _recevingBuffer.Remove(_recevingBuffer.Keys.First());
+
+            return firstOrDefault;
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Engine;
 
 namespace Examples.TheGame
 {
-    class NetworkClient
+    internal class NetworkClient
     {
         private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
@@ -11,7 +12,7 @@ namespace Examples.TheGame
         private int _userID;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkClient"/> class.
+        ///     Initializes a new instance of the <see cref="NetworkClient" /> class.
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
@@ -29,15 +30,15 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Startups the client.
+        ///     Startups the client.
         /// </summary>
         internal void Startup()
         {
-            Network.Instance.StartPeer();   
+            Network.Instance.StartPeer();
         }
 
         /// <summary>
-        /// Connects to the given ip.
+        ///     Connects to the given ip.
         /// </summary>
         /// <param name="ip">The ip.</param>
         internal void ConnectTo(string ip)
@@ -51,7 +52,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles received KeepAlive packets.
+        ///     Handles received KeepAlive packets.
         /// </summary>
         internal void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
         {
@@ -62,17 +63,68 @@ namespace Examples.TheGame
                 var data = new DataPacketKeepAlive {KeepAliveID = keepAlive.KeepAliveID, UserID = _userID};
                 var packet = NetworkProtocol.MessageEncode(DataPacketTypes.KeepAlive, data);
 
-                Network.Instance.SendMessage(packet);
+                Network.Instance.SendMessage(packet, data.MsgDelivery, data.ChannelID);
             }
             else
                 Debug.WriteLine("Warnung: Keine UserID vom Server bekommen!");
         }
 
         /// <summary>
-        /// Handles incoming messages.
+        ///     Handles incoming messages.
         /// </summary>
         internal void HandleMessages()
         {
+            // OUTGOING
+            KeyValuePair<DataPacket, bool> sendingPacket;
+            while ((sendingPacket = _mediator.GetFromSendingBuffer()).Key.Packet != null)
+            {
+                MessageDelivery msgDelivery;
+                int channelID;
+
+                switch (sendingPacket.Key.PacketType)
+                {
+                    case DataPacketTypes.PlayerUpdate:
+                        var playerUpdateData = (DataPacketPlayerUpdate) sendingPacket.Key.Packet;
+
+                        msgDelivery = playerUpdateData.MsgDelivery;
+                        channelID = playerUpdateData.ChannelID;
+
+                        var playerUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                                                                               playerUpdateData);
+
+                        Network.Instance.SendMessage(playerUpdatePacket, msgDelivery, channelID);
+
+                        break;
+
+                    case DataPacketTypes.ObjectSpawn:
+                        var objectSpawnData = (DataPacketObjectSpawn) sendingPacket.Key.Packet;
+
+                        msgDelivery = objectSpawnData.MsgDelivery;
+                        channelID = objectSpawnData.ChannelID;
+
+                        var objectSpawnPacket = NetworkProtocol.MessageEncode(DataPacketTypes.ObjectSpawn,
+                                                                              objectSpawnData);
+
+                        Network.Instance.SendMessage(objectSpawnPacket, msgDelivery, channelID);
+
+                        break;
+
+                    case DataPacketTypes.ObjectUpdate:
+                        var objectUpdateData = (DataPacketObjectUpdate) sendingPacket.Key.Packet;
+
+                        msgDelivery = objectUpdateData.MsgDelivery;
+                        channelID = objectUpdateData.ChannelID;
+
+                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                                                                               objectUpdateData);
+
+                        Network.Instance.SendMessage(objectUpdatePacket, msgDelivery, channelID);
+
+                        break;
+                }
+            }
+
+            // INCOMING
             INetworkMsg msg;
 
             while ((msg = Network.Instance.IncomingMsg) != null)
@@ -104,14 +156,14 @@ namespace Examples.TheGame
                                 _mediator.UserID = _userID;
                             }
                             else
-                                _mediator.AddToReceivingBuffer(decodedMessage);
+                                _mediator.AddToReceivingBuffer(decodedMessage, false);
 
                             break;
 
                         case DataPacketTypes.PlayerUpdate:
                         case DataPacketTypes.ObjectSpawn:
                         case DataPacketTypes.ObjectUpdate:
-                            _mediator.AddToReceivingBuffer(decodedMessage);
+                            _mediator.AddToReceivingBuffer(decodedMessage, false);
                             break;
                     }
                 }
