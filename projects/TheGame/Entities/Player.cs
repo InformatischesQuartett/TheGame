@@ -51,9 +51,8 @@ namespace Examples.TheGame.Entities
         {
             // new Bullet
             var bullet = new Bullet(GetMediator(), null, 4, GetPosition(), 10, 5, GetPosition());
-            GameHandler.Bullets.Add(bullet.GetId(), bullet);
             // add Bullet to ItemDict
-            GameHandler.Items.Add(bullet.GetId(), bullet);
+            GameHandler.Bullets.Add(bullet.GetId(), bullet);
         }
 
 
