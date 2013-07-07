@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Examples.TheGame.Entities;
 using Fusee.Engine;
 
 namespace Examples.TheGame
@@ -23,14 +22,14 @@ namespace Examples.TheGame
 
         internal int UserID { get; set; }
 
-        private readonly Mediator.Mediator _mediator;
+        private readonly Mediator _mediator;
 
         /// <summary>
         ///     RenderContext
         /// </summary>
         private readonly RenderContext _rc;
 
-        internal GameHandler(RenderContext rc, Mediator.Mediator mediator)
+        internal GameHandler(RenderContext rc, Mediator mediator)
         {
             //pass RenderContext
             _rc = rc;

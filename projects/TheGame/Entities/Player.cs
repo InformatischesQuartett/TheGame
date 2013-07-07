@@ -1,9 +1,8 @@
 ﻿using System;
-using Examples.TheGame.Networking;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.TheGame.Entities
+namespace Examples.TheGame
 {
     internal class Player : GameEntity
     {
@@ -11,7 +10,7 @@ namespace Examples.TheGame.Entities
         private Time _lastShotTime;
 
 
-        internal Player(Mediator.Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+        internal Player(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
                       float impact)
             : base(mediator, mesh, collisionRadius, position, speed, impact)
         {

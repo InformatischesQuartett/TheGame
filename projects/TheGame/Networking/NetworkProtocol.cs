@@ -1,13 +1,101 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Examples.TheGame.Mediator;
 using Fusee.Engine;
 using Fusee.Math;
 using ProtoBuf;
 
-namespace Examples.TheGame.Networking
+namespace Examples.TheGame
 {
+    /// <summary>
+    /// Struct for a KeepAlive packet.
+    /// </summary>
+    internal struct DataPacketKeepAlive
+    {
+        // Data
+        internal int UserID;
+        internal int KeepAliveID;
+
+        // Settings
+        internal int ChannelID
+        {
+            get { return 0; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
+    }
+
+    /// <summary>
+    /// Struct for a PlayerSpawn packet.
+    /// </summary>
+    internal partial struct DataPacketPlayerSpawn
+    {
+        // Settings
+        internal int ChannelID
+        {
+            get { return 1; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
+    }
+
+    /// <summary>
+    /// Struct for a PlayerUpdate packet.
+    /// </summary>
+    internal partial struct DataPacketPlayerUpdate
+    {
+        // Settings
+        internal int ChannelID
+        {
+            get { return 2; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableSequenced; }
+        }
+    }
+
+    /// <summary>
+    /// Struct for a ObjectSpawn packet.
+    /// </summary>
+    internal partial struct DataPacketObjectSpawn
+    {
+        // Settings
+        internal int ChannelID
+        {
+            get { return 3; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableOrdered; }
+        }
+    }
+
+    /// <summary>
+    /// Struct for a ObjectUpdate packet.
+    /// </summary>
+    internal partial struct DataPacketObjectUpdate
+    {
+        // Settings
+        internal int ChannelID
+        {
+            get { return 3; }
+        }
+
+        internal MessageDelivery MsgDelivery
+        {
+            get { return MessageDelivery.ReliableOrdered; }
+        }
+    }
+
     /// <summary>
     /// Handles the encoding and decoding of messages.
     /// </summary>

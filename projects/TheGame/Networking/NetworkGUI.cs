@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.TheGame.Networking
+namespace Examples.TheGame
 {
     class NetworkGUI
     {

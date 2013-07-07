@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Examples.TheGame.Networking;
 using Fusee.Engine;
 
-namespace Examples.TheGame.Mediator
+namespace Examples.TheGame
 {
     internal class Mediator
     {

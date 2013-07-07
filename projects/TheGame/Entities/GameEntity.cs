@@ -1,12 +1,12 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.TheGame.Entities
+namespace Examples.TheGame
 {
     internal class GameEntity
     {
         private readonly int _id;
-        private readonly Mediator.Mediator _mediator;
+        private readonly Mediator _mediator;
         private readonly Mesh _mesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
@@ -14,7 +14,7 @@ namespace Examples.TheGame.Entities
         private readonly float _speed;
         private float _impact;
 
-        internal GameEntity(Mediator.Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
+        internal GameEntity(Mediator mediator, Mesh mesh, float collisionRadius, float4x4 position, float speed,
                             float impact)
         {
             //Attribute initialisieren
@@ -33,7 +33,7 @@ namespace Examples.TheGame.Entities
         }
 
 
-        internal Mediator.Mediator GetMediator()
+        internal Mediator GetMediator()
         {
             return _mediator;
         }

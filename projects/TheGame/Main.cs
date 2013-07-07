@@ -13,7 +13,7 @@ namespace Examples.TheGame
         protected IShaderParam[] Param;
         protected ShaderProgram Sp;
 
-        private Mediator.Mediator _mediator;
+        private Mediator _mediator;
 
         /// <summary>
         ///     Initialize FUSEE
@@ -36,7 +36,7 @@ namespace Examples.TheGame
 
             // Mediator for GameHandler and NetworkHandler
             const bool networkActive = true;
-            _mediator = new Mediator.Mediator(RC, networkActive);
+            _mediator = new Mediator(RC, networkActive);
         }
 
         /// <summary>

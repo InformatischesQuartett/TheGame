@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
-using Examples.TheGame.Mediator;
 using Fusee.Engine;
 using Fusee.Math;
 
-namespace Examples.TheGame.Networking
+namespace Examples.TheGame
 {
     class NetworkServer
     {
-        private readonly Mediator.Mediator _mediator;
+        private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private readonly Dictionary<int, INetworkConnection> _userIDs; 
@@ -27,7 +26,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
-        internal NetworkServer(NetworkGUI networkGUI, Mediator.Mediator mediator)
+        internal NetworkServer(NetworkGUI networkGUI, Mediator mediator)
         {
             _mediator = mediator;
             _networkGUI = networkGUI;
@@ -96,6 +95,16 @@ namespace Examples.TheGame.Networking
         /// </summary>
         internal void HandleMessages()
         {
+            // OUTGOING
+            DataPacket sendingPacket;
+            while ((sendingPacket = _mediator.GetFromSendingBuffer()).Packet != null)
+            {
+                switch (sendingPacket.PacketType)
+                {
+                }
+            }
+
+            // INCOMING
             INetworkMsg msg;
 
             while ((msg = Network.Instance.IncomingMsg) != null)

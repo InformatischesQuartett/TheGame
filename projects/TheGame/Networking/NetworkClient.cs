@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
-using Examples.TheGame.Mediator;
 using Fusee.Engine;
 
-namespace Examples.TheGame.Networking
+namespace Examples.TheGame
 {
     class NetworkClient
     {
-        private readonly Mediator.Mediator _mediator;
+        private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
         private int _userID;
@@ -16,7 +15,7 @@ namespace Examples.TheGame.Networking
         /// </summary>
         /// <param name="networkGUI">The network GUI.</param>
         /// <param name="mediator"></param>
-        internal NetworkClient(NetworkGUI networkGUI, Mediator.Mediator mediator)
+        internal NetworkClient(NetworkGUI networkGUI, Mediator mediator)
         {
             _mediator = mediator;
             _networkGUI = networkGUI;
