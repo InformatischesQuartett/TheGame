@@ -24,12 +24,18 @@ namespace Examples.TheGame.Networking
         }
 
         /// <summary>
+        /// Displays the NetworkGUI
+        /// </summary>
+        public void NetworkGUI()
+        {
+            _networkGUI.ShowNetworkGUI();
+        }
+
+        /// <summary>
         /// Handles the network.
         /// </summary>
         internal void HandleNetwork()
         {
-            _networkGUI.ShowNetworkGUI();
-
             if (Network.Instance.Config.SysType == SysType.Server)
                 _networkServer.HandleMessages();
 

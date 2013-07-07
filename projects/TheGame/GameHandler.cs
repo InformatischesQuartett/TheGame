@@ -13,14 +13,14 @@ namespace Examples.TheGame
         /// <summary>
         ///Disctionarires mit allen Items und Playern
         /// </summary>
-        public static Dictionary<int, GameEntity> Items;
-
+        public static Dictionary<int, HealthItem> HealthItems;
+        public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
 
         /// <summary>
         ///State Object, contains the current State the Game is in
         /// </summary>
-        private GameState _gameState;
+        internal GameState GameState { get; set; }
 
         private readonly Mediator _mediator;
 
@@ -35,9 +35,30 @@ namespace Examples.TheGame
             _rc = rc;
             _mediator = mediator;
 
-            Items = new Dictionary<int, GameEntity>();
+            HealthItems = new Dictionary<int, HealthItem>();
+            Bullets = new Dictionary<int, Bullet>();
             Players = new Dictionary<int, Player>();
-            _gameState = new GameState(GameState.State.StartMenu);
+
+            GameState = new GameState(GameState.State.StartMenu);
+        }
+        internal void Update()
+        {
+            foreach (var go in HealthItems)
+                go.Value.Update();
+            foreach (var go in Bullets)
+                go.Value.Update();
+            foreach (var go in Players)
+                go.Value.Update();
+        }
+
+        internal void Render()
+        {
+            foreach (var go in HealthItems)
+                go.Value.RenderUpdate(_rc);
+            foreach (var go in Bullets)
+                go.Value.RenderUpdate(_rc);
+            foreach (var go in Players)
+                go.Value.RenderUpdate(_rc);
         }
     }
 }

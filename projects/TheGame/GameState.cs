@@ -10,20 +10,15 @@
         };
 
         private State _curState;
+        internal State CurState
+        {
+            get { return _curState; }
+            set { _curState = value; }
+        }
 
         internal GameState(State curState)
         {
             _curState = curState;
-        }
-
-        private State GetSate()
-        {
-            return _curState;
-        }
-
-        private void SetState(State newState)
-        {
-            _curState = newState;
         }
     }
 }
