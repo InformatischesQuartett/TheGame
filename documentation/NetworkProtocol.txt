@@ -101,7 +101,7 @@ Length:    10 - 55 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
-           Server -> Client
+           Server -> Clients
 
 ## UserID         ## int    ## A number greater than zero       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##
@@ -132,7 +132,7 @@ Length:    8 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
-           Server -> Client
+           Server -> Clients
 
 ## UserID         ## int    ## A number greater than zero       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##

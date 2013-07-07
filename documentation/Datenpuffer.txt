@@ -1,0 +1,80 @@
+Ihr braucht folgende zwei Funktionen:
+
+> _mediator.GetFromReceivingBuffer()
+
+Liefert ein KeyValuePair<DataPacket, bool> zurück. Das DataPacket erkläre ich gleich noch, das bool gibt an ob es sich um serverrelevante Daten handelt (bisher nur der Fall bei PlayerSpawn, weil dann muss der GameHandler als Server reagieren und eine SpawningPosition anlegen).
+
+> _mediator.AddToSendingBuffer(DataPacket data, bool server)
+
+Gleiches Spiel umgekehrt.
+
+
+--------------------------------------
+
+Pakete empfangen funktioniert nun so:
+
+1.) Die Schleife holt so lange Einträge aus dem Empfangspuffer bis der leer ist. Irgendwo in GameHandler.Update() oder sowas packen, damit das einmal pro Frame passiert.
+
+	KeyValuePair<DataPacket, bool> recvPacket;
+        while ((recvPacket = _mediator.GetFromSReceivingBuffer()).Key.Packet != null)
+	{
+
+2.) Mit Switch-Case könnt ihr jetzt die vier möglichen Pakettypen abarbeiten.
+
+                switch (recvPacket.Key.PacketType)
+                {
+                    case DataPacketTypes.PlayerSpawn:
+			...
+                    case DataPacketTypes.PlayerUpdate:
+			...
+                    case DataPacketTypes.ObjectSpawn:
+			...
+                    case DataPacketTypes.ObjectUpdate:
+			...
+
+3.) Auf die Daten zugreifen:
+
+                    case DataPacketTypes.PlayerSpawn:
+                        var playerSpawnData = (DataPacketPlayerSpawn) recvPacket.Key.Packet;
+
+			var meineSpawningPosition = playerSpawnData.SpawnPosition;
+			...
+
+
+4.) Pakettypen:
+
+> PlayerSpawn
+Da gibts zwei Möglichkeiten. Entweder ist recvPacket.Value true, dann braucht einer der Clients eine SpawningPosition (float3). Oder Value ist false, dann steckt da eine SpawningPosition drin, die vom Server kam (also in dem Fall ist der GameHandler nur ein Client, kein Server).
+
+> PlayerUpdate
+Neuste Positions-/Rotation-/Geschwindkeits-/Gesundheitsdaten eines anderen Spielers. In der UserID steht drin, welcher Spieler das ist. Falls ihr die UserID noch nicht in eurem Dictionary habt, dann gibt es einen neuen Spieler.
+
+> ObjectSpawn
+Information, dass es ein neues Objekt gibt. In ObjectType steckt ein Int, dass ihr auf einen enum casten könnt. Also braucht ihr da einen enum mit allen möglichen ObjektTypen. Ansonsten steht drin, wo das Objekt sich befindet, ob es sich bewegt, etc. Und von welchem Spieler es erstellt wurde (UserID, falls = 0, dann war es der Server)
+
+> ObjectUpdate
+Neben der ObjektID und dem Typ ist da ist ein Bool drin (ObjectRemoved). Wenn das auf true steht, wurde das Objekt gelöscht. Ihr könnt es aus dem Dictionary nehmen.
+
+
+
+
+--------------------------------------
+
+Pakete senden geht so:
+
+Ihr legt ein neues DataPacket an, dann ruft ihr damit die AddToSendingBuffer-Funktion auf. Einfaches Beispiel:
+
+            var data = new DataPacketPlayerUpdate
+                {
+                    UserID = _mediator.UserID,		// eigene UserID!
+                    PlayerActive = true,
+                    PlayerHealth = 100,
+                    PlayerPosition = new float3(1, 2, 3),
+                    PlayerRotation = new float3(0, 0, 0),
+                    PlayerVelocity = new float3(9, 9, 9)
+                };
+
+            var packet = new DataPacket {PacketType = DataPacketTypes.PlayerUpdate, Packet = data};
+
+	    // hier 2. Parameter true, wenn Paket = PlayerSpawn mit SpawningPosition für einen User
+            _mediator.AddToSendingBuffer(packet, false);
