@@ -2,7 +2,7 @@
 
 namespace Examples.TheGame
 {
-    class NetworkHandler
+    internal class NetworkHandler
     {
         private readonly Mediator _mediator;
 
@@ -13,7 +13,7 @@ namespace Examples.TheGame
         private NetworkClient _networkClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkHandler"/> class.
+        ///     Initializes a new instance of the <see cref="NetworkHandler" /> class.
         /// </summary>
         /// <param name="rc">The rc.</param>
         /// <param name="mediator"></param>
@@ -24,7 +24,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Displays the NetworkGUI
+        ///     Displays the NetworkGUI
         /// </summary>
         public void NetworkGUI()
         {
@@ -32,7 +32,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles the network.
+        ///     Handles the network.
         /// </summary>
         internal void HandleNetwork()
         {
@@ -44,7 +44,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Creates the server.
+        ///     Creates the server.
         /// </summary>
         /// <returns></returns>
         internal NetworkServer CreateServer()
@@ -54,7 +54,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Creates the client.
+        ///     Creates the client.
         /// </summary>
         /// <returns></returns>
         internal NetworkClient CreateClient()

@@ -27,20 +27,22 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// The last assigned objectID.
+        ///     The last assigned objectID.
         /// </summary>
         private int _objectID;
 
         /// <summary>
-        /// Amount of objects a client can spawn.
+        ///     Amount of objects a client can spawn.
         /// </summary>
         private const int ObjectRange = 16500000;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Mediator" /> class.
+        ///     Initializes a new instance of the <see cref="Mediator" /> class.
         /// </summary>
         /// <param name="rc">The RenderContext.</param>
-        /// <param name="networkActive">Network is only used if set to <c>true</c>.</param>
+        /// <param name="networkActive">
+        ///     Network is only used if set to <c>true</c>.
+        /// </param>
         internal Mediator(RenderContext rc, bool networkActive)
         {
             _sendingBuffer = new Dictionary<DataPacket, bool>();
@@ -57,7 +59,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Gets a new ObjectID which is based on the UserID
+        ///     Gets a new ObjectID which is based on the UserID
         /// </summary>
         /// <returns></returns>
         internal int GetObjectId()
@@ -72,7 +74,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Updates this instance once a frame.
+        ///     Updates this instance once a frame.
         /// </summary>
         internal void Update()
         {
@@ -91,12 +93,23 @@ namespace Examples.TheGame
                 _networkHandler.HandleNetwork();
         }
 
+        /// <summary>
+        ///     Adds data to the sending buffer.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="server">
+        ///     if set to <c>true</c> [server].
+        /// </param>
         internal void AddToSendingBuffer(DataPacket data, bool server)
         {
             _sendingBuffer.Add(data, server);
         }
 
-        internal KeyValuePair<DataPacket,bool> GetFromSendingBuffer()
+        /// <summary>
+        ///     Gets data from the sending buffer.
+        /// </summary>
+        /// <returns></returns>
+        internal KeyValuePair<DataPacket, bool> GetFromSendingBuffer()
         {
             var firstOrDefault = _sendingBuffer.FirstOrDefault();
             _sendingBuffer.Remove(_sendingBuffer.Keys.First());
@@ -104,11 +117,22 @@ namespace Examples.TheGame
             return firstOrDefault;
         }
 
+        /// <summary>
+        ///     Adds data to the receiving buffer.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <param name="server">
+        ///     if set to <c>true</c> [server].
+        /// </param>
         internal void AddToReceivingBuffer(DataPacket data, bool server)
         {
             _recevingBuffer.Add(data, server);
         }
 
+        /// <summary>
+        ///     Gets data from the receiving buffer.
+        /// </summary>
+        /// <returns></returns>
         internal KeyValuePair<DataPacket, bool> GetFromReceivingBuffer()
         {
             var firstOrDefault = _recevingBuffer.FirstOrDefault();

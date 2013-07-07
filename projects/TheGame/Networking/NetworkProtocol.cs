@@ -8,7 +8,7 @@ using ProtoBuf;
 namespace Examples.TheGame
 {
     /// <summary>
-    /// Struct for a KeepAlive packet.
+    ///     Struct for a KeepAlive packet.
     /// </summary>
     internal struct DataPacketKeepAlive
     {
@@ -29,7 +29,7 @@ namespace Examples.TheGame
     }
 
     /// <summary>
-    /// Struct for a PlayerSpawn packet.
+    ///     Struct for a PlayerSpawn packet.
     /// </summary>
     internal partial struct DataPacketPlayerSpawn
     {
@@ -46,7 +46,7 @@ namespace Examples.TheGame
     }
 
     /// <summary>
-    /// Struct for a PlayerUpdate packet.
+    ///     Struct for a PlayerUpdate packet.
     /// </summary>
     internal partial struct DataPacketPlayerUpdate
     {
@@ -63,7 +63,7 @@ namespace Examples.TheGame
     }
 
     /// <summary>
-    /// Struct for a ObjectSpawn packet.
+    ///     Struct for a ObjectSpawn packet.
     /// </summary>
     internal partial struct DataPacketObjectSpawn
     {
@@ -80,7 +80,7 @@ namespace Examples.TheGame
     }
 
     /// <summary>
-    /// Struct for a ObjectUpdate packet.
+    ///     Struct for a ObjectUpdate packet.
     /// </summary>
     internal partial struct DataPacketObjectUpdate
     {
@@ -97,12 +97,12 @@ namespace Examples.TheGame
     }
 
     /// <summary>
-    /// Handles the encoding and decoding of messages.
+    ///     Handles the encoding and decoding of messages.
     /// </summary>
     internal static class NetworkProtocol
     {
         /// <summary>
-        /// Encodes the message.
+        ///     Encodes the message.
         /// </summary>
         /// <returns>An array of bytes to be sent via network.</returns>
         internal static byte[] MessageEncode(DataPacketTypes msgType, object packetData)
@@ -112,12 +112,12 @@ namespace Examples.TheGame
             {
                 var data = (DataPacketKeepAlive) packetData;
                 var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
-                
+
                 var packet = new byte[keepAliveIDBytes.Length + 2];
                 Buffer.BlockCopy(keepAliveIDBytes, 0, packet, 2, keepAliveIDBytes.Length);
 
-                packet[0] = (byte) msgType;                 // PacketType
-                packet[1] = (byte) (data.UserID & 255);     // UserID (0 = Server)
+                packet[0] = (byte) msgType;             // PacketType
+                packet[1] = (byte) (data.UserID & 255); // UserID (0 = Server)
 
                 return packet;
             }
@@ -125,7 +125,7 @@ namespace Examples.TheGame
             // PlayerSpawn
             if (msgType == DataPacketTypes.PlayerSpawn)
             {
-                var data = (DataPacketPlayerSpawn) packetData;           
+                var data = (DataPacketPlayerSpawn) packetData;
 
                 byte[] encodedSpawnPosition;
                 using (var stream = new MemoryStream())
@@ -147,7 +147,7 @@ namespace Examples.TheGame
             // PlayerUpdate
             if (msgType == DataPacketTypes.PlayerUpdate)
             {
-                var data = (DataPacketPlayerUpdate)packetData;
+                var data = (DataPacketPlayerUpdate) packetData;
 
                 byte[] encPlayerData;
                 using (var stream = new MemoryStream())
@@ -166,14 +166,14 @@ namespace Examples.TheGame
                 packet[1] = (byte) (data.UserID & 255);             // UserID
                 packet[2] = (byte) ((data.PlayerActive) ? 1 : 0);   // If Player is still active
                 packet[3] = (byte) (data.PlayerHealth & 255);       // Health of player
-                
+
                 return packet;
             }
 
             // ObjectSpawn
             if (msgType == DataPacketTypes.ObjectSpawn)
             {
-                var data = (DataPacketObjectSpawn)packetData;
+                var data = (DataPacketObjectSpawn) packetData;
 
                 byte[] encObjectData;
                 using (var stream = new MemoryStream())
@@ -191,9 +191,9 @@ namespace Examples.TheGame
                 Buffer.BlockCopy(objectIDBytes, 0, packet, 2, objectIDBytes.Length);
                 Buffer.BlockCopy(encObjectData, 0, packet, 7, encObjectData.Length);
 
-                packet[0] = (byte) msgType;                       // PacketType
-                packet[1] = (byte) (data.UserID & 255);           // UserID
-                packet[6] = (byte) (data.ObjectType & 255);       // Type of Object
+                packet[0] = (byte) msgType;                 // PacketType
+                packet[1] = (byte) (data.UserID & 255);     // UserID
+                packet[6] = (byte) (data.ObjectType & 255); // Type of Object
 
                 return packet;
             }
@@ -201,7 +201,7 @@ namespace Examples.TheGame
             // ObjectUpdate
             if (msgType == DataPacketTypes.ObjectUpdate)
             {
-                var data = (DataPacketObjectUpdate)packetData;
+                var data = (DataPacketObjectUpdate) packetData;
                 var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
 
                 var packet = new byte[objectIDBytes.Length + 4];
@@ -219,13 +219,13 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Decodes the message.
+        ///     Decodes the message.
         /// </summary>
         /// <param name="msg"></param>
         internal static DataPacket MessageDecode(INetworkMsg msg)
         {
             var decodedMessage = new DataPacket();
-            
+
             try
             {
                 var msgData = msg.Message.ReadBytes;
@@ -237,10 +237,10 @@ namespace Examples.TheGame
                 if (packetType == DataPacketTypes.KeepAlive)
                 {
                     var keepAlivePacket = new DataPacketKeepAlive
-                                              {
-                                                  UserID = msgData[1],
-                                                  KeepAliveID = BitConverter.ToInt32(msgData, 2)
-                                              };
+                        {
+                            UserID = msgData[1],
+                            KeepAliveID = BitConverter.ToInt32(msgData, 2)
+                        };
 
                     decodedMessage.Packet = keepAlivePacket;
                 }
@@ -257,11 +257,11 @@ namespace Examples.TheGame
                     }
 
                     var playerSpawnPacket = new DataPacketPlayerSpawn
-                                                {
-                                                    UserID = msgData[1],
-                                                    Spawn = (msgData[2] == 1),
-                                                    SpawnPosition = decodedSpawnPosition
-                                                };
+                        {
+                            UserID = msgData[1],
+                            Spawn = (msgData[2] == 1),
+                            SpawnPosition = decodedSpawnPosition
+                        };
 
                     decodedMessage.Packet = playerSpawnPacket;
                 }
@@ -284,14 +284,14 @@ namespace Examples.TheGame
                     }
 
                     var playerUpdatePacket = new DataPacketPlayerUpdate
-                                                 {
-                                                     UserID = msgData[1],
-                                                     PlayerActive = (msgData[2] == 1),
-                                                     PlayerHealth = msgData[3],
-                                                     PlayerPosition = decPlayerPosition,
-                                                     PlayerRotation = decPlayerRotation,
-                                                     PlayerVelocity = decPlayerVelocity
-                                                 };
+                        {
+                            UserID = msgData[1],
+                            PlayerActive = (msgData[2] == 1),
+                            PlayerHealth = msgData[3],
+                            PlayerPosition = decPlayerPosition,
+                            PlayerRotation = decPlayerRotation,
+                            PlayerVelocity = decPlayerVelocity
+                        };
 
                     decodedMessage.Packet = playerUpdatePacket;
                 }
@@ -314,14 +314,14 @@ namespace Examples.TheGame
                     }
 
                     var objectSpawnPacket = new DataPacketObjectSpawn
-                                                {
-                                                    UserID = msgData[1],
-                                                    ObjectID = BitConverter.ToUInt32(msgData, 2),
-                                                    ObjectType = msgData[6],
-                                                    ObjectPosition = decObjectPosition,
-                                                    ObjectRotation = decObjectRotation,
-                                                    ObjectVelocity = decObjectVelocity
-                                                };
+                        {
+                            UserID = msgData[1],
+                            ObjectID = BitConverter.ToUInt32(msgData, 2),
+                            ObjectType = msgData[6],
+                            ObjectPosition = decObjectPosition,
+                            ObjectRotation = decObjectRotation,
+                            ObjectVelocity = decObjectVelocity
+                        };
 
                     decodedMessage.Packet = objectSpawnPacket;
                 }
@@ -330,12 +330,12 @@ namespace Examples.TheGame
                 if (packetType == DataPacketTypes.ObjectUpdate)
                 {
                     var objectUpdatePacket = new DataPacketObjectUpdate
-                                              {
-                                                  UserID = msgData[1],
-                                                  ObjectID = BitConverter.ToUInt32(msgData, 2),
-                                                  ObjectType = msgData[6],
-                                                  ObjectRemoved = (msgData[7] == 1)
-                                              };
+                        {
+                            UserID = msgData[1],
+                            ObjectID = BitConverter.ToUInt32(msgData, 2),
+                            ObjectType = msgData[6],
+                            ObjectRemoved = (msgData[7] == 1)
+                        };
 
                     decodedMessage.Packet = objectUpdatePacket;
                 }

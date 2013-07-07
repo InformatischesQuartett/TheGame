@@ -3,7 +3,7 @@ using Fusee.Math;
 
 namespace Examples.TheGame
 {
-    class NetworkGUI
+    internal class NetworkGUI
     {
         private readonly NetworkHandler _networkHandler;
         private readonly RenderContext _renderContext;
@@ -22,7 +22,7 @@ namespace Examples.TheGame
         internal string ConnectToIp = "Discovery?";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NetworkGUI"/> class.
+        ///     Initializes a new instance of the <see cref="NetworkGUI" /> class.
         /// </summary>
         /// <param name="renderContext">Reference to the RenderContext</param>
         /// <param name="networkHandler">Reference to the NetworkHandler</param>
@@ -42,7 +42,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Refreshes the GUI.
+        ///     Refreshes the GUI.
         /// </summary>
         internal void RefreshGUITex()
         {
@@ -57,7 +57,7 @@ namespace Examples.TheGame
                 if (Network.Instance.Config.SysType == SysType.Server)
                     msg += "Server-IP:            " + Network.Instance.LocalIP + "\n\n\nPlayer: " +
                            Network.Instance.Connections.Count + "\n\n\n\t            [SPACE]";
-                
+
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
                         msg += "Verbunden mit:      " + ConnectToIp + "\n\n\n\n\n\n\tWarte auf Spielbeginn";
@@ -79,7 +79,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Displays the GUI for network settings.
+        ///     Displays the GUI for network settings.
         /// </summary>
         internal void ShowNetworkGUI()
         {
@@ -95,7 +95,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles all keyboard input on the GUI.
+        ///     Handles all keyboard input on the GUI.
         /// </summary>
         internal void KeyboadInput()
         {
@@ -139,7 +139,7 @@ namespace Examples.TheGame
         }
 
         /// <summary>
-        /// Handles the typing of an IP address on the GUI.
+        ///     Handles the typing of an IP address on the GUI.
         /// </summary>
         /// <param name="oldIp">The old ip.</param>
         /// <returns>The new ip.</returns>
