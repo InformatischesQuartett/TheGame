@@ -12,6 +12,7 @@ namespace Examples.TheGame.Entities
         protected Mesh EntityMesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
+        private float4x4 _camMatrix;
         private float2 _rotation; // x = Links Rechts, y = Hoch Runter
         private float3 _nRotV; // normalisierter Richtivsvektor
         private float _speed;
@@ -107,22 +108,34 @@ namespace Examples.TheGame.Entities
                          float4x4.CreateTranslation(_nRotV * _speed);
         }
 
-        internal virtual void RenderUpdate(RenderContext rc)
+        /// <summary>
+        /// Renders the update.
+        /// </summary>
+        /// <param name="rc">The rc.</param>
+        /// <param name="camMatrix">The cam matrix.</param>
+        internal virtual void RenderUpdate(RenderContext rc, float4x4 camMatrix)
         {
+            _camMatrix = camMatrix;
             Debug.WriteLine("RenderUpdate");
             //rendern
             rc.SetShader(_sp);
             IShaderParam _vColorParam = _sp.GetShaderParam("vColor");
             _rc.SetShaderParam(_vColorParam, new float4(0.2f,0.5f,0.5f,1));
 
-            float4x4 mtxCam = float4x4.LookAt(_position.M41 + (_nRotV.x * 1000), _position.M42 + (_nRotV.y * 1000), _position.M43 + (_nRotV.z * 1000), _position.M41,
-                                              _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
-            Debug.WriteLine("mtxcam"+(mtxCam.ToString()));
+            //float4x4 mtxCam = float4x4.LookAt(_position.M41 + (_nRotV.x * 1000), _position.M42 + (_nRotV.y * 1000), _position.M43 + (_nRotV.z * 1000), _position.M41,
+            //                                  _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
+            Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
-            _rc.ModelView = _position *mtxCam;
+            _rc.ModelView = _position * _camMatrix;
             Debug.WriteLine("ModelView" + _rc.ModelView.ToString());
             Debug.WriteLine("Position" + _position);
             _rc.Render(EntityMesh);
+        }
+
+        internal float4x4 GetCamMatrix()
+        {
+            return float4x4.LookAt(_position.M41 + (_nRotV.x * 1000), _position.M42 + (_nRotV.y * 1000), _position.M43 + (_nRotV.z * 1000), _position.M41,
+                                              _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
         }
     }
 }
