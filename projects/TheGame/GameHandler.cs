@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Examples.TheGame.Entities;
 using Examples.TheGame.Networking;
 using Fusee.Engine;
@@ -31,8 +32,7 @@ namespace Examples.TheGame
         private readonly RenderContext _rc;
 
         private float4x4 _camMatrix;
-        private Player p;
-        private Mesh TheMesh;
+        private readonly int _playerId;
     
         internal GameHandler(RenderContext rc, Mediator mediator)
         {
@@ -47,62 +47,62 @@ namespace Examples.TheGame
             GameState = new GameState(GameState.State.StartMenu);
 
             _camMatrix = float4x4.Identity;
-            p = new Player(_mediator, _rc, 1, float4x4.Identity, 0, 0);
-            TheMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+
+            var p = new Player(_mediator, _rc,10,float4x4.Identity,0,0);
+            Players.Add(p.GetId(),p);
+            _playerId = p.GetId();
+
+            this.AddNewPlayer();
+
+            Debug.WriteLine("_playerId: "+_playerId);
 
         }
 
         internal void Update()
         {
-            p.Update();
-            _camMatrix = p.GetCamMatrix();
             foreach (var go in HealthItems)
                 go.Value.Update();
             foreach (var go in Bullets)
                 go.Value.Update();
             foreach (var go in Players)
-                go.Value.Update();
+            {
+                if (go.Key != _playerId)
+                    go.Value.Update();
+            }
+            Players[_playerId].PlayerInput();
+            Players[_playerId].Update();
+            _camMatrix = Players[_playerId].GetCamMatrix();
+            
         }
 
         internal void Render()
         {
-
-            p.RenderUpdate(_rc, _camMatrix);
-
-
-            //rendern
-            ShaderProgram sp = MoreShaders.GetShader("simple", _rc);
-            _rc.SetShader(sp);
-            IShaderParam _vColorParam = sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(1.0f, 0.5f, 0.5f, 1));
-            _rc.ModelView = _camMatrix * float4x4.Identity;
-            _rc.Render(TheMesh);
-
-            //ShaderProgram sp = MoreShaders.GetShader("simple", _rc);
-            _rc.SetShader(sp);
-            //IShaderParam _vColorParam = sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(0f, 1f, 0.5f, 1));
-            _rc.ModelView = float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0) * _camMatrix;
-            _rc.Render(TheMesh);
-            //ShaderProgram sp = MoreShaders.GetShader("simple", _rc);
-            _rc.SetShader(sp);
-            //IShaderParam _vColorParam = sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(0f, 1f, 0.5f, 1));
-            _rc.ModelView = float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0) * _camMatrix;
-            _rc.Render(TheMesh);
-            //ShaderProgram sp = MoreShaders.GetShader("simple", _rc);
-            _rc.SetShader(sp);
-            //IShaderParam _vColorParam = sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(0f, 1f, 0.5f, 1));
-            _rc.ModelView = float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f) * _camMatrix;
-            _rc.Render(TheMesh);
-            
             foreach (var go in HealthItems)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Bullets)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Players)
-                go.Value.RenderUpdate(_rc, _camMatrix);
+            {
+                if (go.Key != _playerId)
+                {
+                    go.Value.RenderUpdate(_rc, _camMatrix);
+                    Debug.WriteLine("Playerrender: "+ go.Value.GetId());
+                }
+            }
+            Players[_playerId].RenderUpdate(_rc,_camMatrix);
+            Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
+        }
+        internal void AddNewPlayer()
+        {
+            var p = new Player(_mediator, _rc, 10, float4x4.Identity, 0, 0);
+            Players.Add(p.GetId(), p);
+            p= new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
+            Players.Add(p.GetId(), p);
+            p = new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0), 0, 0);
+            Players.Add(p.GetId(), p);
+            p = new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
+            Players.Add(p.GetId(), p);
+
         }
     }
 }

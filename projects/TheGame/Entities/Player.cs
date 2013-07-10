@@ -64,13 +64,12 @@ namespace Examples.TheGame.Entities
         internal override void Update()
         {
             base.Update();
-            PlayerInput();
             CheckCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
 
         }
 
-        private void PlayerInput()
+        internal void PlayerInput()
         {
 
             var f = new float2(0, 0);

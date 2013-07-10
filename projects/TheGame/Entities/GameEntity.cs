@@ -14,7 +14,9 @@ namespace Examples.TheGame.Entities
         private float4x4 _position; //z = Vorne Hinten
         private float4x4 _camMatrix;
         private float2 _rotation; // x = Links Rechts, y = Hoch Runter
-        private float3 _nRotV; // normalisierter Richtivsvektor
+        private float3 _nRotXV; // normalisierter Richtungsvektor
+        private float3 _nRotYV; // normalisierter Richtungsvektor
+        private float3 _nRotZV; // normalisierter Richtungsvektor
         private float _speed;
         private float _speedMax;
         private float _impact;
@@ -100,12 +102,14 @@ namespace Examples.TheGame.Entities
 
         internal virtual void Update()
         {
-            _nRotV = float3.Normalize(new float3(_position.M31, _position.M32, _position.M33));
+            _nRotXV = float3.Normalize(new float3(_position.M11, _position.M12, _position.M13));
+            _nRotYV = float3.Normalize(new float3(_position.M21, _position.M22, _position.M23));
+            _nRotZV = float3.Normalize(new float3(_position.M31, _position.M32, _position.M33));
 
             _position *= float4x4.CreateTranslation(-_position.M41, -_position.M42, -_position.M43)*
-                         float4x4.CreateRotationY(_rotation.y)*float4x4.CreateRotationX(_rotation.x)*
+                         float4x4.CreateFromAxisAngle(_nRotYV, _rotation.y) * float4x4.CreateFromAxisAngle(_nRotXV, _rotation.x) * //float4x4.CreateRotationX(_rotation.x) *
                          float4x4.CreateTranslation(_position.M41, _position.M42, _position.M43)*
-                         float4x4.CreateTranslation(_nRotV * _speed);
+                         float4x4.CreateTranslation(_nRotZV * _speed);
         }
 
         /// <summary>
@@ -116,25 +120,23 @@ namespace Examples.TheGame.Entities
         internal virtual void RenderUpdate(RenderContext rc, float4x4 camMatrix)
         {
             _camMatrix = camMatrix;
-            Debug.WriteLine("RenderUpdate");
+            //Debug.WriteLine("RenderUpdate");
             //rendern
             rc.SetShader(_sp);
             IShaderParam _vColorParam = _sp.GetShaderParam("vColor");
             _rc.SetShaderParam(_vColorParam, new float4(0.2f,0.5f,0.5f,1));
 
-            //float4x4 mtxCam = float4x4.LookAt(_position.M41 + (_nRotV.x * 1000), _position.M42 + (_nRotV.y * 1000), _position.M43 + (_nRotV.z * 1000), _position.M41,
-            //                                  _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
-            Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
+            //Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
             _rc.ModelView = _position * _camMatrix;
-            Debug.WriteLine("ModelView" + _rc.ModelView.ToString());
-            Debug.WriteLine("Position" + _position);
+            //Debug.WriteLine("ModelView" + _rc.ModelView.ToString());
+            //Debug.WriteLine("Position" + _position);
             _rc.Render(EntityMesh);
         }
 
         internal float4x4 GetCamMatrix()
         {
-            return float4x4.LookAt(_position.M41 + (_nRotV.x * 1000), _position.M42 + (_nRotV.y * 1000), _position.M43 + (_nRotV.z * 1000), _position.M41,
+            return float4x4.LookAt(_position.M41 + (_nRotZV.x * 1000), _position.M42 + (_nRotZV.y * 1000), _position.M43 + (_nRotZV.z * 1000), _position.M41,
                                               _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
         }
     }
