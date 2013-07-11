@@ -86,11 +86,11 @@ namespace Examples.TheGame
                 if (go.Key != _playerId)
                 {
                     go.Value.RenderUpdate(_rc, _camMatrix);
-                    Debug.WriteLine("Playerrender: "+ go.Value.GetId());
+                   // Debug.WriteLine("Playerrender: "+ go.Value.GetId());
                 }
             }
             Players[_playerId].RenderUpdate(_rc,_camMatrix);
-            Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
+           // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
         }
         internal void AddNewPlayer()
         {

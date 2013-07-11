@@ -18,5 +18,11 @@ namespace Examples.TheGame.Entities
         {
             return _health;
         }
+
+        internal override void OnCollisionEnter(int id)
+        {
+            GameHandler.Players[id].SetLive(+1);
+            this.DestroyEnity();
+        }
     }
 }

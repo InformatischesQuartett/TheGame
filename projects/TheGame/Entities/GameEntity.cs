@@ -17,6 +17,7 @@ namespace Examples.TheGame.Entities
         private float3 _nRotXV; // normalisierter Richtungsvektor
         private float3 _nRotYV; // normalisierter Richtungsvektor
         private float3 _nRotZV; // normalisierter Richtungsvektor
+        private float3 _pointPosition;
         private float _speed;
         private float _speedMax;
         private float _impact;
@@ -59,6 +60,11 @@ namespace Examples.TheGame.Entities
             return _collisionRadius;
         }
 
+        internal virtual void OnCollisionEnter(int id)
+        {
+            Debug.WriteLine("OnCollisionEnter");
+        }
+
         internal void SetRotation(float2 rotation)
         {
             _rotation = rotation * (float)Time.Instance.DeltaTime;
@@ -70,14 +76,14 @@ namespace Examples.TheGame.Entities
             {
                 if (_speed < _speedMax)
                 {
-                    _speed += -1* (float)Time.Instance.DeltaTime * 1.2f;
+                    _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
                 }
             }
             else
             {
                 if (_speed > 0.2f)
                 {
-                    _speed = -1 * (float)Time.Instance.DeltaTime / 1.2f;
+                    _speed = -2 * (float)Time.Instance.DeltaTime / 1.2f;
                 }
                 else
                 {

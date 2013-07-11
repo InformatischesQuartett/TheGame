@@ -8,7 +8,7 @@ namespace Examples.TheGame.Entities
 {
     internal class Player : GameEntity
     {
-        private int _life;
+        private float _life;
         private float _shotTimer;
 
 
@@ -17,22 +17,29 @@ namespace Examples.TheGame.Entities
                       float impact)
             : base(mediator, rc, collisionRadius, position, speed, impact)
         {
-            this._life = 3;
+            this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
         }
 
-        internal int GetLife()
+        internal float GetLife()
         {
             return _life;
+        }
+        internal void SetLive(float value)
+        {
+            _life += value;
         }
 
         internal void CheckCollision()
         {
             foreach (var go in GameHandler.Players)
             {
-                var distanceMatrix = float4x4.Substract(go.Value.GetPosition(), GetPosition());
+                float4x4 goPos = go.Value.GetPosition();
+                float4x4 pos = float4x4.Identity;
+              
+                var distanceMatrix = float4x4.Substract(pos, GetPosition());
                 var distance =
                     (float)
                     Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
@@ -41,12 +48,23 @@ namespace Examples.TheGame.Entities
 
                 if (distance < distancecoll)
                 {
+                    Debug.WriteLine("BAM");
                     if (go.GetType() == typeof (Player))
-                        this.DestroyEnity();
-                    
-                    go.Value.DestroyEnity();
+                       OnCollisionEnter(this.GetId());
+
+
+                    //go.Value.OnCollisionEnter(this.GetId());
+                }
+                else
+                {
+                    Debug.WriteLine("clear");
                 }
             }
+        }
+
+        internal override void OnCollisionEnter(int id)
+        {
+            SetLive(-1);
         }
 
         internal void Shoot()
@@ -54,7 +72,7 @@ namespace Examples.TheGame.Entities
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), 10, 5, GetPosition());
+                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), 50, 5, GetPosition());
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
@@ -109,6 +127,10 @@ namespace Examples.TheGame.Entities
             if (Input.Instance.IsKeyPressed(KeyCodes.Space))
             {
                 this.Shoot();
+            }
+            if (Input.Instance.IsKeyPressed(KeyCodes.B))
+            {
+                Debug.WriteLine(GetPosition() + "\n");
             }
             this.SetRotation(f);
         }
