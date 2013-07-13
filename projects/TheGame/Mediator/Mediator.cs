@@ -60,6 +60,8 @@ namespace Examples.TheGame
 
             UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
+
+            _gameHandler.GameState.CurState = GameState.State.InGame;
         }
 
         /// <summary>
@@ -73,10 +75,10 @@ namespace Examples.TheGame
                 {
                     _networkHandler.NetworkGUI();
                     return;
-                } _networkHandler.NetworkGUI();
+                }
 
-          //   _gameHandler.Update();
-           //  _gameHandler.Render();
+             _gameHandler.Update();
+             _gameHandler.Render();
             
             if (_networkActive)
                 _networkHandler.HandleNetwork();
