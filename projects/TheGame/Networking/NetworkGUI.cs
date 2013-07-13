@@ -26,6 +26,7 @@ namespace Examples.TheGame
         private int _chosenEntry;
 
         private IAudioStream _menuSound;
+        private IAudioStream _menuSound2;
 
         internal string ConnectToIp = "Discovery?";
 
@@ -60,6 +61,7 @@ namespace Examples.TheGame
 
             // load Sound
             _menuSound = Audio.Instance.LoadFile("Assets/MenuBeep.wav");
+            _menuSound2 = Audio.Instance.LoadFile("Assets/MenuBeep2.wav");
 
             _chosenEntry = 0;
             RefreshGUITex();
@@ -79,20 +81,19 @@ namespace Examples.TheGame
                 string msg = "";
 
                 if (Network.Instance.Config.SysType == SysType.Server)
-                    msg += "IP of the Server:\n\n                   " + Network.Instance.LocalIP + "\n\nPlayer: " +
-                           Network.Instance.Connections.Count + "\t\t(Press Space)";
+                    msg += "IP of the Server:\n\n                " + Network.Instance.LocalIP + "\n\nPlayers: " +
+                           Network.Instance.Connections.Count + "             (Press Space)";
 
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
-                        msg += "Connected to:\n\n                   " + ConnectToIp + "\n\nWaiting...";
+                        msg += "Connected to:\n\n                " + ConnectToIp + "\n\nWaiting...";
                     else if (Network.Instance.Status.Connecting)
                         msg += "Connecting...";
                     else
-                        msg += "IP of the Server:\n\n                   " + ConnectToIp + "\n\n\t\t(Press Return)";
+                        msg += "IP of the Server:\n\n                " + ConnectToIp + "\n\n\t               (Press Return)";
 
                 if (msg != _lastMsg)
                 {
-                    //_emptyBg = _renderContext.LoadImage("Assets/menue_empty.png");
                     var finalImg = _renderContext.TextOnImage(_emptyBg, "Calibri", 56, msg, "white", 60, 60);
                     _guiTex = _renderContext.CreateTexture(finalImg);
                 }
@@ -149,6 +150,8 @@ namespace Examples.TheGame
                 // Selecting
                 if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
+                    _menuSound2.Play();
+
                     switch (_chosenEntry)
                     {
                         // --> Client
@@ -167,8 +170,6 @@ namespace Examples.TheGame
                             Environment.Exit(0);
                             break;
                     }
-
-                    _menuSound.Play();
                 }
 
                 return;
@@ -179,7 +180,8 @@ namespace Examples.TheGame
             {
                 if (Input.Instance.IsKeyDown(KeyCodes.Space))
                 {
-                    // change GameStart -> START
+                    _menuSound2.Play();
+                    _networkHandler.Mediator.StartGame();
                 }
 
                 return;
@@ -192,6 +194,7 @@ namespace Examples.TheGame
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
+                    _menuSound2.Play();
                     _networkClient.Startup();
                     _networkClient.ConnectTo(ConnectToIp);
                 }

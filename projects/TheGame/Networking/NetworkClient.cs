@@ -156,7 +156,11 @@ namespace Examples.TheGame
                                 _mediator.UserID = _userID;
                             }
                             else
+                            {
+                                // spawning, so start the game
                                 _mediator.AddToReceivingBuffer(decodedMessage, false);
+                                _mediator.StartGame();
+                            }
 
                             break;
 

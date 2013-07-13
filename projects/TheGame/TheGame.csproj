@@ -51,9 +51,9 @@
     <Compile Include="Entities\Explosion.cs" />
     <Compile Include="Entities\HealthItem.cs" />
     <Compile Include="Entities\Player.cs" />
-    <Compile Include="GameHandler.cs" />
-    <Compile Include="GameHandlerServer.cs" />
-    <Compile Include="GameState.cs" />
+    <Compile Include="GameHandler\GameHandler.cs" />
+    <Compile Include="GameHandler\GameHandlerServer.cs" />
+    <Compile Include="GameHandler\GameState.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Entities\GameEntity.cs" />
     <Compile Include="Mediator\Mediator.cs" />
@@ -67,6 +67,9 @@
     <Compile Include="Shader\ShaderCode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\MenuBeep2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\menue_client.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

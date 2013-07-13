@@ -65,6 +65,15 @@ namespace Examples.TheGame
         }
 
         /// <summary>
+        /// Starts the game.
+        /// </summary>
+        public void StartGame()
+        {
+            _gameHandler.GameState.CurState = GameState.State.InGame;
+            _gameHandler.StartGame();
+        }
+
+        /// <summary>
         ///     Updates this instance once a frame.
         /// </summary>
         internal void Update()
@@ -74,6 +83,8 @@ namespace Examples.TheGame
                 if (_networkActive)
                 {
                     _networkHandler.NetworkGUI();
+                    _networkHandler.HandleNetwork();
+
                     return;
                 }
 
@@ -120,10 +131,16 @@ namespace Examples.TheGame
         /// </returns>
         internal KeyValuePair<DataPacket, bool> GetFromSendingBuffer()
         {
-            var firstOrDefault = _sendingBuffer.FirstOrDefault();
-            _sendingBuffer.Remove(_sendingBuffer.Keys.First());
+            var emptyPacket = new DataPacket {Packet = null};
+            var keyValuePair = new KeyValuePair<DataPacket, bool>(emptyPacket, false);
 
-            return firstOrDefault;
+            if (_sendingBuffer.Count > 0)
+            {
+                keyValuePair = _sendingBuffer.First();
+                _sendingBuffer.Remove(_sendingBuffer.Keys.First());
+            }
+
+            return keyValuePair;
         }
 
         /// <summary>
@@ -147,10 +164,16 @@ namespace Examples.TheGame
         /// </returns>
         internal KeyValuePair<DataPacket, bool> GetFromReceivingBuffer()
         {
-            var firstOrDefault = _recevingBuffer.FirstOrDefault();
-            _recevingBuffer.Remove(_recevingBuffer.Keys.First());
+            var emptyPacket = new DataPacket { Packet = null };
+            var keyValuePair = new KeyValuePair<DataPacket, bool>(emptyPacket, false);
 
-            return firstOrDefault;
+            if (_recevingBuffer.Count > 0)
+            {
+                keyValuePair = _recevingBuffer.First();
+                _recevingBuffer.Remove(_recevingBuffer.Keys.First());
+            }
+
+            return keyValuePair;
         }
 
         /// <summary>

@@ -245,7 +245,8 @@ namespace Examples.TheGame
                     var keepAlivePacket = new DataPacketKeepAlive
                         {
                             UserID = msgData[1],
-                            KeepAliveID = BitConverter.ToInt32(msgData, 2)
+                            KeepAliveID = BitConverter.ToInt32(msgData, 2),
+                            Timestamp = BitConverter.ToUInt32(msgData, 6)
                         };
 
                     decodedMessage.Packet = keepAlivePacket;
@@ -292,8 +293,9 @@ namespace Examples.TheGame
                     var playerUpdatePacket = new DataPacketPlayerUpdate
                         {
                             UserID = msgData[1],
-                            PlayerActive = (msgData[2] == 1),
-                            PlayerHealth = msgData[3],
+                            Timestamp = BitConverter.ToUInt32(msgData, 2),
+                            PlayerActive = (msgData[6] == 1),
+                            PlayerHealth = msgData[7],
                             PlayerPosition = decPlayerPosition,
                             PlayerRotation = decPlayerRotation,
                             PlayerVelocity = decPlayerVelocity
