@@ -16,11 +16,11 @@ namespace Examples.TheGame
         public static Dictionary<int, HealthItem> HealthItems;
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
-<<<<<<< HEAD
+
         public static int PlayAreaRange = 1500;
-=======
+
         public static Dictionary<int, Explosion> Explosions;
->>>>>>> d0d29ab09274ad4c2458d2dccd302365345457ea
+
 
         public static List<int> RemoveBullets;
         public static List<int> RemovePlayers;

@@ -8,12 +8,11 @@ namespace Examples.TheGame
     internal class GameEntity
     {
         private readonly int _id;
-<<<<<<< HEAD
+
         private readonly Mediator _mediator;
         private GameHandlerServer _gameHandlerServer;
-=======
-        protected readonly Mediator _mediator;
->>>>>>> d0d29ab09274ad4c2458d2dccd302365345457ea
+
+
         protected Mesh EntityMesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
