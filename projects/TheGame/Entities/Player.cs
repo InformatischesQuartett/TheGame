@@ -20,7 +20,6 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-
         }
 
         internal float GetLife()
@@ -157,6 +156,11 @@ namespace Examples.TheGame
             if (Input.Instance.IsKeyPressed(KeyCodes.B))
             {
                 Debug.WriteLine(GetPosition() + "\n");
+            }
+            if (Input.Instance.IsKeyPressed(KeyCodes.E))
+            {
+                Explosion expl = new Explosion(_mediator, _rc, GetPosition());
+                GameHandler.Explosions.Add(expl.GetId(), expl);
             }
             this.SetRotation(f);
         }

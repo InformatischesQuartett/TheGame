@@ -16,10 +16,12 @@ namespace Examples.TheGame
         public static Dictionary<int, HealthItem> HealthItems;
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
+        public static Dictionary<int, Explosion> Explosions;
 
         public static List<int> RemoveBullets;
         public static List<int> RemovePlayers;
         public static List<int> RemoveHealthItems;
+        public static List<int> RemoveExplosions;
 
         /// <summary>
         ///State Object, contains the current State the Game is in
@@ -47,9 +49,11 @@ namespace Examples.TheGame
             HealthItems = new Dictionary<int, HealthItem>();
             Bullets = new Dictionary<int, Bullet>();
             Players = new Dictionary<int, Player>();
+            Explosions = new Dictionary<int, Explosion>();
             RemoveBullets = new List<int>();
             RemovePlayers = new List<int>();
             RemoveHealthItems = new List<int>();
+            RemoveExplosions = new List<int>();
 
             GameState = new GameState(GameState.State.StartMenu);
 
@@ -71,6 +75,8 @@ namespace Examples.TheGame
                 go.Value.Update();
             foreach (var go in Bullets)
                 go.Value.Update();
+            foreach (var go in Explosions)
+                go.Value.Update();
             foreach (var go in Players)
             {
                 if (go.Key != _playerId)
@@ -88,10 +94,18 @@ namespace Examples.TheGame
             {
                 RemoveHealthItems.Remove(removeItem);
             }
-             foreach (var removeBullet in RemoveBullets)
+            foreach (int removeBullet in RemoveBullets)
             {
                 Bullets.Remove(removeBullet);
             }
+            foreach (int removeExplosion in RemoveExplosions)
+            {
+                Explosions.Remove(removeExplosion);
+            }
+            RemovePlayers.Clear();
+            RemoveHealthItems.Clear();
+            RemoveBullets.Clear();
+            RemoveExplosions.Clear();
         }
 
         internal void Render()
@@ -99,6 +113,8 @@ namespace Examples.TheGame
             foreach (var go in HealthItems)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Bullets)
+                go.Value.RenderUpdate(_rc, _camMatrix);
+            foreach (var go in Explosions)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Players)
             {
