@@ -29,6 +29,11 @@ namespace Examples.TheGame
             _life += value;
         }
 
+        internal void ResetLive()
+        {
+            _life = 5;
+        }
+
         internal void SetScore()
         {
             this.score++;
@@ -154,8 +159,8 @@ namespace Examples.TheGame
             }
             if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
-                Explosion expl = new Explosion(_mediator, _rc, GetPosition());
-                GameHandler.Explosions.Add(expl.GetId(), expl);
+                //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
+               // GameHandler.Explosions.Add(expl.GetId(), expl);
             }
             this.SetRotation(f);
         }

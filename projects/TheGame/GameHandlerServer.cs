@@ -19,7 +19,7 @@ namespace Examples.TheGame
             //Respawn Player at a clear position
             Debug.WriteLine("RespawnPlayer:" + id);
             var respawnPosition = GetClearPosition(id);
-            
+            GameHandler.Players[id].ResetLive();
             GameHandler.Players[id].SetPosition(respawnPosition);
 
         }
