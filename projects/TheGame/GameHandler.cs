@@ -16,6 +16,7 @@ namespace Examples.TheGame
         public static Dictionary<int, HealthItem> HealthItems;
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
+        public static int PlayAreaRange = 1500;
 
         public static List<int> RemoveBullets;
         public static List<int> RemovePlayers;
@@ -113,7 +114,7 @@ namespace Examples.TheGame
         }
         internal void AddNewPlayer()
         {
-            var p = new Player(_mediator, _rc, 100, float4x4.Identity, 0, 0);
+            var p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(600, 0, 0), 0, 0);
             Players.Add(p.GetId(), p);
             p= new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
             Players.Add(p.GetId(), p);

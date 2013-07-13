@@ -11,8 +11,6 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
-
-
         internal Player(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
                       float impact)
             : base(mediator, rc, collisionRadius, position, speed, impact)
@@ -50,8 +48,9 @@ namespace Examples.TheGame
                 {
                     if (CheckCollision(go.Value))
                     {
-                       // Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
+                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
                         // Kill both players
+                        this.DestroyEnity();
                     }
                     else
                     {

@@ -9,6 +9,7 @@ namespace Examples.TheGame
     {
         private readonly int _id;
         private readonly Mediator _mediator;
+        private GameHandlerServer _gameHandlerServer;
         protected Mesh EntityMesh;
         private readonly float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
@@ -30,12 +31,13 @@ namespace Examples.TheGame
             _mediator = mediator;
             _id = _mediator.GetObjectId();
             _collisionRadius = collisionRadius;
-            _position = position;
+            this.SetPosition(position);
             _speed = speed;
             _impact = impact;
             _speedMax = 10;
             _rc = rc;
             _sp = MoreShaders.GetShader("simple", _rc);
+            _gameHandlerServer = new GameHandlerServer();
         }
 
 
@@ -52,6 +54,10 @@ namespace Examples.TheGame
         internal float4x4 GetPosition()
         {
             return _position;
+        }
+        internal void SetPosition(float4x4 position)
+        {
+            this._position = position;
         }
 
         internal float3 GetPositionVector()
@@ -114,7 +120,9 @@ namespace Examples.TheGame
             //Adding Items to RemoveLists
             if (this.GetType() == typeof (Player))
             {
-                GameHandler.RemovePlayers.Add(this.GetId());
+                //GameHandler.RemovePlayers.Add(this.GetId());
+                //Call RespawnPlayer
+                _gameHandlerServer.RespawnPlayer(this.GetId());
             }
             if (this.GetType() == typeof (HealthItem))
             {
