@@ -48,24 +48,14 @@ namespace Examples.TheGame
             {
                 if (this.GetId() != go.Value.GetId())
                 {
-                    float4x4 goPos = go.Value.GetPosition();
-                    float4x4 pos = this.GetPosition();
-
-                    var distanceMatrix = float4x4.Substract(pos, goPos);
-                    var distance =
-                        (float)
-                        Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
-                                   Math.Pow(distanceMatrix.M43, 2)));
-                    var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
-
-                    if (distance < distancecoll)
+                    if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM");
+                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
                         // Kill both players
                     }
                     else
                     {
-                        Debug.WriteLine("Collision: Player " + this.GetId() + " clear");
+                        //Debug.WriteLine("Collision: Player " + this.GetId() + " clear");
                     }
                 }
             }
@@ -73,17 +63,7 @@ namespace Examples.TheGame
             {
                 if (this.GetId() != go.Value.GetOwnerId())
                 {
-                    float4x4 goPos = go.Value.GetPosition();
-                    float4x4 pos = this.GetPosition();
-               
-                    var distanceMatrix = float4x4.Substract(pos, goPos);
-                    var distance =
-                        (float)
-                        Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
-                                   Math.Pow(distanceMatrix.M43, 2)));
-                    var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
-
-                    if (distance < distancecoll)
+                    if (CheckCollision(go.Value))
                     {
                         Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
                         go.Value.OnCollisionEnter(go.Value.GetId());
@@ -97,14 +77,7 @@ namespace Examples.TheGame
             }
             foreach (var go in GameHandler.HealthItems)
             {
-                float4x4 goPos = go.Value.GetPosition();
-                float4x4 pos = this.GetPosition();
-                var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
-
-                var distanceMatrix = float4x4.Substract(pos, goPos);
-                var distance = (float) Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) + Math.Pow(distanceMatrix.M43, 2)));
-                
-                if (distance < distancecoll)
+                if (CheckCollision(go.Value))
                 {
                     Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
                     go.Value.OnCollisionEnter(go.Value.GetId());

@@ -16,7 +16,6 @@ namespace Examples.TheGame
         private float3 _nRotXV; // normalisierter Richtungsvektor
         private float3 _nRotYV; // normalisierter Richtungsvektor
         private float3 _nRotZV; // normalisierter Richtungsvektor
-        private float3 _pointPosition;
         private float _speed;
         private float _speedMax;
         private float _impact;
@@ -54,9 +53,21 @@ namespace Examples.TheGame
             return _position;
         }
 
+        internal float3 GetPositionVector()
+        {
+            return new float3(_position.M41, _position.M42, _position.M43);
+        }
+
         internal float GetCollisionRadius()
         {
             return _collisionRadius;
+        }
+
+        internal bool CheckCollision(GameEntity other)
+        {
+            return (other.GetPositionVector() - this.GetPositionVector()).LengthSquared <=
+                   other.GetCollisionRadius() * other.GetCollisionRadius() +
+                   this.GetCollisionRadius() * this.GetCollisionRadius();
         }
 
         internal virtual void OnCollisionEnter(int id)
