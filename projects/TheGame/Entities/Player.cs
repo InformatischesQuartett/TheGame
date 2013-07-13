@@ -86,7 +86,7 @@ namespace Examples.TheGame
                     if (distance < distancecoll)
                     {
                         Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
-                        go.Value.OnCollisionEnter(this.GetId());
+                        go.Value.OnCollisionEnter(go.Value.GetId());
                         // Kill player and bullet
                     }
                     else
@@ -107,7 +107,7 @@ namespace Examples.TheGame
                 if (distance < distancecoll)
                 {
                     Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
-                    go.Value.OnCollisionEnter(this.GetId());
+                    go.Value.OnCollisionEnter(go.Value.GetId());
                     // Kill healthitem and heal player by impact
                 }
                 else
