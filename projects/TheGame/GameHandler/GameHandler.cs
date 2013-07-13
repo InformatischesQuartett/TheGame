@@ -174,9 +174,10 @@ namespace Examples.TheGame
             // Change ViewPort and aspectRatio (fullsize)
             RContext.Viewport(0, 0, Mediator.Width, Mediator.Height);
 
-            var aspectRatio = Mediator.Width / Mediator.Height;
+            var aspectRatio = Mediator.Width / (float) Mediator.Height;
             RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
+            // Render all Objects
             foreach (var go in HealthItems)
                 go.Value.RenderUpdate(RContext, _camMatrix);
 
@@ -222,15 +223,19 @@ namespace Examples.TheGame
         {
             var p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(600, 0, 0), 0, 0, 11);
             Players.Add(p.GetId(), p);
+            RespawnPlayer(p.GetId());
 
             p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(300f, 0, 0), 0, 0, 22);
             Players.Add(p.GetId(), p);
+            RespawnPlayer(p.GetId());
 
             p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(0, 300f, 0), 0, 0, 33);
             Players.Add(p.GetId(), p);
+            RespawnPlayer(p.GetId());
 
             p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(0, 0, -300f), 0, 0, 44);
             Players.Add(p.GetId(), p);
+            RespawnPlayer(p.GetId());
         }
 
         public void RespawnPlayer(int getId)

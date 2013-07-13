@@ -65,8 +65,7 @@ namespace Examples.TheGame
 
         internal void SetPosition(float3 position)
         {
-            _position = new float4x4 { Row3 = new float4(position, 1) };
-            Debug.WriteLine(_position);
+            _position.Row3 = new float4(position, 1);
         }
 
         internal float3 GetPositionVector()

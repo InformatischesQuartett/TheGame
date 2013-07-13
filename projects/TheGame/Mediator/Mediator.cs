@@ -63,8 +63,12 @@ namespace Examples.TheGame
             UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
 
-            Blending = true;
-            _gameHandler.GameState.CurState = GameState.State.StartMenu;
+            if (networkActive)
+            {
+                Blending = true;
+                _gameHandler.GameState.CurState = GameState.State.StartMenu;
+            } else
+                StartGame();
         }
 
         /// <summary>
@@ -72,6 +76,7 @@ namespace Examples.TheGame
         /// </summary>
         public void StartGame()
         {
+            Blending = false;
             _gameHandler.GameState.CurState = GameState.State.InGame;
             _gameHandler.StartGame();
         }
