@@ -31,7 +31,7 @@ namespace Examples.TheGame
             _life += value;
         }
 
-        internal void CheckCollision()
+        internal void CheckAllCollision()
         {
             foreach (var go in GameHandler.Players)
             {
@@ -49,19 +49,57 @@ namespace Examples.TheGame
 
                     if (distance < distancecoll)
                     {
-                        Debug.WriteLine("BAM");
-                        if (go.GetType() == typeof (Player))
-                            OnCollisionEnter(this.GetId());
-
-
-                        //go.Value.OnCollisionEnter(this.GetId());
+                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM");
+                        // Kill both players
                     }
                     else
                     {
-                        Debug.WriteLine("clear");
+                        Debug.WriteLine("Collision: Player " + this.GetId() + " clear");
                     }
                 }
             }
+            foreach (var go in GameHandler.Bullets)
+            {
+                float4x4 goPos = go.Value.GetPosition();
+                float4x4 pos = this.GetPosition();
+
+                var distanceMatrix = float4x4.Substract(pos, goPos);
+                var distance =
+                    (float)
+                    Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
+                                Math.Pow(distanceMatrix.M43, 2)));
+                var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
+
+                if (distance < distancecoll)
+                {
+                    Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
+                    // Kill player and bullet
+                }
+                else
+                {
+                    Debug.WriteLine("Collision: Bullet " + this.GetId() + " clear");
+                }
+            }
+            foreach (var go in GameHandler.HealthItems)
+            {
+                float4x4 goPos = go.Value.GetPosition();
+                float4x4 pos = this.GetPosition();
+                var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
+
+                var distanceMatrix = float4x4.Substract(pos, goPos);
+                var distance = (float) Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) + Math.Pow(distanceMatrix.M43, 2)));
+                
+                if (distance < distancecoll)
+                {
+                    Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
+                    // Kill healthitem and heal player by impact
+                }
+                else
+                {
+                    Debug.WriteLine("Collision: HealthItem " + this.GetId() + " clear");
+                }
+            }
+
         }
 
         internal override void OnCollisionEnter(int id)
@@ -84,7 +122,7 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            CheckCollision();
+            CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
 
         }
