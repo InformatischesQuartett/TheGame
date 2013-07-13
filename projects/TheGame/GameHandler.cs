@@ -48,7 +48,7 @@ namespace Examples.TheGame
 
             _camMatrix = float4x4.Identity;
 
-            var p = new Player(_mediator, _rc,10,float4x4.Identity,0,0);
+            var p = new Player(_mediator, _rc,100,float4x4.Identity,0,0);
             Players.Add(p.GetId(),p);
             _playerId = p.GetId();
 
@@ -94,13 +94,13 @@ namespace Examples.TheGame
         }
         internal void AddNewPlayer()
         {
-            var p = new Player(_mediator, _rc, 10, float4x4.Identity, 0, 0);
+            var p = new Player(_mediator, _rc, 100, float4x4.Identity, 0, 0);
             Players.Add(p.GetId(), p);
-            p= new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
+            p= new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
             Players.Add(p.GetId(), p);
-            p = new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0), 0, 0);
+            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0), 0, 0);
             Players.Add(p.GetId(), p);
-            p = new Player(_mediator, _rc, 10, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
+            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
             Players.Add(p.GetId(), p);
 
         }
