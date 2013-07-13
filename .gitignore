@@ -12,6 +12,7 @@ TestResults
 *.suo
 *.user
 *.sln.docstates
+*.orig
 
 # Build results
 [Dd]ebug/
