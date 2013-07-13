@@ -92,6 +92,11 @@ namespace Examples.TheGame
         }
 
 
+        internal float GetSpeed()
+        {
+            return this._speed;
+        }
+
         internal void DestroyEnity()
         {
             if (this.GetType() == typeof (Player) || this.GetType() == typeof (HealthItem))
@@ -101,6 +106,7 @@ namespace Examples.TheGame
             if (this.GetType() == typeof (Bullet))
             {
                 //remove Bullet from Dict
+                GameHandler.Bullets.Remove(this.GetId());
             }
 
         }
