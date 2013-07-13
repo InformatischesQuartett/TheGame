@@ -153,11 +153,11 @@ namespace Examples.TheGame
             {
                 this.Shoot();
             }
-            }
             if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
                 Explosion expl = new Explosion(_mediator, _rc, GetPosition());
                 GameHandler.Explosions.Add(expl.GetId(), expl);
+            }
             this.SetRotation(f);
         }
     }
