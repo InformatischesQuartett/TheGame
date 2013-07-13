@@ -102,7 +102,6 @@ namespace Examples.TheGame
             Players.Add(p.GetId(), p);
             p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
             Players.Add(p.GetId(), p);
-
         }
     }
 }
