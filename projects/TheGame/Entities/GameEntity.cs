@@ -66,6 +66,7 @@ namespace Examples.TheGame
         internal void SetPosition(float3 position)
         {
             _position = new float4x4 { Row3 = new float4(position, 1) };
+            Debug.WriteLine(_position);
         }
 
         internal float3 GetPositionVector()
@@ -163,11 +164,11 @@ namespace Examples.TheGame
 
         internal virtual void Update()
         {
-            _nRotXV = float3.Normalize(new float3(_position.M11, _position.M12, _position.M13));
-            _nRotYV = float3.Normalize(new float3(_position.M21, _position.M22, _position.M23));
-            _nRotZV = float3.Normalize(new float3(_position.M31, _position.M32, _position.M33));
+            _nRotXV = float3.Normalize(new float3(_position.Row0));
+            _nRotYV = float3.Normalize(new float3(_position.Row1));
+            _nRotZV = float3.Normalize(new float3(_position.Row2));
 
-            _position *= float4x4.CreateTranslation(-_position.M41, -_position.M42, -_position.M43) *
+            _position *= float4x4.CreateTranslation(- new float3(_position.Row3)) *
                          float4x4.CreateFromAxisAngle(_nRotYV, _rotation.y) * float4x4.CreateFromAxisAngle(_nRotXV, _rotation.x) * //float4x4.CreateRotationX(_rotation.x) *
                          float4x4.CreateTranslation(_position.M41, _position.M42, _position.M43)*
                          float4x4.CreateTranslation(_nRotZV * _speed);

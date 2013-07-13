@@ -56,7 +56,7 @@ namespace Examples.TheGame
         /// </summary>
         internal void ReceiveKeepAlive(DataPacketKeepAlive keepAlive)
         {
-            Debug.WriteLine("KeepAlive bekommen. ID: " + keepAlive.KeepAliveID);
+            // Debug.WriteLine("KeepAlive bekommen. ID: " + keepAlive.KeepAliveID);
 
             if (_userID != -1)
             {
@@ -158,6 +158,7 @@ namespace Examples.TheGame
                             else
                             {
                                 // spawning, so start the game
+                                Debug.Write("Got SpawningPosition :)");
                                 _mediator.AddToReceivingBuffer(decodedMessage, false);
                                 _mediator.StartGame();
                             }

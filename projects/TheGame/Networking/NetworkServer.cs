@@ -66,10 +66,7 @@ namespace Examples.TheGame
 
             foreach (var keepAliveResponse in _keepAliveResponses)
                 if (!keepAliveResponse.Value)
-                {
-                    System.Diagnostics.Debug.WriteLine("Kein KeepAlive von " + keepAliveResponse.Key);
                     keepAliveResponse.Key.Disconnect();
-                }
 
             // new KeepAlive messages to all clients
             _keepAliveID = _random.Next(10000000, 100000000);

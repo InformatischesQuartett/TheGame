@@ -66,8 +66,6 @@ namespace Examples.TheGame
             _camMatrix = float4x4.Identity;
 
           //  StartGame();
-
-
            // this.AddNewPlayer();
 
             Debug.WriteLine("_playerId: " + _playerId);
@@ -75,6 +73,10 @@ namespace Examples.TheGame
 
         internal void Update()
         {
+            // Handle Network
+            HandleIncomingMessage();
+
+            // Handle Game
             foreach (var go in HealthItems)
                 go.Value.Update();
 
@@ -112,6 +114,61 @@ namespace Examples.TheGame
             RemoveExplosions.Clear();
         }
 
+        private void HandleIncomingMessage()
+        {
+            KeyValuePair<DataPacket, bool> recvPacket;
+            while ((recvPacket = Mediator.GetFromReceivingBuffer()).Key.Packet != null)
+            {
+                switch (recvPacket.Key.PacketType)
+                {
+                    case DataPacketTypes.PlayerSpawn:
+                        var playerSpawnData = (DataPacketPlayerSpawn)recvPacket.Key.Packet;
+
+                        // either a spawning position for this client - or someone needs a new spawning position
+                        if (!recvPacket.Value)
+                        {
+                            Debug.WriteLine("This player shall spawn at: " + playerSpawnData.SpawnPosition);
+                            Players[_playerId].SetPosition(playerSpawnData.SpawnPosition);
+                        }
+                        else
+                        {
+                            // SERVER ACTIVITY!
+                            var respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
+
+                            while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
+                            {
+                                respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
+                            }
+
+                            // send back to user
+                            var data = new DataPacketPlayerSpawn()
+                            {
+                                UserID = playerSpawnData.UserID,
+                                Spawn = true,
+                                SpawnPosition = respawnPosition
+                            };
+
+                            var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
+                            Mediator.AddToSendingBuffer(packet, true);
+                        }
+
+                        break;
+
+                    case DataPacketTypes.PlayerUpdate:
+                        // TODO: PlayerUpdate
+                        break;
+
+                    case DataPacketTypes.ObjectSpawn:
+                        // TODO: ObjectSpawn
+                        break;
+
+                    case DataPacketTypes.ObjectUpdate:
+                        // TODO: ObjectUpdate
+                        break;
+                }
+            }
+        }
+
         internal void Render()
         {
             // Change ViewPort and aspectRatio (fullsize)
@@ -145,14 +202,18 @@ namespace Examples.TheGame
         internal void StartGame()
         {
             UserID = Mediator.UserID;
+            _playerId = Mediator.UserID;
 
             var p = new Player(this, 100, float4x4.Identity, 0, 0, Mediator.UserID);
 
             Players.Add(Mediator.UserID, p);
-            _playerId = Mediator.UserID;
 
             if (_playerId == 0)
+            {
                 _gameHandlerServer = new GameHandlerServer(this);
+                RespawnPlayer(Mediator.UserID);
+            }
+
 
             this.AddNewPlayer();
         }

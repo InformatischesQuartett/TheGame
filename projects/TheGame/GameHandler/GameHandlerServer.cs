@@ -11,7 +11,7 @@ namespace Examples.TheGame
     {
         private readonly GameHandler _gameHandler;
 
-        private const int PlayAreaRange = 1500;
+        private const int PlayAreaRange = 100;
 
         public GameHandlerServer(GameHandler gameHandler)
         {
@@ -35,7 +35,7 @@ namespace Examples.TheGame
         {
             Debug.WriteLine("RespawnPlayer:" + id);
 
-            var rndNum = RandomNumber()*id;
+            var rndNum = RandomNumber()*(id+1);
             return new float3(rndNum, rndNum, rndNum);
         }
     }
