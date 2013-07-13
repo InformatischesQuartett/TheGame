@@ -90,7 +90,7 @@ namespace Examples.TheGame
             }
              foreach (var removeBullet in RemoveBullets)
             {
-                Players.Remove(removeBullet);
+                Bullets.Remove(removeBullet);
             }
         }
 
