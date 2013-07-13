@@ -11,9 +11,6 @@ namespace Examples.TheGame
         private readonly NetworkHandler _networkHandler;
         private readonly RenderContext _renderContext;
 
-        private float _width;
-        private float _height;
-
         private NetworkServer _networkServer;
         private NetworkClient _networkClient;
 
@@ -21,12 +18,14 @@ namespace Examples.TheGame
         private readonly ShaderProgram _guiShader;
         private readonly IShaderParam _texParam;
 
-        private ImageData _emptyBg;
+        private readonly ImageData _emptyBg;
         private readonly ITexture[] _textures;
 
         private ITexture _guiTex;
         private string _lastMsg;
         private int _chosenEntry;
+
+        private IAudioStream _menuSound;
 
         internal string ConnectToIp = "Discovery?";
 
@@ -58,6 +57,9 @@ namespace Examples.TheGame
             _textures[2] = _renderContext.CreateTexture(imgData);
 
             _emptyBg = _renderContext.LoadImage("Assets/menue_empty.png");
+
+            // load Sound
+            _menuSound = Audio.Instance.LoadFile("Assets/MenuBeep.wav");
 
             _chosenEntry = 0;
             RefreshGUITex();
@@ -132,12 +134,19 @@ namespace Examples.TheGame
             // none SysType chosen
             if (Network.Instance.Config.SysType == SysType.None)
             {
+                // Choosing
+                var lastChosenEntry = _chosenEntry;
+
                 if (Input.Instance.IsKeyDown(KeyCodes.Up) || Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
                     _chosenEntry = (--_chosenEntry < 0) ? 2 : _chosenEntry;
 
                 if (Input.Instance.IsKeyDown(KeyCodes.Down) || Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
                     _chosenEntry = (++_chosenEntry > 2) ? 0 : _chosenEntry;
 
+                if (_chosenEntry != lastChosenEntry)
+                    _menuSound.Play();
+
+                // Selecting
                 if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
                     switch (_chosenEntry)
@@ -158,7 +167,11 @@ namespace Examples.TheGame
                             Environment.Exit(0);
                             break;
                     }
+
+                    _menuSound.Play();
                 }
+
+                return;
             }
 
             // SysType "Server"
@@ -168,6 +181,8 @@ namespace Examples.TheGame
                 {
                     // change GameStart -> START
                 }
+
+                return;
             }
 
             // SysType "Client"
