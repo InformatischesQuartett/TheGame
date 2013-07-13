@@ -90,7 +90,7 @@ namespace Examples.TheGame
 
                 if (msg != _lastMsg)
                 {
-                    _emptyBg = _renderContext.LoadImage("Assets/menue_empty.png"); // TODO: TWO BUGS IN FUSEE?
+                    //_emptyBg = _renderContext.LoadImage("Assets/menue_empty.png");
                     var finalImg = _renderContext.TextOnImage(_emptyBg, "Calibri", 56, msg, "white", 60, 60);
                     _guiTex = _renderContext.CreateTexture(finalImg);
                 }
@@ -117,7 +117,7 @@ namespace Examples.TheGame
             _renderContext.SetShader(_guiShader);
             _renderContext.SetShaderParamTexture(_texParam, _guiTex);
             _renderContext.ModelView = float4x4.Scale(new float3(0.5f, 1, 1))*
-                                       float4x4.LookAt(0, 0, 3500, 0, 0, 0, 0, 1, 0);
+                                       float4x4.LookAt(0, 0, 4360, 0, 0, 0, 0, 1, 0);
 
             _renderContext.Render(_guiPlaneMesh);
 

@@ -37,7 +37,8 @@ namespace Examples.TheGame
 
             M = new ShaderMaterial(Sp);
 
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
+            EnableBlending = true;
+            RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 
             // Mediator for GameHandler and NetworkHandler
             const bool networkActive = true;

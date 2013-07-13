@@ -61,7 +61,7 @@ namespace Examples.TheGame
             UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
 
-            _gameHandler.GameState.CurState = GameState.State.InGame;
+            _gameHandler.GameState.CurState = GameState.State.StartMenu;
         }
 
         /// <summary>

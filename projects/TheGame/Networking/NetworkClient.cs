@@ -170,7 +170,7 @@ namespace Examples.TheGame
 
                 if (msg.Type == MessageType.DiscoveryResponse)
                 {
-                    _networkGUI.ConnectToIp = msg.Sender.Address.ToString();
+                    _networkGUI.ConnectToIp = msg.Sender.RemoteEndPoint.ToString();
                 }
             }
         }
