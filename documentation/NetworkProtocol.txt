@@ -36,6 +36,7 @@ Direction: Server -> Clients
 
 ## UserID         ## int    ## 0 as UserID is the server        ##
 ## KeepAliveID    ## int    ## 10000000 - 99999999              ##
+## Timestamp      ## uint   ## Unix-Timestamp                   ##
 
 The server sends a KeepAlive packet with a random ID every 60 sec
 to all clients. Every client has to respond within 60 sec with the
@@ -76,6 +77,7 @@ Direction: Client -> Server -> Clients
 	   Server -> Clients
 
 ## UserID         ## int    ## A number greater than zero       ##
+## Timestamp      ## uint   ## Unix-Timestamp                   ##
 ## PlayerActive   ## bool   ## false if player disconnected     ##
 ## PlayerHealth   ## int    ## A number between 0 and 100       ##
 ## PlayerPosition ## float3 ## Coordinates within the 3D space  ##

@@ -4,7 +4,7 @@ namespace Examples.TheGame
 {
     internal class NetworkHandler
     {
-        private readonly Mediator _mediator;
+        internal readonly Mediator Mediator;
 
         // private RenderContext _renderContext;
         private readonly NetworkGUI _networkGUI;
@@ -19,7 +19,7 @@ namespace Examples.TheGame
         /// <param name="mediator"></param>
         public NetworkHandler(RenderContext rc, Mediator mediator)
         {
-            _mediator = mediator;
+            Mediator = mediator;
             _networkGUI = new NetworkGUI(rc, this);
         }
 
@@ -49,7 +49,7 @@ namespace Examples.TheGame
         /// <returns></returns>
         internal NetworkServer CreateServer()
         {
-            _networkServer = new NetworkServer(_networkGUI, _mediator);
+            _networkServer = new NetworkServer(_networkGUI, Mediator);
             return _networkServer;
         }
 
@@ -59,7 +59,7 @@ namespace Examples.TheGame
         /// <returns></returns>
         internal NetworkClient CreateClient()
         {
-            _networkClient = new NetworkClient(_networkGUI, _mediator);
+            _networkClient = new NetworkClient(_networkGUI, Mediator);
             return _networkClient;
         }
     }

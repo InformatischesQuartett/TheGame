@@ -15,6 +15,7 @@ namespace Examples.TheGame
         // Data
         internal int UserID;
         internal int KeepAliveID;
+        internal uint Timestamp;
 
         // Settings
         internal int ChannelID
@@ -111,10 +112,13 @@ namespace Examples.TheGame
             if (msgType == DataPacketTypes.KeepAlive)
             {
                 var data = (DataPacketKeepAlive) packetData;
-                var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
 
-                var packet = new byte[keepAliveIDBytes.Length + 2];
+                var keepAliveIDBytes = BitConverter.GetBytes(data.KeepAliveID);
+                var timestampBytes = BitConverter.GetBytes(data.Timestamp);
+
+                var packet = new byte[keepAliveIDBytes.Length + timestampBytes.Length + 2];
                 Buffer.BlockCopy(keepAliveIDBytes, 0, packet, 2, keepAliveIDBytes.Length);
+                Buffer.BlockCopy(timestampBytes, 0, packet, 6, timestampBytes.Length);
 
                 packet[0] = (byte) msgType;             // PacketType
                 packet[1] = (byte) (data.UserID & 255); // UserID (0 = Server)
@@ -148,6 +152,7 @@ namespace Examples.TheGame
             if (msgType == DataPacketTypes.PlayerUpdate)
             {
                 var data = (DataPacketPlayerUpdate) packetData;
+                var timestampBytes = BitConverter.GetBytes(data.Timestamp);
 
                 byte[] encPlayerData;
                 using (var stream = new MemoryStream())
@@ -159,13 +164,14 @@ namespace Examples.TheGame
                     encPlayerData = stream.ToArray();
                 }
 
-                var packet = new byte[encPlayerData.Length + 4];
-                Buffer.BlockCopy(encPlayerData, 0, packet, 4, encPlayerData.Length);
+                var packet = new byte[timestampBytes.Length + encPlayerData.Length + 4];
+                Buffer.BlockCopy(timestampBytes, 0, packet, 2, timestampBytes.Length);
+                Buffer.BlockCopy(encPlayerData, 0, packet, 8, encPlayerData.Length);
 
                 packet[0] = (byte) msgType;                         // PacketType
                 packet[1] = (byte) (data.UserID & 255);             // UserID
-                packet[2] = (byte) ((data.PlayerActive) ? 1 : 0);   // If Player is still active
-                packet[3] = (byte) (data.PlayerHealth & 255);       // Health of player
+                packet[6] = (byte) ((data.PlayerActive) ? 1 : 0);   // If Player is still active
+                packet[7] = (byte) (data.PlayerHealth & 255);       // Health of player
 
                 return packet;
             }

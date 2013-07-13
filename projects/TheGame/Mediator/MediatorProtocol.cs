@@ -41,6 +41,7 @@ namespace Examples.TheGame
     {
         // Data
         internal int UserID;
+        internal uint Timestamp;
         internal bool PlayerActive;
         internal int PlayerHealth;
         internal float3 PlayerPosition;

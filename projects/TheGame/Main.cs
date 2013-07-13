@@ -40,9 +40,8 @@ namespace Examples.TheGame
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Mediator for GameHandler and NetworkHandler
-            const bool networkActive = false;
+            const bool networkActive = true;
             _mediator = new Mediator(RC, networkActive);
-           
         }
 
         /// <summary>
@@ -63,6 +62,9 @@ namespace Examples.TheGame
         public override void Resize()
         {
             // is called when the window is resized
+            _mediator.Width = Width;
+            _mediator.Height = Height;
+
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width/(float) Height;

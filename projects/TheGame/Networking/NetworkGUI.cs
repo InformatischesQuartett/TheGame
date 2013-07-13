@@ -1,4 +1,7 @@
-﻿using Fusee.Engine;
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
@@ -8,6 +11,9 @@ namespace Examples.TheGame
         private readonly NetworkHandler _networkHandler;
         private readonly RenderContext _renderContext;
 
+        private float _width;
+        private float _height;
+
         private NetworkServer _networkServer;
         private NetworkClient _networkClient;
 
@@ -15,9 +21,12 @@ namespace Examples.TheGame
         private readonly ShaderProgram _guiShader;
         private readonly IShaderParam _texParam;
 
-        private ImageData _whiteBg;
+        private ImageData _emptyBg;
+        private readonly ITexture[] _textures;
+
         private ITexture _guiTex;
         private string _lastMsg;
+        private int _chosenEntry;
 
         internal string ConnectToIp = "Discovery?";
 
@@ -37,7 +46,20 @@ namespace Examples.TheGame
             // load Texture
             _guiShader = MoreShaders.GetShader("texture", _renderContext);
             _texParam = _guiShader.GetShaderParam("texture1");
+            _textures = new ITexture[3];
 
+            var imgData = _renderContext.LoadImage("Assets/menue_client.png");
+            _textures[0] = _renderContext.CreateTexture(imgData);
+
+            imgData = _renderContext.LoadImage("Assets/menue_server.png");
+            _textures[1] = _renderContext.CreateTexture(imgData);
+
+            imgData = _renderContext.LoadImage("Assets/menue_close.png");
+            _textures[2] = _renderContext.CreateTexture(imgData);
+
+            _emptyBg = _renderContext.LoadImage("Assets/menue_empty.png");
+
+            _chosenEntry = 0;
             RefreshGUITex();
         }
 
@@ -46,36 +68,35 @@ namespace Examples.TheGame
         /// </summary>
         internal void RefreshGUITex()
         {
-            var msg = "The Game\n\n\n\n";
-
             if (Network.Instance.Config.SysType == SysType.None)
             {
-                msg += "F1 = Server \tF2 = Client";
+                _guiTex = _textures[_chosenEntry];
             }
             else
             {
+                string msg = "";
+
                 if (Network.Instance.Config.SysType == SysType.Server)
-                    msg += "Server-IP:            " + Network.Instance.LocalIP + "\n\n\nPlayer: " +
-                           Network.Instance.Connections.Count + "\n\n\n\t            [SPACE]";
+                    msg += "IP of the Server:\n\n                   " + Network.Instance.LocalIP + "\n\nPlayer: " +
+                           Network.Instance.Connections.Count + "\t\t(Press Space)";
 
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
-                        msg += "Verbunden mit:      " + ConnectToIp + "\n\n\n\n\n\n\tWarte auf Spielbeginn";
+                        msg += "Connected to:\n\n                   " + ConnectToIp + "\n\nWaiting...";
                     else if (Network.Instance.Status.Connecting)
-                        msg += "Verbindungsaufbau...";
+                        msg += "Connecting...";
                     else
-                        msg += "IP eingeben: \t       " + ConnectToIp + "\n\n\t\t\t[RETURN]";
+                        msg += "IP of the Server:\n\n                   " + ConnectToIp + "\n\n\t\t(Press Return)";
+
+                if (msg != _lastMsg)
+                {
+                    _emptyBg = _renderContext.LoadImage("Assets/menue_empty.png"); // TODO: TWO BUGS IN FUSEE?
+                    var finalImg = _renderContext.TextOnImage(_emptyBg, "Calibri", 56, msg, "white", 60, 60);
+                    _guiTex = _renderContext.CreateTexture(finalImg);
+                }
+
+                _lastMsg = msg;
             }
-
-            if (msg != _lastMsg)
-            {
-                _whiteBg = _renderContext.CreateImage(1920, 1920, "white");
-                var finalImg = _renderContext.TextOnImage(_whiteBg, "Calibri", 28, msg, "black", 730, 650);
-
-                _guiTex = _renderContext.CreateTexture(finalImg);
-            }
-
-            _lastMsg = msg;
         }
 
         /// <summary>
@@ -85,9 +106,18 @@ namespace Examples.TheGame
         {
             RefreshGUITex();
 
+            // Change ViewPort and aspectRatio
+            _renderContext.Viewport(_networkHandler.Mediator.Width/2 - 848/2,
+                                    _networkHandler.Mediator.Height/2 - 436/2,
+                                    848, 436);
+
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 10000);
+
+            // Set Shader and ModelView
             _renderContext.SetShader(_guiShader);
             _renderContext.SetShaderParamTexture(_texParam, _guiTex);
-            _renderContext.ModelView = float4x4.LookAt(0, 0, 1000, 0, 0, 0, 0, 1, 0);
+            _renderContext.ModelView = float4x4.Scale(new float3(0.5f, 1, 1))*
+                                       float4x4.LookAt(0, 0, 3500, 0, 0, 0, 0, 1, 0);
 
             _renderContext.Render(_guiPlaneMesh);
 
@@ -102,17 +132,32 @@ namespace Examples.TheGame
             // none SysType chosen
             if (Network.Instance.Config.SysType == SysType.None)
             {
-                // --> Server
-                if (Input.Instance.IsKeyDown(KeyCodes.F1))
-                {
-                    _networkServer = _networkHandler.CreateServer();
-                    _networkServer.Startup();
-                }
+                if (Input.Instance.IsKeyDown(KeyCodes.Up) || Input.Instance.GetAxis(InputAxis.MouseWheel) > 0)
+                    _chosenEntry = (--_chosenEntry < 0) ? 2 : _chosenEntry;
 
-                // --> Client
-                if (Input.Instance.IsKeyDown(KeyCodes.F2))
+                if (Input.Instance.IsKeyDown(KeyCodes.Down) || Input.Instance.GetAxis(InputAxis.MouseWheel) < 0)
+                    _chosenEntry = (++_chosenEntry > 2) ? 0 : _chosenEntry;
+
+                if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
-                    _networkClient = _networkHandler.CreateClient();
+                    switch (_chosenEntry)
+                    {
+                        // --> Client
+                        case 0:
+                            _networkClient = _networkHandler.CreateClient();
+                            break;
+
+                        // --> Server
+                        case 1:
+                            _networkServer = _networkHandler.CreateServer();
+                            _networkServer.Startup();
+                            break;
+
+                        // --> Exit
+                        case 2:
+                            Environment.Exit(0);
+                            break;
+                    }
                 }
             }
 

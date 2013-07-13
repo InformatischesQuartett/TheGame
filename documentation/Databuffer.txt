@@ -1,0 +1,12 @@
+There are two important functions which are used by the GameHandler:
+
+> _mediator.GetFromReceivingBuffer()
+
+This returns an KeyValuePair<DataPacket, bool>. The bool is an
+indictor if the packet containts server data (currenty, this is
+only the case with PlayerSpawn, because then the GameHandler has
+to act as the server and it has to create an new SpawningPosition).
+
+> _mediator.AddToSendingBuffer(DataPacket data, bool server)
+
+Same thing the other way round.

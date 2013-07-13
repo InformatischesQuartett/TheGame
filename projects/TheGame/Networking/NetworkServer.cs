@@ -70,8 +70,15 @@ namespace Examples.TheGame
 
             // new KeepAlive messages to all clients
             _keepAliveID = _random.Next(10000000, 100000000);
+            var timestamp = _mediator.GetUnixTimestamp();
 
-            var data = new DataPacketKeepAlive {KeepAliveID = _keepAliveID, UserID = 0};
+            var data = new DataPacketKeepAlive
+                {
+                    KeepAliveID = _keepAliveID,
+                    Timestamp = timestamp,
+                    UserID = 0
+                };
+
             var packet = NetworkProtocol.MessageEncode(DataPacketTypes.KeepAlive, data);
             Network.Instance.SendMessage(packet, data.MsgDelivery, data.ChannelID);
 

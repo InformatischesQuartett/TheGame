@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Fusee.Engine;
 
@@ -26,6 +27,9 @@ namespace Examples.TheGame
             }
         }
 
+        internal int Height { set; get; }
+        internal int Width { set; get; }
+
         /// <summary>
         ///     The last assigned objectID.
         /// </summary>
@@ -39,20 +43,20 @@ namespace Examples.TheGame
         /// <summary>
         ///     Initializes a new instance of the <see cref="Mediator" /> class.
         /// </summary>
-        /// <param name="rc">The RenderContext.</param>
+        /// <param name="rContext">The RenderContext.</param>
         /// <param name="networkActive">
         ///     Network is only used if set to <c>true</c>.
         /// </param>
-        internal Mediator(RenderContext rc, bool networkActive)
+        internal Mediator(RenderContext rContext, bool networkActive)
         {
             _sendingBuffer = new Dictionary<DataPacket, bool>();
             _recevingBuffer = new Dictionary<DataPacket, bool>();
 
-            _gameHandler = new GameHandler(rc, this);
+            _gameHandler = new GameHandler(rContext, this);
 
             _networkActive = networkActive;
             if (networkActive)
-                _networkHandler = new NetworkHandler(rc, this);
+                _networkHandler = new NetworkHandler(rContext, this);
 
             UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
@@ -69,10 +73,10 @@ namespace Examples.TheGame
                 {
                     _networkHandler.NetworkGUI();
                     return;
-                }
+                } _networkHandler.NetworkGUI();
 
-             _gameHandler.Update();
-             _gameHandler.Render();
+          //   _gameHandler.Update();
+           //  _gameHandler.Render();
             
             if (_networkActive)
                 _networkHandler.HandleNetwork();
@@ -145,6 +149,16 @@ namespace Examples.TheGame
             _recevingBuffer.Remove(_recevingBuffer.Keys.First());
 
             return firstOrDefault;
+        }
+
+        /// <summary>
+        /// Gets the current UNIX timestamp.
+        /// </summary>
+        /// <returns></returns>
+        internal uint GetUnixTimestamp()
+        {
+            var timestamp = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
+            return (uint)timestamp.TotalSeconds;
         }
     }
 }
