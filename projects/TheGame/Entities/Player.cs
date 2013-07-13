@@ -12,9 +12,10 @@ namespace Examples.TheGame
         private int score;
 
         internal Player(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
-                      float impact)
+                      float impact, int id)
             : base(mediator, rc, collisionRadius, position, speed, impact)
         {
+            SetId(id);
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");

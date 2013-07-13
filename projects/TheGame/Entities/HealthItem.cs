@@ -11,6 +11,7 @@ namespace Examples.TheGame
                           float impact, int health)
             : base(mediator, rc, collisionRadius, position, speed, impact)
         {
+            SetId(mediator.GetObjectId());
             _health = health;
         }
 

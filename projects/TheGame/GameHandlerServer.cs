@@ -9,6 +9,8 @@ namespace Examples.TheGame
 {
     class GameHandlerServer
     {
+        private const int PlayAreaRange = 1500;
+
         public GameHandlerServer()
         {
             
@@ -27,8 +29,8 @@ namespace Examples.TheGame
         public float RandomNumber()
         {
             var random = new Random();
-            var min = -1 * (GameHandler.PlayAreaRange);
-            var max = GameHandler.PlayAreaRange;
+            var min = -1 * (PlayAreaRange);
+            var max = PlayAreaRange;
             float rndNum = random.Next(min, max);
             Debug.WriteLine("RandomNumber" + rndNum);
             return rndNum;
