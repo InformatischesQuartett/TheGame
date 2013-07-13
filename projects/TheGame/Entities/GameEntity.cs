@@ -106,7 +106,7 @@ namespace Examples.TheGame
             if (this.GetType() == typeof (Bullet))
             {
                 //remove Bullet from Dict
-                GameHandler.Bullets.Remove(this.GetId());
+                GameHandler.RemoveBullets.Add(this.GetId());
             }
 
         }

@@ -17,6 +17,10 @@ namespace Examples.TheGame
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
 
+        public static List<int> RemoveBullets;
+        public static List<int> RemovePlayers;
+        public static List<int> RemoveHealthItems;
+
         /// <summary>
         ///State Object, contains the current State the Game is in
         /// </summary>
@@ -43,6 +47,9 @@ namespace Examples.TheGame
             HealthItems = new Dictionary<int, HealthItem>();
             Bullets = new Dictionary<int, Bullet>();
             Players = new Dictionary<int, Player>();
+            RemoveBullets = new List<int>();
+            RemovePlayers = new List<int>();
+            RemoveHealthItems = new List<int>();
 
             GameState = new GameState(GameState.State.StartMenu);
 
@@ -72,7 +79,19 @@ namespace Examples.TheGame
             Players[_playerId].PlayerInput();
             Players[_playerId].Update();
             _camMatrix = Players[_playerId].GetCamMatrix();
-            
+
+            foreach (var removePlayer in RemovePlayers)
+            {
+                Players.Remove(removePlayer);
+            }
+             foreach (var removeItem in RemoveHealthItems)
+            {
+                RemoveHealthItems.Remove(removeItem);
+            }
+             foreach (var removeBullet in RemoveBullets)
+            {
+                Players.Remove(removeBullet);
+            }
         }
 
         internal void Render()
