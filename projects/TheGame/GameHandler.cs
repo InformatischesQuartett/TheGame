@@ -17,6 +17,16 @@ namespace Examples.TheGame
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
 
+        public static int PlayAreaRange = 1500;
+
+        public static Dictionary<int, Explosion> Explosions;
+
+
+        public static List<int> RemoveBullets;
+        public static List<int> RemovePlayers;
+        public static List<int> RemoveHealthItems;
+        public static List<int> RemoveExplosions;
+
         /// <summary>
         ///State Object, contains the current State the Game is in
         /// </summary>
@@ -43,6 +53,11 @@ namespace Examples.TheGame
             HealthItems = new Dictionary<int, HealthItem>();
             Bullets = new Dictionary<int, Bullet>();
             Players = new Dictionary<int, Player>();
+            Explosions = new Dictionary<int, Explosion>();
+            RemoveBullets = new List<int>();
+            RemovePlayers = new List<int>();
+            RemoveHealthItems = new List<int>();
+            RemoveExplosions = new List<int>();
 
             GameState = new GameState(GameState.State.StartMenu);
 
@@ -64,6 +79,8 @@ namespace Examples.TheGame
                 go.Value.Update();
             foreach (var go in Bullets)
                 go.Value.Update();
+            foreach (var go in Explosions)
+                go.Value.Update();
             foreach (var go in Players)
             {
                 if (go.Key != _playerId)
@@ -72,7 +89,27 @@ namespace Examples.TheGame
             Players[_playerId].PlayerInput();
             Players[_playerId].Update();
             _camMatrix = Players[_playerId].GetCamMatrix();
-            
+
+            foreach (var removePlayer in RemovePlayers)
+            {
+                Players.Remove(removePlayer);
+            }
+             foreach (var removeItem in RemoveHealthItems)
+            {
+                RemoveHealthItems.Remove(removeItem);
+            }
+            foreach (int removeBullet in RemoveBullets)
+            {
+                Bullets.Remove(removeBullet);
+            }
+            foreach (int removeExplosion in RemoveExplosions)
+            {
+                Explosions.Remove(removeExplosion);
+            }
+            RemovePlayers.Clear();
+            RemoveHealthItems.Clear();
+            RemoveBullets.Clear();
+            RemoveExplosions.Clear();
         }
 
         internal void Render()
@@ -80,6 +117,8 @@ namespace Examples.TheGame
             foreach (var go in HealthItems)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Bullets)
+                go.Value.RenderUpdate(_rc, _camMatrix);
+            foreach (var go in Explosions)
                 go.Value.RenderUpdate(_rc, _camMatrix);
             foreach (var go in Players)
             {
@@ -94,7 +133,7 @@ namespace Examples.TheGame
         }
         internal void AddNewPlayer()
         {
-            var p = new Player(_mediator, _rc, 100, float4x4.Identity, 0, 0);
+            var p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(600, 0, 0), 0, 0);
             Players.Add(p.GetId(), p);
             p= new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
             Players.Add(p.GetId(), p);
@@ -102,7 +141,6 @@ namespace Examples.TheGame
             Players.Add(p.GetId(), p);
             p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
             Players.Add(p.GetId(), p);
-
         }
     }
 }

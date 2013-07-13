@@ -9,8 +9,7 @@ namespace Examples.TheGame
     {
         private float _life;
         private float _shotTimer;
-
-
+        private int score;
 
         internal Player(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
                       float impact)
@@ -19,7 +18,6 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-
         }
 
         internal float GetLife()
@@ -31,35 +29,66 @@ namespace Examples.TheGame
             _life += value;
         }
 
-        internal void CheckCollision()
+        internal void ResetLive()
+        {
+            _life = 5;
+        }
+
+        internal void SetScore()
+        {
+            this.score++;
+        }
+
+        internal int GetScore()
+        {
+            return score;
+        }
+
+        internal void CheckAllCollision()
         {
             foreach (var go in GameHandler.Players)
             {
                 if (this.GetId() != go.Value.GetId())
                 {
-                    float4x4 goPos = go.Value.GetPosition();
-                    float4x4 pos = this.GetPosition();
-
-                    var distanceMatrix = float4x4.Substract(pos, goPos);
-                    var distance =
-                        (float)
-                        Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
-                                   Math.Pow(distanceMatrix.M43, 2)));
-                    var distancecoll = go.Value.GetCollisionRadius() + GetCollisionRadius();
-
-                    if (distance < distancecoll)
+                    if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("BAM");
-                        if (go.GetType() == typeof (Player))
-                            OnCollisionEnter(this.GetId());
-
-
-                        //go.Value.OnCollisionEnter(this.GetId());
+                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
+                        // Kill both players
+                        this.DestroyEnity();
                     }
                     else
                     {
-                        Debug.WriteLine("clear");
+                        //Debug.WriteLine("Collision: Player " + this.GetId() + " clear");
                     }
+                }
+            }
+            foreach (var go in GameHandler.Bullets)
+            {
+                if (this.GetId() != go.Value.GetOwnerId())
+                {
+                    if (CheckCollision(go.Value))
+                    {
+                        Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
+                        go.Value.OnCollisionEnter(this.GetId());
+                        // Kill bullet
+                    }
+                    else
+                    {
+                        //Debug.WriteLine("Collision: Bullet " + go.Value.GetId() + " clear");
+                    }
+                }
+            }
+            foreach (var go in GameHandler.HealthItems)
+            {
+                if (CheckCollision(go.Value))
+                {
+                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
+                    go.Value.OnCollisionEnter(go.Value.GetId());
+                    // Kill healthitem and heal player by impact
+                }
+                else
+                {
+                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " clear");
                 }
             }
         }
@@ -74,7 +103,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), 50, 5, GetPosition());
+                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), -2, 5, this.GetId());
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
@@ -84,7 +113,7 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            CheckCollision();
+            CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
 
         }
@@ -128,9 +157,10 @@ namespace Examples.TheGame
             {
                 this.Shoot();
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.B))
+            if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
-                Debug.WriteLine(GetPosition() + "\n");
+                //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
+               // GameHandler.Explosions.Add(expl.GetId(), expl);
             }
             this.SetRotation(f);
         }
