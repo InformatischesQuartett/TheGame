@@ -87,6 +87,7 @@
             uniform vec4 matDiffuse; // material diffuse color
             uniform vec4 matSpecular; // material specular color
             uniform float matShininess; // specular shininess
+            uniform vec4 matAlbedo = vec4(0.5, 0.5, 1, 1); // Albedo of the material
 
             uniform vec4 camPosition; // camera position in world space
 
@@ -364,15 +365,15 @@
 		            {
 			            if(i < amountOfLights)
 			            {
-				            if(isInConeOfLight(vec3(worldVertexPos), lights[i]))
-				            {
+				            //if(isInConeOfLight(vec3(worldVertexPos), lights[i]))
+				            //{
 					            // calculate falloff
 					            float dist = length(worldVertexPos - lights[i].position);
 					            float falloff = max(0.0, (-dist / lights[i].falloff) + 1);
 	
 					            totalLighting += calcDiffuse(lights[i], falloff);
 					            totalLighting += calcSpecular(lights[i], falloff);
-				            }
+				            //}
 			            }
 			            else
 			            {
@@ -388,7 +389,11 @@
 	            }
 	
 	            // calculate fragment color
-	            gl_FragColor = texture2D(tex, vertexUV) * totalLighting;
+                vec4 texColor = texture2D(tex, vertexUV);
+                if(texColor.rgb == vec3(0, 0, 0))
+                    texColor.rgb = vec3(0.5, 0.5, 1.0);
+	            //gl_FragColor = ((1 -texColor.a) * matAlbedo + texColor) * totalLighting;
+                gl_FragColor = texColor * totalLighting;
             }";
 
         /// <summary>

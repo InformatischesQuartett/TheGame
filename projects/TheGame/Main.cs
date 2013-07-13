@@ -41,7 +41,7 @@ namespace Examples.TheGame
         protected ITexture TextureHandle;
         protected IShaderParam TextureShaderParam;
 
-        private float3 _cameraPos = new float3(0, 0, 1000);
+        private float3 _cameraPos = new float3(0, 1000, -1000);
         private float _light1Falloff = 10000;
         private float _light1Aperture = 0.1f;
         private float _noiseTime = 0.0f;
@@ -101,7 +101,7 @@ namespace Examples.TheGame
 
             // Init shader
             RC.SetShaderParam(CalcLightingShaderParam, 0);
-            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.1f, 0.1f, 0.1f, 1.0f));
+            RC.SetShaderParam(AmbientLightShaderParam, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(MaterialDiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(MaterialSpecularShaderParam, new float4(0.1f, 0.1f, 0.2f, 1.0f));
@@ -163,7 +163,7 @@ namespace Examples.TheGame
             }
 
 
-            float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(45) * float4x4.CreateRotationX(45);
+            float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(0) * float4x4.CreateRotationX(0);
             float4x4 mtxCam = float4x4.LookAt(_cameraPos, new float3(0, 0, 0), new float3(0, 1, 0));
             float4x4 mtxScale = float4x4.Scale(1f, 1f, 1f);
             float4x4 mtxPos = float4x4.CreateTranslation(0, 0, 0);
