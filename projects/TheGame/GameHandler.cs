@@ -17,7 +17,7 @@ namespace Examples.TheGame
         public static Dictionary<int, Bullet> Bullets;
         public static Dictionary<int, Player> Players;
 
-        public static int PlayAreaRange = 1500;
+        
 
         public static Dictionary<int, Explosion> Explosions;
 
@@ -42,7 +42,7 @@ namespace Examples.TheGame
         private readonly RenderContext _rc;
 
         private float4x4 _camMatrix;
-        private readonly int _playerId;
+        private int _playerId;
     
         internal GameHandler(RenderContext rc, Mediator mediator)
         {
@@ -63,9 +63,8 @@ namespace Examples.TheGame
 
             _camMatrix = float4x4.Identity;
 
-            var p = new Player(_mediator, _rc,100,float4x4.Identity,0,0);
-            Players.Add(p.GetId(),p);
-            _playerId = p.GetId();
+            StartGame();
+            
 
             this.AddNewPlayer();
 
@@ -131,15 +130,22 @@ namespace Examples.TheGame
             Players[_playerId].RenderUpdate(_rc,_camMatrix);
            // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
         }
+
+        internal void StartGame()
+        {
+            var p = new Player(_mediator, _rc, 100, float4x4.Identity, 0, 0, _mediator.UserID);
+            Players.Add(p.GetId(), p);
+            _playerId = p.GetId();
+        }
         internal void AddNewPlayer()
         {
-            var p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(600, 0, 0), 0, 0);
+            var p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(600, 0, 0), 0, 0,11);
             Players.Add(p.GetId(), p);
-            p= new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0);
+            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0, 22);
             Players.Add(p.GetId(), p);
-            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0), 0, 0);
+            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 300f, 0), 0, 0,33);
             Players.Add(p.GetId(), p);
-            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0);
+            p = new Player(_mediator, _rc, 100, float4x4.Identity * float4x4.CreateTranslation(0, 0, -300f), 0, 0,44);
             Players.Add(p.GetId(), p);
         }
     }

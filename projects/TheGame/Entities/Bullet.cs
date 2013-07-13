@@ -16,6 +16,7 @@ namespace Examples.TheGame
                      int ownerId)
             : base(mediator, rc, collisionRadius, position, speed, impact)
         {
+            SetId(mediator.GetObjectId());
             _maxDist = 200;
             _ownerId = ownerId;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");

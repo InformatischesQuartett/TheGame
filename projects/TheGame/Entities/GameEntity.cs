@@ -7,7 +7,7 @@ namespace Examples.TheGame
 {
     internal class GameEntity
     {
-        private readonly int _id;
+        private int _id;
 
         private readonly Mediator _mediator;
         private GameHandlerServer _gameHandlerServer;
@@ -33,7 +33,7 @@ namespace Examples.TheGame
         {
             //Attribute initialisieren
             _mediator = mediator;
-            _id = _mediator.GetObjectId();
+            //_id = _mediator.GetObjectId();
             _collisionRadius = collisionRadius;
             this.SetPosition(position);
             _speed = speed;
@@ -53,6 +53,11 @@ namespace Examples.TheGame
         internal int GetId()
         {
             return _id;
+        }
+
+        internal void SetId(int id)
+        {
+            _id = id;
         }
 
         internal float4x4 GetPosition()
