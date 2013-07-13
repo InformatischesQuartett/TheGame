@@ -36,9 +36,8 @@ namespace Examples.TheGame
             foreach (var go in GameHandler.Players)
             {
                 float4x4 goPos = go.Value.GetPosition();
-                float4x4 pos = float4x4.Identity;
-              
-                var distanceMatrix = float4x4.Substract(pos, GetPosition());
+                
+                var distanceMatrix = float4x4.Substract(goPos, GetPosition());
                 var distance =
                     (float)
                     Math.Sqrt((Math.Pow(distanceMatrix.M41, 2) + Math.Pow(distanceMatrix.M42, 2) +
@@ -47,7 +46,7 @@ namespace Examples.TheGame
 
                 if (distance < distancecoll)
                 {
-                    Debug.WriteLine("BAM");
+                    //Debug.WriteLine("BAM");
                     if (go.GetType() == typeof (Player))
                        OnCollisionEnter(this.GetId());
 
@@ -56,7 +55,7 @@ namespace Examples.TheGame
                 }
                 else
                 {
-                    Debug.WriteLine("clear");
+                    //Debug.WriteLine("clear");
                 }
             }
         }
@@ -71,7 +70,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), 50, 5, GetPosition());
+                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), -2, 5, GetPosition());
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
