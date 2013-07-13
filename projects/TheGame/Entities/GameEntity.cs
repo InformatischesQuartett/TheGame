@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -110,14 +111,18 @@ namespace Examples.TheGame
 
         internal void DestroyEnity()
         {
-            if (this.GetType() == typeof (Player) || this.GetType() == typeof (HealthItem))
+            //Adding Items to RemoveLists
+            if (this.GetType() == typeof (Player))
             {
-                //Respawn stuff
+                GameHandler.RemovePlayers.Add(this.GetId());
+            }
+            if (this.GetType() == typeof (HealthItem))
+            {
+                GameHandler.RemoveHealthItems.Add(this.GetId());
             }
             if (this.GetType() == typeof (Bullet))
             {
-                //remove Bullet from Dict
-                GameHandler.RemoveBullets.Add(this.GetId());
+                GameHandler.RemoveBullets.Add(this.GetId());               
             }
 
         }

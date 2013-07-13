@@ -50,7 +50,7 @@ namespace Examples.TheGame
                 {
                     if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
+                       // Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
                         // Kill both players
                     }
                     else
@@ -66,12 +66,12 @@ namespace Examples.TheGame
                     if (CheckCollision(go.Value))
                     {
                         Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
-                        go.Value.OnCollisionEnter(go.Value.GetId());
-                        // Kill player and bullet
+                        go.Value.OnCollisionEnter(this.GetId());
+                        // Kill bullet
                     }
                     else
                     {
-                        Debug.WriteLine("Collision: Bullet " + this.GetId() + " clear");
+                        //Debug.WriteLine("Collision: Bullet " + go.Value.GetId() + " clear");
                     }
                 }
             }
@@ -79,13 +79,13 @@ namespace Examples.TheGame
             {
                 if (CheckCollision(go.Value))
                 {
-                    Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
+                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
                     go.Value.OnCollisionEnter(go.Value.GetId());
                     // Kill healthitem and heal player by impact
                 }
                 else
                 {
-                    Debug.WriteLine("Collision: HealthItem " + this.GetId() + " clear");
+                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " clear");
                 }
             }
         }
@@ -153,10 +153,6 @@ namespace Examples.TheGame
             if (Input.Instance.IsKeyPressed(KeyCodes.Space))
             {
                 this.Shoot();
-            }
-            if (Input.Instance.IsKeyPressed(KeyCodes.B))
-            {
-                Debug.WriteLine(GetPosition() + "\n");
             }
             this.SetRotation(f);
         }
