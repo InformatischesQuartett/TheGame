@@ -15,6 +15,8 @@ namespace Examples.TheGame
         private NetworkClient _networkClient;
 
         private readonly Mesh _guiPlaneMesh;
+        private float xPos;
+
         private readonly ShaderProgram _guiShader;
         private readonly IShaderParam _texParam;
 
@@ -25,8 +27,8 @@ namespace Examples.TheGame
         private string _lastMsg;
         private int _chosenEntry;
 
-        private IAudioStream _menuSound;
-        private IAudioStream _menuSound2;
+        private readonly IAudioStream _menuSound;
+        private readonly IAudioStream _menuSound2;
 
         internal string ConnectToIp = "Discovery?";
 
@@ -42,11 +44,12 @@ namespace Examples.TheGame
 
             // load GUIMesh
             _guiPlaneMesh = MeshReader.LoadMesh("Assets/guiPlane.obj.model");
+            xPos = 500;
 
             // load Texture
             _guiShader = MoreShaders.GetShader("texture", _renderContext);
             _texParam = _guiShader.GetShaderParam("texture1");
-            _textures = new ITexture[3];
+            _textures = new ITexture[4];
 
             var imgData = _renderContext.LoadImage("Assets/menue_client.png");
             _textures[0] = _renderContext.CreateTexture(imgData);
@@ -56,6 +59,9 @@ namespace Examples.TheGame
 
             imgData = _renderContext.LoadImage("Assets/menue_close.png");
             _textures[2] = _renderContext.CreateTexture(imgData);
+
+            imgData = _renderContext.LoadImage("Assets/guiSpace.jpg");
+            _textures[3] = _renderContext.CreateTexture(imgData);
 
             _emptyBg = _renderContext.LoadImage("Assets/menue_empty.png");
 
@@ -81,16 +87,16 @@ namespace Examples.TheGame
                 string msg = "";
 
                 if (Network.Instance.Config.SysType == SysType.Server)
-                    msg += "IP of the Server:\n\n                " + Network.Instance.LocalIP + "\n\nPlayers: " +
+                    msg += "IP of the Server:\n\n              " + Network.Instance.LocalIP + "\n\nPlayers: " +
                            Network.Instance.Connections.Count + "             (Press Space)";
 
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
-                        msg += "Connected to:\n\n                " + ConnectToIp + "\n\nWaiting...";
+                        msg += "Connected to:\n\n       " + ConnectToIp + "\n\nWaiting...";
                     else if (Network.Instance.Status.Connecting)
                         msg += "Connecting...";
                     else
-                        msg += "IP of the Server:\n\n                " + ConnectToIp + "\n\n\t               (Press Return)";
+                        msg += "IP of the Server:\n\n              " + ConnectToIp + "\n\n\t               (Press Return)";
 
                 if (msg != _lastMsg)
                 {
@@ -109,7 +115,22 @@ namespace Examples.TheGame
         {
             RefreshGUITex();
 
-            // Change ViewPort and aspectRatio
+            // Change ViewPort and aspectRatio (fullsize)
+            /* _renderContext.Viewport(0, 0, _networkHandler.Mediator.Width, _networkHandler.Mediator.Height);
+
+            var aspectRatio = _networkHandler.Mediator.Width/_networkHandler.Mediator.Height;
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+            
+            // Set Shader and ModelView
+            xPos -= (float) Time.Instance.DeltaTime*0.75f;
+
+            _renderContext.SetShaderParamTexture(_texParam, _textures[3]);
+            _renderContext.ModelView = float4x4.Scale(new float3(0.5f, 0.25f, 1))*float4x4.CreateTranslation(xPos, 0, 0)*
+                                       float4x4.LookAt(0, 0, 400, 0, 0, 0, 0, 1, 0);
+
+            _renderContext.Render(_guiPlaneMesh);*/
+
+            // Change ViewPort and aspectRatio (GUI size)
             _renderContext.Viewport(_networkHandler.Mediator.Width/2 - 848/2,
                                     _networkHandler.Mediator.Height/2 - 436/2,
                                     848, 436);
@@ -117,12 +138,15 @@ namespace Examples.TheGame
             _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 10000);
 
             // Set Shader and ModelView
+            _renderContext.Clear(ClearFlags.Depth);
             _renderContext.SetShader(_guiShader);
             _renderContext.SetShaderParamTexture(_texParam, _guiTex);
             _renderContext.ModelView = float4x4.Scale(new float3(0.5f, 1, 1))*
                                        float4x4.LookAt(0, 0, 4360, 0, 0, 0, 0, 1, 0);
 
             _renderContext.Render(_guiPlaneMesh);
+
+
 
             KeyboadInput();
         }

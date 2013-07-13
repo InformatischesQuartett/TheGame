@@ -9,52 +9,34 @@ namespace Examples.TheGame
 {
     class GameHandlerServer
     {
+        private readonly GameHandler _gameHandler;
+
         private const int PlayAreaRange = 1500;
 
-        public GameHandlerServer()
+        public GameHandlerServer(GameHandler gameHandler)
         {
-            
-        }
-
-        public void RespawnPlayer(int id)
-        {
-            //Respawn Player at a clear position
-            Debug.WriteLine("RespawnPlayer:" + id);
-            var respawnPosition = GetClearPosition(id);
-            GameHandler.Players[id].ResetLive();
-            GameHandler.Players[id].SetPosition(respawnPosition);
-
+            _gameHandler = gameHandler;
         }
 
         public float RandomNumber()
         {
             var random = new Random();
-            var min = -1 * (PlayAreaRange);
-            var max = PlayAreaRange;
+
+            const int min = -1 * (PlayAreaRange);
+            const int max = PlayAreaRange;
+
             float rndNum = random.Next(min, max);
             Debug.WriteLine("RandomNumber" + rndNum);
-            return rndNum;
 
+            return rndNum;
         }
 
-        public float4x4 GetClearPosition(int id)
+        public float3 RespawnPlayer(int id)
         {
-            Debug.WriteLine("GetClearPosition:" + id);
-            var clearPosition = float4x4.Identity;
-            var rndNum = RandomNumber()*id;
-            Debug.WriteLine("GetClearPosition 2");
-            clearPosition.M41 = rndNum;
-            clearPosition.M42 = rndNum;
-            clearPosition.M43 = rndNum;
+            Debug.WriteLine("RespawnPlayer:" + id);
 
-            foreach (var go in GameHandler.Players)
-            {
-                if (clearPosition == go.Value.GetPosition())
-                {
-                    GetClearPosition(id);
-                }
-            }
-            return clearPosition;
+            var rndNum = RandomNumber()*id;
+            return new float3(rndNum, rndNum, rndNum);
         }
     }
 }

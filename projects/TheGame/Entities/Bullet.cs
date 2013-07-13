@@ -12,13 +12,15 @@ namespace Examples.TheGame
         private float _distCounter;
         private int _ownerId;
 
-        internal Bullet(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed, float impact,
+        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
                      int ownerId)
-            : base(mediator, rc, collisionRadius, position, speed, impact)
+            : base(gameHandler, collisionRadius, position, speed, impact)
         {
-            SetId(mediator.GetObjectId());
+            SetId(gameHandler.Mediator.GetObjectId());
+
             _maxDist = 200;
             _ownerId = ownerId;
+
             this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             Debug.WriteLine("New Bullet");
         }
@@ -40,8 +42,8 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(int id)
         {
-            GameHandler.Players[id].SetLive(-0.5f);
-            GameHandler.Players[_ownerId].SetScore();
+            _gameHandler.Players[id].SetLife(-0.5f);
+            _gameHandler.Players[_ownerId].SetScore();
             this.DestroyEnity();
         }
     }

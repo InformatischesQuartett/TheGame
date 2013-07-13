@@ -11,9 +11,9 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
-        internal Player(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
+        internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                       float impact, int id)
-            : base(mediator, rc, collisionRadius, position, speed, impact)
+            : base(gameHandler, collisionRadius, position, speed, impact)
         {
             SetId(id);
             this._life = 5;
@@ -25,12 +25,12 @@ namespace Examples.TheGame
         {
             return _life;
         }
-        internal void SetLive(float value)
+        internal void SetLife(float value)
         {
             _life += value;
         }
 
-        internal void ResetLive()
+        internal void ResetLife()
         {
             _life = 5;
         }
@@ -47,7 +47,7 @@ namespace Examples.TheGame
 
         internal void CheckAllCollision()
         {
-            foreach (var go in GameHandler.Players)
+            foreach (var go in _gameHandler.Players)
             {
                 if (this.GetId() != go.Value.GetId())
                 {
@@ -63,7 +63,8 @@ namespace Examples.TheGame
                     }
                 }
             }
-            foreach (var go in GameHandler.Bullets)
+
+            foreach (var go in _gameHandler.Bullets)
             {
                 if (this.GetId() != go.Value.GetOwnerId())
                 {
@@ -79,7 +80,8 @@ namespace Examples.TheGame
                     }
                 }
             }
-            foreach (var go in GameHandler.HealthItems)
+
+            foreach (var go in _gameHandler.HealthItems)
             {
                 if (CheckCollision(go.Value))
                 {
@@ -96,7 +98,7 @@ namespace Examples.TheGame
 
         internal override void OnCollisionEnter(int id)
         {
-            SetLive(-1);
+            SetLife(-1);
         }
 
         internal void Shoot()
@@ -104,9 +106,10 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GetMediator(), this._rc, 4, GetPosition(), -2, 5, this.GetId());
+                var bullet = new Bullet(_gameHandler, 4, GetPosition(), -2, 5, GetId());
+
                 // add Bullet to ItemDict
-                GameHandler.Bullets.Add(bullet.GetId(), bullet);
+                _gameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
             }
         }
@@ -114,14 +117,13 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
+
             CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
-
         }
 
         internal void PlayerInput()
         {
-
             var f = new float2(0, 0);
             
            // move forward Shift

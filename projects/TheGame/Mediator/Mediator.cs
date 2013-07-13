@@ -30,6 +30,8 @@ namespace Examples.TheGame
         internal int Height { set; get; }
         internal int Width { set; get; }
 
+        internal bool Blending { set; get; }
+
         /// <summary>
         ///     The last assigned objectID.
         /// </summary>
@@ -61,6 +63,7 @@ namespace Examples.TheGame
             UserID = (networkActive) ? -1 : 0;
             _objectID = -1;
 
+            Blending = true;
             _gameHandler.GameState.CurState = GameState.State.StartMenu;
         }
 
@@ -82,15 +85,19 @@ namespace Examples.TheGame
             if (_gameHandler.GameState.CurState == GameState.State.StartMenu)
                 if (_networkActive)
                 {
+                    Blending = true;
+
                     _networkHandler.NetworkGUI();
                     _networkHandler.HandleNetwork();
 
                     return;
                 }
 
-             _gameHandler.Update();
-             _gameHandler.Render();
-            
+            Blending = false;
+
+            _gameHandler.Update();
+            _gameHandler.Render();
+
             if (_networkActive)
                 _networkHandler.HandleNetwork();
         }

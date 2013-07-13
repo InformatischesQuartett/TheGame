@@ -38,6 +38,8 @@ namespace Examples.TheGame
             M = new ShaderMaterial(Sp);
 
             EnableBlending = true;
+            VSync = false;
+
             RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 
             // Mediator for GameHandler and NetworkHandler
@@ -52,6 +54,7 @@ namespace Examples.TheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            EnableBlending = _mediator.Blending;
             _mediator.Update();
 
             Present();

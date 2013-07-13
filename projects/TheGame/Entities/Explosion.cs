@@ -27,10 +27,9 @@ namespace Examples.TheGame
         /// <summary>
         /// Initializes a new instance of the <see cref="Explosion"/> class.
         /// </summary>
-        /// <param name="mediator">The mediator.</param>
-        /// <param name="rc">The rc.</param>
+        /// <param name="gameHandler">The GameHandler</param>
         /// <param name="position">The position.</param>
-        internal Explosion(Mediator mediator, RenderContext rc, float4x4 position) : base(mediator, rc, 0, position, 0, 0)
+        internal Explosion(GameHandler gameHandler, float4x4 position) : base(gameHandler, 0, position, 0, 0)
         {
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
         }

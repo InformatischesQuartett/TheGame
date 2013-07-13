@@ -7,11 +7,12 @@ namespace Examples.TheGame
     {
         private readonly int _health;
 
-        public HealthItem(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
+        public HealthItem(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                           float impact, int health)
-            : base(mediator, rc, collisionRadius, position, speed, impact)
+            : base(gameHandler, collisionRadius, position, speed, impact)
         {
-            SetId(mediator.GetObjectId());
+            SetId(gameHandler.Mediator.GetObjectId());
+
             _health = health;
         }
 
@@ -22,7 +23,7 @@ namespace Examples.TheGame
 
         internal override void OnCollisionEnter(int id)
         {
-            GameHandler.Players[id].SetLive(+1);
+            _gameHandler.Players[id].SetLife(+1);
             this.DestroyEnity();
         }
     }

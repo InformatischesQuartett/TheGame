@@ -9,9 +9,7 @@ namespace Examples.TheGame
     {
         private int _id;
 
-        private readonly Mediator _mediator;
-        private GameHandlerServer _gameHandlerServer;
-
+        protected GameHandler _gameHandler;
 
         protected Mesh EntityMesh;
         private readonly float _collisionRadius;
@@ -28,26 +26,21 @@ namespace Examples.TheGame
         protected RenderContext _rc;
         private ShaderProgram _sp;
 
-        internal GameEntity(Mediator mediator, RenderContext rc, float collisionRadius, float4x4 position, float speed,
-                            float impact)
+        internal GameEntity(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact)
         {
             //Attribute initialisieren
-            _mediator = mediator;
+            _gameHandler = gameHandler;
             //_id = _mediator.GetObjectId();
+
             _collisionRadius = collisionRadius;
             this.SetPosition(position);
+
             _speed = speed;
             _impact = impact;
             _speedMax = 10;
-            _rc = rc;
+
+            _rc = gameHandler.RContext;
             _sp = MoreShaders.GetShader("simple", _rc);
-            _gameHandlerServer = new GameHandlerServer();
-        }
-
-
-        internal Mediator GetMediator()
-        {
-            return _mediator;
         }
 
         internal int GetId()
@@ -64,9 +57,15 @@ namespace Examples.TheGame
         {
             return _position;
         }
+
         internal void SetPosition(float4x4 position)
         {
             this._position = position;
+        }
+
+        internal void SetPosition(float3 position)
+        {
+            _position = new float4x4 { Row3 = new float4(position, 1) };
         }
 
         internal float3 GetPositionVector()
@@ -141,22 +140,25 @@ namespace Examples.TheGame
             {
                 //GameHandler.RemovePlayers.Add(this.GetId());
                 //Call RespawnPlayer
-                _gameHandlerServer.RespawnPlayer(this.GetId());
+
+                _gameHandler.RespawnPlayer(GetId());
             }
+
             if (this.GetType() == typeof (HealthItem))
             {
-                GameHandler.RemoveHealthItems.Add(this.GetId());
+                _gameHandler.RemoveHealthItems.Add(this.GetId());
             }
+
             if (this.GetType() == typeof(Explosion))
             {
                 //remove explosion from Dict
-                GameHandler.RemoveExplosions.Add(this.GetId());
-            }
-            if (this.GetType() == typeof (Bullet))
-            {
-                GameHandler.RemoveBullets.Add(this.GetId());               
+                _gameHandler.RemoveExplosions.Add(this.GetId());
             }
 
+            if (this.GetType() == typeof (Bullet))
+            {
+                _gameHandler.RemoveBullets.Add(this.GetId());               
+            }
         }
 
         internal virtual void Update()
