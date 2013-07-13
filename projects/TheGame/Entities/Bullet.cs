@@ -16,7 +16,7 @@ namespace Examples.TheGame
                      int ownerId)
             : base(mediator, rc, collisionRadius, position, speed, impact)
         {
-            _maxDist = 100;
+            _maxDist = 200;
             _ownerId = ownerId;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             Debug.WriteLine("New Bullet");
@@ -30,8 +30,7 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            _distCounter += -(this.GetSpeed());
-            Debug.WriteLine(_distCounter);
+            _distCounter += -0.5f*(this.GetSpeed());
             if (_distCounter > _maxDist)
             {
                 this.DestroyEnity();
@@ -40,7 +39,6 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(int id)
         {
-            Debug.WriteLine("Hit Player"+id);
             GameHandler.Players[id].SetLive(-0.5f);
             GameHandler.Players[_ownerId].SetScore();
             this.DestroyEnity();
