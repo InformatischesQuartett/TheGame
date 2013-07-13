@@ -22,6 +22,11 @@ namespace Examples.TheGame
             Debug.WriteLine("New Bullet");
         }
 
+        internal int GetOwnerId()
+        {
+            return _ownerId;
+        }
+
         internal override void Update()
         {
             base.Update();
