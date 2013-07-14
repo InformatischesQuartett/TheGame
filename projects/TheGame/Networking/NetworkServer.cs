@@ -199,7 +199,7 @@ namespace Examples.TheGame
                 {
                     int userID;
                     var decodedMessage = NetworkProtocol.MessageDecode(msg);
-                    System.Diagnostics.Debug.WriteLine(decodedMessage.PacketType);
+
                     switch (decodedMessage.PacketType)
                     {
                         case DataPacketTypes.KeepAlive:

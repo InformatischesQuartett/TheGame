@@ -166,6 +166,26 @@ namespace Examples.TheGame
                // GameHandler.Explosions.Add(expl.GetId(), expl);
             }
             this.SetRotation(f);
+
+            // Send update to all clients.
+            if (Math.Abs(GetSpeed()) > 0 || f != new float2(0, 0))
+            {
+                var data = new DataPacketPlayerUpdate
+                {
+                    UserID = GetId(),
+                    Timestamp = _gameHandler.Mediator.GetUnixTimestamp(),
+                    PlayerHealth = (int) _life,
+                    PlayerActive = true,
+                    PlayerVelocity = GetSpeed(),
+                    PlayerPosition = GetPositionVector(),
+                    PlayerRotationX = GetRotationFromMatrix(0),
+                    PlayerRotationY = GetRotationFromMatrix(1),
+                    PlayerRotationZ = GetRotationFromMatrix(2),
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
+                _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+            }
         }
     }
 }

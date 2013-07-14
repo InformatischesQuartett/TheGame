@@ -152,21 +152,26 @@ namespace Examples.TheGame
             if (msgType == DataPacketTypes.PlayerUpdate)
             {
                 var data = (DataPacketPlayerUpdate) packetData;
+
                 var timestampBytes = BitConverter.GetBytes(data.Timestamp);
+                var velocityBytes = BitConverter.GetBytes(data.PlayerVelocity);
 
                 byte[] encPlayerData;
                 using (var stream = new MemoryStream())
                 {
                     Serializer.SerializeWithLengthPrefix(stream, data.PlayerPosition, PrefixStyle.Base128);
-                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerRotation, PrefixStyle.Base128);
-                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerVelocity, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerRotationX, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerRotationY, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.PlayerRotationZ, PrefixStyle.Base128);
 
                     encPlayerData = stream.ToArray();
                 }
 
-                var packet = new byte[timestampBytes.Length + encPlayerData.Length + 4];
+                var packet = new byte[timestampBytes.Length + velocityBytes.Length + encPlayerData.Length + 4];
+
                 Buffer.BlockCopy(timestampBytes, 0, packet, 2, timestampBytes.Length);
-                Buffer.BlockCopy(encPlayerData, 0, packet, 8, encPlayerData.Length);
+                Buffer.BlockCopy(velocityBytes, 0, packet, 8, velocityBytes.Length);
+                Buffer.BlockCopy(encPlayerData, 0, packet, 12, encPlayerData.Length);
 
                 packet[0] = (byte) msgType;                         // PacketType
                 packet[1] = (byte) (data.UserID & 255);             // UserID
@@ -277,17 +282,19 @@ namespace Examples.TheGame
                 if (packetType == DataPacketTypes.PlayerUpdate)
                 {
                     float3 decPlayerPosition;
-                    float3 decPlayerRotation;
-                    float3 decPlayerVelocity;
+                    float3 decPlayerRotationX;
+                    float3 decPlayerRotationY;
+                    float3 decPlayerRotationZ;
 
                     using (var ms = new MemoryStream())
                     {
-                        ms.Write(msgData, 4, msgData.Length - 4);
+                        ms.Write(msgData, 12, msgData.Length - 12);
                         ms.Position = 0;
 
                         decPlayerPosition = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
-                        decPlayerRotation = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
-                        decPlayerVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decPlayerRotationX = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decPlayerRotationY = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decPlayerRotationZ = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
                     }
 
                     var playerUpdatePacket = new DataPacketPlayerUpdate
@@ -296,9 +303,11 @@ namespace Examples.TheGame
                             Timestamp = BitConverter.ToUInt32(msgData, 2),
                             PlayerActive = (msgData[6] == 1),
                             PlayerHealth = msgData[7],
+                            PlayerVelocity = BitConverter.ToSingle(msgData, 8),
                             PlayerPosition = decPlayerPosition,
-                            PlayerRotation = decPlayerRotation,
-                            PlayerVelocity = decPlayerVelocity
+                            PlayerRotationX = decPlayerRotationX,
+                            PlayerRotationY = decPlayerRotationY,
+                            PlayerRotationZ = decPlayerRotationZ,
                         };
 
                     decodedMessage.Packet = playerUpdatePacket;

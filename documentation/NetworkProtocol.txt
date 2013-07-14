@@ -76,13 +76,16 @@ Channel:   2
 Direction: Client -> Server -> Clients
 	   Server -> Clients
 
-## UserID         ## int    ## A number greater than zero       ##
-## Timestamp      ## uint   ## Unix-Timestamp                   ##
-## PlayerActive   ## bool   ## false if player disconnected     ##
-## PlayerHealth   ## int    ## A number between 0 and 100       ##
-## PlayerPosition ## float3 ## Coordinates within the 3D space  ##
-## PlayerRotation ## float3 ## Coordinates within the 3D space  ##
-## PlayerVelocity ## float3 ## Vector; Length is speed in px/f  ##
+## UserID          ## int    ## A number greater than zero      ##
+## Timestamp       ## uint   ## Unix-Timestamp                  ##
+## PlayerActive    ## bool   ## false if player disconnected    ##
+## PlayerHealth    ## int    ## A number between 0 and 100      ##
+## PlayerVelocity  ## float  ##                                 ##
+## PlayerPosition  ## float3 ## Coordinates within the 3D space ##
+## PlayerRotationX ## float3 ## Coordinates within the 3D space ##
+## PlayerRotationY ## float3 ## Coordinates within the 3D space ##
+## PlayerRotationZ ## float3 ## Coordinates within the 3D space ##
+
 
 Whenever a player changes the direction or speed of his ship by
 pressing a key (respectively by releasing a key) the client sends

@@ -95,6 +95,38 @@ namespace Examples.TheGame
             _rotation = rotation * (float)Time.Instance.DeltaTime;
         }
 
+        internal void SetRotationInMatrix(int axis, float3 value)
+        {
+            switch (axis)
+            {
+                case 0:
+                    _position.Row0 = new float4(value, 0);
+                    break;
+                case 1:
+                    _position.Row1 = new float4(value, 0);
+                    break;
+                case 2:
+                    _position.Row2 = new float4(value, 0);
+                    break;
+            }            
+        }
+
+        internal float3 GetRotationFromMatrix(int axis)
+        {
+            switch (axis)
+            {
+                case 0:
+                    return new float3(_position.Row0);
+                case 1:
+                    return new float3(_position.Row1);
+                case 2:
+                    return new float3(_position.Row2);
+            }
+            return new float3(0, 0, 0);
+        }
+
+
+
         internal void SetScale(float scale)
         {
             _scale = scale;

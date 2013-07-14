@@ -10,8 +10,8 @@ namespace Examples.TheGame
         private readonly GameHandler _gameHandler;
         private readonly NetworkHandler _networkHandler;
 
-        private readonly Dictionary<DataPacket, bool> _sendingBuffer;
-        private readonly Dictionary<DataPacket, bool> _recevingBuffer;
+        private readonly List<KeyValuePair<DataPacket, bool>> _sendingBuffer;
+        private readonly List<KeyValuePair<DataPacket, bool>> _recevingBuffer;
 
         private readonly bool _networkActive;
 
@@ -51,8 +51,8 @@ namespace Examples.TheGame
         /// </param>
         internal Mediator(RenderContext rContext, bool networkActive)
         {
-            _sendingBuffer = new Dictionary<DataPacket, bool>();
-            _recevingBuffer = new Dictionary<DataPacket, bool>();
+            _sendingBuffer = new List<KeyValuePair<DataPacket, bool>>();
+            _recevingBuffer = new List<KeyValuePair<DataPacket, bool>>();
 
             _gameHandler = new GameHandler(rContext, this);
 
@@ -131,7 +131,7 @@ namespace Examples.TheGame
         /// </param>
         internal void AddToSendingBuffer(DataPacket data, bool server)
         {
-            _sendingBuffer.Add(data, server);
+            _sendingBuffer.Add(new KeyValuePair<DataPacket, bool>(data, server));
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Examples.TheGame
             if (_sendingBuffer.Count > 0)
             {
                 keyValuePair = _sendingBuffer.First();
-                _sendingBuffer.Remove(_sendingBuffer.Keys.First());
+                _sendingBuffer.Remove(keyValuePair);
             }
 
             return keyValuePair;
@@ -164,7 +164,7 @@ namespace Examples.TheGame
         /// </param>
         internal void AddToReceivingBuffer(DataPacket data, bool server)
         {
-            _recevingBuffer.Add(data, server);
+            _recevingBuffer.Add(new KeyValuePair<DataPacket, bool>(data, server));
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Examples.TheGame
             if (_recevingBuffer.Count > 0)
             {
                 keyValuePair = _recevingBuffer.First();
-                _recevingBuffer.Remove(_recevingBuffer.Keys.First());
+                _recevingBuffer.Remove(keyValuePair);
             }
 
             return keyValuePair;

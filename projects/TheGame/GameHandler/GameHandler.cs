@@ -65,8 +65,8 @@ namespace Examples.TheGame
 
             _camMatrix = float4x4.Identity;
 
-          //  StartGame();
-           // this.AddNewPlayer();
+            //  StartGame();
+            // this.AddNewPlayer();
 
             Debug.WriteLine("_playerId: " + _playerId);
         }
@@ -122,14 +122,11 @@ namespace Examples.TheGame
                 switch (recvPacket.Key.PacketType)
                 {
                     case DataPacketTypes.PlayerSpawn:
-                        var playerSpawnData = (DataPacketPlayerSpawn)recvPacket.Key.Packet;
+                        var playerSpawnData = (DataPacketPlayerSpawn) recvPacket.Key.Packet;
 
                         // either a spawning position for this client - or someone needs a new spawning position
                         if (!recvPacket.Value)
-                        {
-                            Debug.WriteLine("This player shall spawn at: " + playerSpawnData.SpawnPosition);
                             Players[_playerId].SetPosition(playerSpawnData.SpawnPosition);
-                        }
                         else
                         {
                             // SERVER ACTIVITY!
@@ -141,21 +138,38 @@ namespace Examples.TheGame
                             }
 
                             // send back to user
-                            var data = new DataPacketPlayerSpawn()
-                            {
-                                UserID = playerSpawnData.UserID,
-                                Spawn = true,
-                                SpawnPosition = respawnPosition
-                            };
+                            var data = new DataPacketPlayerSpawn
+                                {
+                                    UserID = playerSpawnData.UserID,
+                                    Spawn = true,
+                                    SpawnPosition = respawnPosition
+                                };
 
-                            var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
+                            var packet = new DataPacket {PacketType = DataPacketTypes.PlayerSpawn, Packet = data};
                             Mediator.AddToSendingBuffer(packet, true);
                         }
 
                         break;
 
                     case DataPacketTypes.PlayerUpdate:
-                        // TODO: PlayerUpdate
+                        var playerUpdateData = (DataPacketPlayerUpdate) recvPacket.Key.Packet;
+
+                        var userID = playerUpdateData.UserID;
+
+                        if (!Players.ContainsKey(userID))
+                        {
+                            var p = new Player(this, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0, userID);
+                            Players.Add(userID, p);
+                        }
+
+                        Players[userID].SetPosition(playerUpdateData.PlayerPosition);
+
+                        Players[userID].SetRotationInMatrix(0, playerUpdateData.PlayerRotationX);
+                        Players[userID].SetRotationInMatrix(1, playerUpdateData.PlayerRotationY);
+                        Players[userID].SetRotationInMatrix(2, playerUpdateData.PlayerRotationZ);
+
+                        // Players[UserID].SetSpeed();
+
                         break;
 
                     case DataPacketTypes.ObjectSpawn:
@@ -174,7 +188,7 @@ namespace Examples.TheGame
             // Change ViewPort and aspectRatio (fullsize)
             RContext.Viewport(0, 0, Mediator.Width, Mediator.Height);
 
-            var aspectRatio = Mediator.Width / (float) Mediator.Height;
+            var aspectRatio = Mediator.Width/(float) Mediator.Height;
             RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
 
             // Render all Objects

@@ -44,9 +44,11 @@ namespace Examples.TheGame
         internal uint Timestamp;
         internal bool PlayerActive;
         internal int PlayerHealth;
+        internal float PlayerVelocity;
         internal float3 PlayerPosition;
-        internal float3 PlayerRotation;
-        internal float3 PlayerVelocity;
+        internal float3 PlayerRotationX;
+        internal float3 PlayerRotationY;
+        internal float3 PlayerRotationZ;
     }
 
     /// <summary>
