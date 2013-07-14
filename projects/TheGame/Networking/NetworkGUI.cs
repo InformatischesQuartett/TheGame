@@ -69,8 +69,8 @@ namespace Examples.TheGame
             _menuSound = Audio.Instance.LoadFile("Assets/MenuBeep.wav");
             _menuSound2 = Audio.Instance.LoadFile("Assets/MenuBeep2.wav");
 
-            _menuSound.Volume = 0.75f;
-            _menuSound2.Volume = 0.75f;
+            _menuSound.Volume = 75f;
+            _menuSound2.Volume = 75f;
 
             _chosenEntry = 0;
             RefreshGUITex();
