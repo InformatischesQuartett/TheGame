@@ -107,18 +107,20 @@ namespace Examples.TheGame
 
         internal void SetSpeed(bool power)
         {
+            // All speeds are negative!
+            Debug.WriteLine("Speed: " + _speed);
             if(power == true)
             {
-                if (_speed < _speedMax)
+                if (_speed > -_speedMax)
                 {
                     _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
                 }
             }
             else
             {
-                if (_speed > 0.2f)
+                if (_speed < -1)
                 {
-                    _speed = -2 * (float)Time.Instance.DeltaTime / 1.2f;
+                    _speed -= -2 * (float)Time.Instance.DeltaTime * 1.2f;
                 }
                 else
                 {
