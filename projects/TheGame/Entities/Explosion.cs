@@ -74,7 +74,7 @@ namespace Examples.TheGame
             _rc.SetShaderParam(_sp.GetShaderParam("calcLighting"), 1);
             _rc.SetShaderParam(_sp.GetShaderParam("ambientLight"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
             _rc.SetShaderParam(_sp.GetShaderParam("matAmbient"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            _rc.SetShaderParam(_sp.GetShaderParam("noiseStrength"), 1.0f);
+            _rc.SetShaderParam(_sp.GetShaderParam("noiseStrength"), 1.5f);
             _rc.SetShaderParam(_sp.GetShaderParam("noiseTime"), (float)_elapsedTime/5);
             _rc.SetShaderParam(_sp.GetShaderParam("noiseOffset"), new float2(0, 0));
         }
