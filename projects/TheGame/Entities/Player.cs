@@ -12,8 +12,6 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
-        private IAudioStream _shootSound;
-
         internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                       float impact, int id)
             : base(gameHandler, collisionRadius, position, speed, impact)
@@ -22,7 +20,6 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            _shootSound = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
         }
 
         internal float GetLife()
@@ -103,6 +100,9 @@ namespace Examples.TheGame
         internal override void OnCollisionEnter(int id)
         {
             SetLife(-1);
+
+            Explosion explo = new Explosion(_gameHandler, GetPosition());
+            _gameHandler.Explosions.Add(explo.GetId(), explo);
         }
 
         internal void Shoot()
@@ -115,7 +115,7 @@ namespace Examples.TheGame
                 // add Bullet to ItemDict
                 _gameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
-                _shootSound.Play();
+                _gameHandler.AudioShoot.Play();
             }
         }
 
@@ -173,13 +173,11 @@ namespace Examples.TheGame
             {
                 this.Shoot();
             }
-
-
-            if (Input.Instance.IsKeyPressed(KeyCodes.E))
+            /*if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
-                //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
-                //GameHandler.Explosions.Add(expl.GetId(), expl);
-            }
+                Explosion explo = new Explosion(_gameHandler, GetPosition());
+                _gameHandler.Explosions.Add(explo.GetId(), explo);
+            }*/
             this.SetRotation(f);
         }
     }

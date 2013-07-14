@@ -24,7 +24,7 @@ namespace Examples.TheGame
         private float _speedMax;
         private float _impact;
         protected RenderContext _rc;
-        private ShaderProgram _sp;
+        protected ShaderProgram _sp;
 
         internal GameEntity(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact)
         {
@@ -40,7 +40,7 @@ namespace Examples.TheGame
             _speedMax = 10;
 
             _rc = gameHandler.RContext;
-            _sp = MoreShaders.GetShader("simple", _rc);
+            _sp = gameHandler.BasicSp;
         }
 
         internal int GetId()
@@ -137,6 +137,11 @@ namespace Examples.TheGame
             //Adding Items to RemoveLists
             if (this.GetType() == typeof (Player))
             {
+                // Spawn a new explosion
+                Explosion explo = new Explosion(_gameHandler, GetPosition());
+                _gameHandler.Explosions.Add(explo.GetId(), explo);
+                _gameHandler.AudioExplosion.Play();
+
                 //GameHandler.RemovePlayers.Add(this.GetId());
                 //Call RespawnPlayer
 
@@ -173,6 +178,15 @@ namespace Examples.TheGame
         }
 
         /// <summary>
+        /// Instructs the shader prior to rendering
+        /// </summary>
+        internal virtual void InstructShader()
+        {
+            IShaderParam vColorParam = _sp.GetShaderParam("vColor");
+            _rc.SetShaderParam(vColorParam, new float4(0.2f, 0.5f, 0.5f, 1));
+        }
+
+        /// <summary>
         /// Renders the update.
         /// </summary>
         /// <param name="rc">The rc.</param>
@@ -184,8 +198,7 @@ namespace Examples.TheGame
             //Debug.WriteLine("RenderUpdate");
             //rendern
             rc.SetShader(_sp);
-            IShaderParam _vColorParam = _sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(0.2f,0.5f,0.5f,1));
+            InstructShader();
             
             //Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
