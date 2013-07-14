@@ -29,7 +29,7 @@ fields are always the last few bytes of a packet.
 ## KEEP ALIVE ####################################################
 
 Packet ID: 0x00
-Length:    6 Bytes
+Length:    10 Bytes
 Method:	   Reliable, Sequenced
 Channel:   0
 Direction: Server -> Clients
@@ -51,7 +51,7 @@ Method:	   Reliable, Sequenced
 Channel:   1
 Direction: Server -> Client
 
-## UserID         ## int    ## A number greater than zero       ##
+## UserID         ## int    ## A number between 1 and 255       ##
 ## Spawn          ## bool   ## false if client just connected   ##
 ## SpawnPosition  ## float3 ## Coordinates within the 3D space  ##
 
@@ -70,13 +70,13 @@ SpawnPosition field.
 ## PLAYER UPDATE #################################################
 
 Packet ID: 0x02
-Length:    7 - 52 Bytes
+Length:    24 - 72 Bytes
 Method:	   Reliable, Sequenced
 Channel:   2
 Direction: Client -> Server -> Clients
 	   Server -> Clients
 
-## UserID          ## int    ## A number greater than zero      ##
+## UserID          ## int    ## A number between 1 and 255      ##
 ## Timestamp       ## uint   ## Unix-Timestamp                  ##
 ## PlayerActive    ## bool   ## false if player disconnected    ##
 ## PlayerHealth    ## int    ## A number between 0 and 100      ##
@@ -85,7 +85,6 @@ Direction: Client -> Server -> Clients
 ## PlayerRotationX ## float3 ## Coordinates within the 3D space ##
 ## PlayerRotationY ## float3 ## Coordinates within the 3D space ##
 ## PlayerRotationZ ## float3 ## Coordinates within the 3D space ##
-
 
 Whenever a player changes the direction or speed of his ship by
 pressing a key (respectively by releasing a key) the client sends
@@ -102,15 +101,15 @@ until any new information is available.
 ## OBJECT SPAWN ##################################################
 
 Packet ID: 0x03
-Length:    10 - 55 Bytes
+Length:    16 - 52 Bytes
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Clients
 
-## UserID         ## int    ## A number greater than zero       ##
+## UserID         ## int    ## A number between 1 and 255       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##
-## ObjectType     ## int    ## A number greater than zero       ##
+## ObjectType     ## int    ## A number between 0 and 255       ##
 ## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
 ## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
 ## ObjectVelocity ## float3 ## Vector; Length is speed in px/f  ##
@@ -139,9 +138,9 @@ Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Clients
 
-## UserID         ## int    ## A number greater than zero       ##
+## UserID         ## int    ## A number between 1 and 255       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##
-## ObjectType     ## int    ## A number greater than zero       ##
+## ObjectType     ## int    ## A number between 0 and 255       ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##
 
 This packet is only used to remove objects (bullets, power-ups).
