@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
+using OpenTK.Input;
 
 namespace Examples.TheGame
 {
@@ -99,6 +100,9 @@ namespace Examples.TheGame
         internal override void OnCollisionEnter(int id)
         {
             SetLife(-1);
+
+            Explosion explo = new Explosion(_gameHandler, GetPosition());
+            _gameHandler.Explosions.Add(explo.GetId(), explo);
         }
 
         internal void Shoot()
@@ -111,12 +115,17 @@ namespace Examples.TheGame
                 // add Bullet to ItemDict
                 _gameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
+                _gameHandler.AudioShoot.Play();
             }
         }
 
         internal override void Update()
         {
             base.Update();
+            if (this.GetLife() <= 0)
+            {
+                this.DestroyEnity();
+            }
 
             CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
@@ -126,45 +135,49 @@ namespace Examples.TheGame
         {
             var f = new float2(0, 0);
             
-           // move forward Shift
-            switch (Input.Instance.IsKeyPressed(KeyCodes.P))
-            {
-                case true:
-                    SetSpeed(true);
-                    break;
-                case false:
-                    SetSpeed(false);
-                    break;
-            }
-
-
             //Up  Down
+            f.y = Input.Instance.GetAxis(InputAxis.MouseX);
+            f.x = -Input.Instance.GetAxis(InputAxis.MouseY);
+            Point mp = Input.Instance.GetMousePos();
+            //Debug.WriteLine("mousepops: " + mp.x + " "+mp.y);
+            //Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
+            var w = _gameHandler.Mediator.Width;
+            var h = _gameHandler.Mediator.Height;
+            /*if (mp.x >= _gameHandler.Mediator.Width-1 || mp.x <= 1)
+            {
+                Debug.WriteLine("mousepops: " + mp.x + " " + mp.y);
+                Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
+            }
+            if (mp.y >= _gameHandler.Mediator.Height - 1 || mp.y <= 1)
+            {
+                Mouse.SetPosition(w, h*0.5);
+            }*/
+            
+            //if (mp.y )
+
+            //Speed
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
             {
-                f += new float2(-1,0);
+                SetSpeed(1);
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.S))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.S))
             {
-                f += new float2(1,0);
+                SetSpeed(-1);
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.A))
+            else
             {
-                f += new float2(0,1);
+                SetSpeed(0);
             }
-
-            if (Input.Instance.IsKeyPressed(KeyCodes.D))
-            {
-                f += new float2(0, -1);
-            }
-            if (Input.Instance.IsKeyPressed(KeyCodes.Space))
+            //Shoot on left mouse button
+            if (Input.Instance.OnButtonDown(MouseButtons.Left))
             {
                 this.Shoot();
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.E))
+            /*if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
-                //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
-               // GameHandler.Explosions.Add(expl.GetId(), expl);
-            }
+                Explosion explo = new Explosion(_gameHandler, GetPosition());
+                _gameHandler.Explosions.Add(explo.GetId(), explo);
+            }*/
             this.SetRotation(f);
 
             // Send update to all clients.

@@ -55,6 +55,7 @@ namespace Examples.TheGame
             _recevingBuffer = new List<KeyValuePair<DataPacket, bool>>();
 
             _gameHandler = new GameHandler(rContext, this);
+            _gameHandler.AudioInitiated.Play();
 
             _networkActive = networkActive;
             if (networkActive)
@@ -76,6 +77,8 @@ namespace Examples.TheGame
         /// </summary>
         public void StartGame()
         {
+            _gameHandler.AudioConnectionEstablished.Play();
+
             Blending = false;
             _gameHandler.GameState.CurState = GameState.State.InGame;
             _gameHandler.StartGame();

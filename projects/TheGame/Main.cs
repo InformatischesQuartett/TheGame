@@ -10,7 +10,7 @@ namespace Examples.TheGame
     /// </summary>
     public class TheGame : RenderCanvas
     {
-        public const int GameSize = 10;
+        //public const int GameSize = 10;
 
 
         private static float _red, _green, _blue;
@@ -74,7 +74,7 @@ namespace Examples.TheGame
             var aspectRatio = Width/(float) Height;
             RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
         }
-
+        
         /// <summary>
         ///     Main entry point of the game
         /// </summary>

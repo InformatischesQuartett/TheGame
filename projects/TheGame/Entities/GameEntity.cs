@@ -24,7 +24,7 @@ namespace Examples.TheGame
         private float _speedMax;
         private float _impact;
         protected RenderContext _rc;
-        private ShaderProgram _sp;
+        protected ShaderProgram _sp;
 
         internal GameEntity(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact)
         {
@@ -40,7 +40,7 @@ namespace Examples.TheGame
             _speedMax = 10;
 
             _rc = gameHandler.RContext;
-            _sp = MoreShaders.GetShader("simple", _rc);
+            _sp = gameHandler.BasicSp;
         }
 
         internal int GetId()
@@ -92,7 +92,7 @@ namespace Examples.TheGame
 
         internal void SetRotation(float2 rotation)
         {
-            _rotation = rotation * (float)Time.Instance.DeltaTime;
+            _rotation = 300*rotation * (float)Time.Instance.DeltaTime;
         }
 
         internal void SetRotationInMatrix(int axis, float3 value)
@@ -137,25 +137,24 @@ namespace Examples.TheGame
             return _scale;
         }
 
-        internal void SetSpeed(bool power)
+        internal void SetSpeed(int i)
         {
-            if(power == true)
+            //All speeds are negative
+            //Debug.WriteLine("Speed: " + _speed);
+
+            if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
-                if (_speed < _speedMax)
-                {
-                    _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
-                }
+                //Vorwärts und bremsen rückwärts
+                _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
+            }
+            else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -0.2f))
+            {
+                //Rückwärts und bremsen vorwärts
+                _speed -= -2* (float)Time.Instance.DeltaTime * 1.2f;
             }
             else
             {
-                if (_speed > 0.2f)
-                {
-                    _speed = -2 * (float)Time.Instance.DeltaTime / 1.2f;
-                }
-                else
-                {
-                    _speed = 0;
-                }
+                _speed = 0;
             }
         }
 
@@ -170,6 +169,11 @@ namespace Examples.TheGame
             //Adding Items to RemoveLists
             if (this.GetType() == typeof (Player))
             {
+                // Spawn a new explosion
+                Explosion explo = new Explosion(_gameHandler, GetPosition());
+                _gameHandler.Explosions.Add(explo.GetId(), explo);
+                _gameHandler.AudioExplosion.Play();
+
                 //GameHandler.RemovePlayers.Add(this.GetId());
                 //Call RespawnPlayer
 
@@ -206,19 +210,28 @@ namespace Examples.TheGame
         }
 
         /// <summary>
+        /// Instructs the shader prior to rendering
+        /// </summary>
+        internal virtual void InstructShader()
+        {
+            IShaderParam vColorParam = _sp.GetShaderParam("vColor");
+            _rc.SetShaderParam(vColorParam, new float4(0.2f, 0.5f, 0.5f, 1));
+        }
+
+        /// <summary>
         /// Renders the update.
         /// </summary>
         /// <param name="rc">The rc.</param>
         /// <param name="camMatrix">The cam matrix.</param>
         internal virtual void RenderUpdate(RenderContext rc, float4x4 camMatrix)
         {
+            
             _camMatrix = camMatrix;
             //Debug.WriteLine("RenderUpdate");
             //rendern
             rc.SetShader(_sp);
-            IShaderParam _vColorParam = _sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(_vColorParam, new float4(0.2f,0.5f,0.5f,1));
-
+            InstructShader();
+            
             //Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
             _rc.ModelView = float4x4.Scale(_scale) * _position * _camMatrix;

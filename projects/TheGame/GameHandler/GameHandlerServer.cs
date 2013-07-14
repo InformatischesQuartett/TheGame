@@ -11,21 +11,22 @@ namespace Examples.TheGame
     {
         private readonly GameHandler _gameHandler;
 
-        private const int PlayAreaRange = 100;
+        private const int PlayAreaRange = 1000;
+
+        private readonly Random _random;
 
         public GameHandlerServer(GameHandler gameHandler)
         {
+            _random = new Random();
             _gameHandler = gameHandler;
         }
 
         public float RandomNumber()
         {
-            var random = new Random();
-
             const int min = -1 * (PlayAreaRange);
             const int max = PlayAreaRange;
 
-            float rndNum = random.Next(min, max);
+            float rndNum = _random.Next(min, max);
             Debug.WriteLine("RandomNumber" + rndNum);
 
             return rndNum;
@@ -33,10 +34,13 @@ namespace Examples.TheGame
 
         public float3 RespawnPlayer(int id)
         {
-            Debug.WriteLine("RespawnPlayer:" + id);
+            var rndNum1 = RandomNumber();
+            var rndNum2 = RandomNumber();
+            var rndNum3 = RandomNumber();
 
-            var rndNum = RandomNumber()*(id+1);
-            return new float3(rndNum, rndNum, rndNum);
+            Debug.WriteLine("RespawnPlayer: " + rndNum1 + ", " + rndNum2 + ", " + rndNum3);
+            
+            return new float3(rndNum1, rndNum2, rndNum3);
         }
     }
 }
