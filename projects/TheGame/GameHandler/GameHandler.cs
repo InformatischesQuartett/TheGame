@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Examples.TheGame.Shader;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -27,6 +28,13 @@ namespace Examples.TheGame
         internal readonly List<int> RemovePlayers;
         internal readonly List<int> RemoveHealthItems;
         internal readonly List<int> RemoveExplosions;
+
+        internal readonly ShaderProgram BasicSp;
+        internal readonly ShaderProgram CustomSp;
+
+        internal readonly ITexture TextureExplosionHandle;
+
+        internal readonly IAudioStream AudioExplosion;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -60,6 +68,14 @@ namespace Examples.TheGame
             RemovePlayers = new List<int>();
             RemoveHealthItems = new List<int>();
             RemoveExplosions = new List<int>();
+
+            BasicSp = MoreShaders.GetShader("simple", rc);
+            CustomSp = rc.CreateShader(ShaderCode.GetVertexShader(), ShaderCode.GetFragmentShader());
+
+            ImageData texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
+            TextureExplosionHandle = rc.CreateTexture(texture);
+
+            AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
 
             GameState = new GameState(GameState.State.StartMenu);
 

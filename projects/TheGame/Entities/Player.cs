@@ -99,6 +99,9 @@ namespace Examples.TheGame
         internal override void OnCollisionEnter(int id)
         {
             SetLife(-1);
+
+            Explosion explo = new Explosion(_gameHandler, GetPosition());
+            _gameHandler.Explosions.Add(explo.GetId(), explo);
         }
 
         internal void Shoot()
@@ -160,11 +163,11 @@ namespace Examples.TheGame
             {
                 this.Shoot();
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.E))
+            /*if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
-                //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
-               // GameHandler.Explosions.Add(expl.GetId(), expl);
-            }
+                Explosion explo = new Explosion(_gameHandler, GetPosition());
+                _gameHandler.Explosions.Add(explo.GetId(), explo);
+            }*/
             this.SetRotation(f);
         }
     }
