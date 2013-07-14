@@ -18,7 +18,7 @@ namespace Examples.TheGame
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
-            _maxDist = 200;
+            _maxDist = 500;
             _ownerId = ownerId;
 
             this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");

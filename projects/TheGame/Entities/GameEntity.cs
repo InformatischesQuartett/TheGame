@@ -92,7 +92,7 @@ namespace Examples.TheGame
 
         internal void SetRotation(float2 rotation)
         {
-            _rotation = rotation * (float)Time.Instance.DeltaTime;
+            _rotation = 300*rotation * (float)Time.Instance.DeltaTime;
         }
 
         internal void SetScale(float scale)
@@ -105,16 +105,17 @@ namespace Examples.TheGame
             return _scale;
         }
 
-        internal void SetSpeed(bool power)
+        internal void SetSpeed(int i)
         {
-            if(power == true)
+            if( i > 0 )
             {
-                if (_speed < _speedMax)
-                {
-                    _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
-                }
+                _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
             }
-            else
+            else if (i < 0)
+            {
+                _speed += 2* (float)Time.Instance.DeltaTime * 1.2f;
+            }
+            else if (i == 0)
             {
                 if (_speed > 0.2f)
                 {
@@ -194,12 +195,13 @@ namespace Examples.TheGame
         /// <param name="camMatrix">The cam matrix.</param>
         internal virtual void RenderUpdate(RenderContext rc, float4x4 camMatrix)
         {
+            
             _camMatrix = camMatrix;
             //Debug.WriteLine("RenderUpdate");
             //rendern
             rc.SetShader(_sp);
             InstructShader();
-
+            
             //Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
             _rc.ModelView = float4x4.Scale(_scale) * _position * _camMatrix;
