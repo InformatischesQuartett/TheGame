@@ -107,24 +107,22 @@ namespace Examples.TheGame
 
         internal void SetSpeed(int i)
         {
-            if( i > 0 )
+            //All speeds are negative
+            //Debug.WriteLine("Speed: " + _speed);
+
+            if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
+                //Vorwärts und bremsen rückwärts
                 _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
             }
-            else if (i < 0)
+            else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -0.2f))
             {
-                _speed += 2* (float)Time.Instance.DeltaTime * 1.2f;
+                //Rückwärts und bremsen vorwärts
+                _speed -= -2* (float)Time.Instance.DeltaTime * 1.2f;
             }
-            else if (i == 0)
+            else
             {
-                if (_speed > 0.2f)
-                {
-                    _speed = -2 * (float)Time.Instance.DeltaTime / 1.2f;
-                }
-                else
-                {
-                    _speed = 0;
-                }
+                _speed = 0;
             }
         }
 
