@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
+using OpenTK.Input;
 
 namespace Examples.TheGame
 {
@@ -11,6 +12,8 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
+        private IAudioStream _shootSound;
+
         internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                       float impact, int id)
             : base(gameHandler, collisionRadius, position, speed, impact)
@@ -19,6 +22,7 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            _shootSound = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
         }
 
         internal float GetLife()
@@ -111,12 +115,17 @@ namespace Examples.TheGame
                 // add Bullet to ItemDict
                 _gameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
+                _shootSound.Play();
             }
         }
 
         internal override void Update()
         {
             base.Update();
+            if (this.GetLife() <= 0)
+            {
+                this.DestroyEnity();
+            }
 
             CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
@@ -126,44 +135,50 @@ namespace Examples.TheGame
         {
             var f = new float2(0, 0);
             
-           // move forward Shift
-            switch (Input.Instance.IsKeyPressed(KeyCodes.P))
-            {
-                case true:
-                    SetSpeed(true);
-                    break;
-                case false:
-                    SetSpeed(false);
-                    break;
-            }
-
-
             //Up  Down
+            f.y = Input.Instance.GetAxis(InputAxis.MouseX);
+            f.x = -Input.Instance.GetAxis(InputAxis.MouseY);
+            Point mp = Input.Instance.GetMousePos();
+            //Debug.WriteLine("mousepops: " + mp.x + " "+mp.y);
+            //Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
+            var w = _gameHandler.Mediator.Width;
+            var h = _gameHandler.Mediator.Height;
+            /*if (mp.x >= _gameHandler.Mediator.Width-1 || mp.x <= 1)
+            {
+                Debug.WriteLine("mousepops: " + mp.x + " " + mp.y);
+                Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
+            }
+            if (mp.y >= _gameHandler.Mediator.Height - 1 || mp.y <= 1)
+            {
+                Mouse.SetPosition(w, h*0.5);
+            }*/
+            
+            //if (mp.y )
+
+            //Speed
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
             {
-                f += new float2(-1,0);
+                SetSpeed(1);
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.S))
+            else if (Input.Instance.IsKeyPressed(KeyCodes.S))
             {
-                f += new float2(1,0);
+                SetSpeed(-1);
             }
-            if (Input.Instance.IsKeyPressed(KeyCodes.A))
+            else
             {
-                f += new float2(0,1);
+                SetSpeed(0);
             }
-
-            if (Input.Instance.IsKeyPressed(KeyCodes.D))
-            {
-                f += new float2(0, -1);
-            }
-            if (Input.Instance.IsKeyPressed(KeyCodes.Space))
+            //Shoot on left mouse button
+            if (Input.Instance.OnButtonDown(MouseButtons.Left))
             {
                 this.Shoot();
             }
+
+
             if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
                 //Explosion expl = new Explosion(_mediator, _rc, GetPosition());
-               // GameHandler.Explosions.Add(expl.GetId(), expl);
+                //GameHandler.Explosions.Add(expl.GetId(), expl);
             }
             this.SetRotation(f);
         }
