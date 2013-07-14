@@ -37,6 +37,9 @@ namespace Examples.TheGame
         internal readonly IAudioStream AudioSoundtrack;
         internal readonly IAudioStream AudioExplosion;
         internal readonly IAudioStream AudioShoot;
+        internal readonly IAudioStream AudioConnectionEstablished;
+        internal readonly IAudioStream AudioInitiated;
+        internal readonly IAudioStream AudioMissionComplete;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -80,6 +83,9 @@ namespace Examples.TheGame
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
             AudioShoot = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
+            AudioConnectionEstablished = Audio.Instance.LoadFile("Assets/VoiceActConnectionEstablished.wav");
+            AudioInitiated = Audio.Instance.LoadFile("Assets/VoiceActInitiated.wav");
+            AudioMissionComplete = Audio.Instance.LoadFile("Assets/VoiceActMissionComplete.wav");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
