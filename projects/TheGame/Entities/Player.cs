@@ -19,7 +19,7 @@ namespace Examples.TheGame
             SetId(id);
             this._life = 5;
             collisionRadius = 10;
-            this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            this.EntityMesh = gameHandler.SpaceShipMesh;
         }
 
         internal float GetLife()

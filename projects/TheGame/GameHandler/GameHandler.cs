@@ -41,6 +41,8 @@ namespace Examples.TheGame
         internal readonly IAudioStream AudioInitiated;
         internal readonly IAudioStream AudioMissionComplete;
 
+        internal Mesh SpaceShipMesh;
+
         /// <summary>
         ///     State Object, contains the current State the Game is in
         /// </summary>
@@ -86,6 +88,8 @@ namespace Examples.TheGame
             AudioConnectionEstablished = Audio.Instance.LoadFile("Assets/VoiceActConnectionEstablished.wav");
             AudioInitiated = Audio.Instance.LoadFile("Assets/VoiceActInitiated.wav");
             AudioMissionComplete = Audio.Instance.LoadFile("Assets/VoiceActMissionComplete.wav");
+
+            SpaceShipMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
