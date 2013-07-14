@@ -12,8 +12,6 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
-        private IAudioStream _shootSound;
-
         internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                       float impact, int id)
             : base(gameHandler, collisionRadius, position, speed, impact)
@@ -22,7 +20,6 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            _shootSound = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
         }
 
         internal float GetLife()
@@ -118,7 +115,7 @@ namespace Examples.TheGame
                 // add Bullet to ItemDict
                 _gameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
-                _shootSound.Play();
+                _gameHandler.AudioShoot.Play();
             }
         }
 

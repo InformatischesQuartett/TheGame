@@ -34,7 +34,9 @@ namespace Examples.TheGame
 
         internal readonly ITexture TextureExplosionHandle;
 
+        internal readonly IAudioStream AudioSoundtrack;
         internal readonly IAudioStream AudioExplosion;
+        internal readonly IAudioStream AudioShoot;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -75,7 +77,12 @@ namespace Examples.TheGame
             ImageData texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
             TextureExplosionHandle = rc.CreateTexture(texture);
 
+            AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
+            AudioShoot = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
+
+            // Start soundtrack
+            AudioSoundtrack.Play(true);
 
             GameState = new GameState(GameState.State.StartMenu);
 
