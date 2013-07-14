@@ -50,16 +50,16 @@ namespace Examples.TheGame
             if (_elapsedTime <= MaxTime/2.0f)
             {
                 SetScale(GetScale() + (float) (SizeIncrease * Time.Instance.DeltaTime));
-                Debug.WriteLine("Explosion increase: " + GetScale());
+                //Debug.WriteLine("Explosion increase: " + GetScale());
             }
             else if (_elapsedTime > MaxTime / 2.0f)
             {
                 SetScale(GetScale() - (float)(SizeIncrease * Time.Instance.DeltaTime));
-                Debug.WriteLine("Explosion decrease: " + GetScale());
+                //Debug.WriteLine("Explosion decrease: " + GetScale());
             }
             if (_elapsedTime >= MaxTime)
             {
-                Debug.WriteLine("Explosion destroyed");
+                //Debug.WriteLine("Explosion destroyed");
 
                 this.DestroyEnity();
             }
