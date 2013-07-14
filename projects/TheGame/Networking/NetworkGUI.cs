@@ -90,7 +90,7 @@ namespace Examples.TheGame
                 string msg = "";
 
                 if (Network.Instance.Config.SysType == SysType.Server)
-                    msg += "IP of the Server:\n\n              " + Network.Instance.LocalIP + "\n\nPlayers: " +
+                    msg += "IP of the Server:\n\n              " + ConnectToIp + "\n\nPlayers: " +
                            Network.Instance.Connections.Count + "             (Press Space)";
 
                 if (Network.Instance.Config.SysType == SysType.Client)
@@ -99,7 +99,8 @@ namespace Examples.TheGame
                     else if (Network.Instance.Status.Connecting)
                         msg += "Connecting...";
                     else
-                        msg += "IP of the Server:\n\n              " + ConnectToIp + "\n\n\t               (Press Return)";
+                        msg += "IP of the Server:\n\n              " + ConnectToIp +
+                               "\n\n\t               (Press Return)";
 
                 if (msg != _lastMsg)
                 {
@@ -149,8 +150,6 @@ namespace Examples.TheGame
 
             _renderContext.Render(_guiPlaneMesh);
 
-
-
             KeyboadInput();
         }
 
@@ -190,6 +189,9 @@ namespace Examples.TheGame
                         case 1:
                             _networkServer = _networkHandler.CreateServer();
                             _networkServer.Startup();
+
+                            ConnectToIp = Network.Instance.LocalIP;
+
                             break;
 
                         // --> Exit
