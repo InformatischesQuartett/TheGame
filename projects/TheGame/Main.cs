@@ -38,7 +38,7 @@ namespace Examples.TheGame
             M = new ShaderMaterial(Sp);
 
             EnableBlending = true;
-            VSync = false;
+            VSync = true;
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 
