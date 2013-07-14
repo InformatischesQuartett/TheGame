@@ -69,6 +69,9 @@ namespace Examples.TheGame
             _menuSound = Audio.Instance.LoadFile("Assets/MenuBeep.wav");
             _menuSound2 = Audio.Instance.LoadFile("Assets/MenuBeep2.wav");
 
+            _menuSound.Volume = 0.75f;
+            _menuSound2.Volume = 0.75f;
+
             _chosenEntry = 0;
             RefreshGUITex();
         }
@@ -116,19 +119,19 @@ namespace Examples.TheGame
             RefreshGUITex();
 
             // Change ViewPort and aspectRatio (fullsize)
-            /* _renderContext.Viewport(0, 0, _networkHandler.Mediator.Width, _networkHandler.Mediator.Height);
+            _renderContext.Viewport(0, 0, _networkHandler.Mediator.Width, _networkHandler.Mediator.Height);
 
             var aspectRatio = _networkHandler.Mediator.Width/_networkHandler.Mediator.Height;
             _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
             
             // Set Shader and ModelView
-            xPos -= (float) Time.Instance.DeltaTime*0.75f;
+            xPos = (xPos < -500) ? 500 : xPos - (float) Time.Instance.DeltaTime*0.75f;
 
             _renderContext.SetShaderParamTexture(_texParam, _textures[3]);
             _renderContext.ModelView = float4x4.Scale(new float3(0.5f, 0.25f, 1))*float4x4.CreateTranslation(xPos, 0, 0)*
                                        float4x4.LookAt(0, 0, 400, 0, 0, 0, 0, 1, 0);
 
-            _renderContext.Render(_guiPlaneMesh);*/
+            _renderContext.Render(_guiPlaneMesh);
 
             // Change ViewPort and aspectRatio (GUI size)
             _renderContext.Viewport(_networkHandler.Mediator.Width/2 - 848/2,
