@@ -123,7 +123,7 @@ namespace Examples.TheGame
             _renderContext.Viewport(0, 0, _networkHandler.Mediator.Width, _networkHandler.Mediator.Height);
 
             var aspectRatio = _networkHandler.Mediator.Width/_networkHandler.Mediator.Height;
-            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
             
             // Set Shader and ModelView
             xPos = (xPos < -500) ? 500 : xPos - (float) Time.Instance.DeltaTime*0.75f;
@@ -139,7 +139,7 @@ namespace Examples.TheGame
                                     _networkHandler.Mediator.Height/2 - 436/2,
                                     848, 436);
 
-            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 10000);
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 100000);
 
             // Set Shader and ModelView
             _renderContext.Clear(ClearFlags.Depth);

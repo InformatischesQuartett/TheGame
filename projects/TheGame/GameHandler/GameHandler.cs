@@ -29,9 +29,13 @@ namespace Examples.TheGame
         internal readonly List<int> RemoveHealthItems;
         internal readonly List<int> RemoveExplosions;
 
+        internal readonly ShaderProgram TextureSp;
         internal readonly ShaderProgram BasicSp;
         internal readonly ShaderProgram CustomSp;
 
+        private readonly IShaderParam _skyBoxShaderParam;
+
+        private readonly ITexture _skyBoxTexture;
         internal readonly ITexture TextureExplosionHandle;
 
         internal readonly IAudioStream AudioSoundtrack;
@@ -42,6 +46,7 @@ namespace Examples.TheGame
         internal readonly IAudioStream AudioMissionComplete;
 
         internal Mesh SpaceShipMesh;
+        private readonly Mesh _skyBoxMesh;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -76,11 +81,17 @@ namespace Examples.TheGame
             RemoveHealthItems = new List<int>();
             RemoveExplosions = new List<int>();
 
+            TextureSp = MoreShaders.GetShader("texture2", rc);
             BasicSp = MoreShaders.GetShader("simple", rc);
             CustomSp = rc.CreateShader(ShaderCode.GetVertexShader(), ShaderCode.GetFragmentShader());
 
+            _skyBoxShaderParam = rc.GetShaderParam(TextureSp, "texture1");
+
             ImageData texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
             TextureExplosionHandle = rc.CreateTexture(texture);
+
+            texture = rc.LoadImage("Assets/skybox.png");
+            _skyBoxTexture = rc.CreateTexture(texture);
 
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
@@ -90,6 +101,7 @@ namespace Examples.TheGame
             AudioMissionComplete = Audio.Instance.LoadFile("Assets/VoiceActMissionComplete.wav");
 
             SpaceShipMesh = MeshReader.LoadMesh("Assets/spaceshuttle2.obj.model");
+            _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
@@ -208,7 +220,7 @@ namespace Examples.TheGame
             RContext.Viewport(0, 0, Mediator.Width, Mediator.Height);
 
             var aspectRatio = Mediator.Width / (float) Mediator.Height;
-            RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 10000);
+            RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
 
             // Render all Objects
             foreach (var go in HealthItems)
@@ -231,6 +243,16 @@ namespace Examples.TheGame
 
             Players[_playerId].RenderUpdate(RContext, _camMatrix);
             // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
+
+            // Render SkyBox
+            RContext.SetShader(TextureSp);
+            RContext.SetShaderParamTexture(_skyBoxShaderParam, _skyBoxTexture);
+
+            var rotation = _camMatrix;
+            rotation.Row3 = new float4(0, 0, 0, 1);
+            RContext.ModelView = float4x4.Scale(50, 50, 50) * rotation;
+
+            RContext.Render(_skyBoxMesh);
         }
 
         internal void StartGame()
