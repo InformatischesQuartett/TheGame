@@ -136,8 +136,8 @@ namespace Examples.TheGame
             var f = new float2(0, 0);
             
             //Up  Down
-            f.y = Input.Instance.GetAxis(InputAxis.MouseX);
-            f.x = -Input.Instance.GetAxis(InputAxis.MouseY);
+            f.y = Input.Instance.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime * 10;
+            f.x = -Input.Instance.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime * 10;
             Point mp = Input.Instance.GetMousePos();
             //Debug.WriteLine("mousepops: " + mp.x + " "+mp.y);
             //Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
