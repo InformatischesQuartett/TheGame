@@ -65,7 +65,7 @@ namespace Examples.TheGame
                     {
                         UserID = GetId(),
                         ObjectID = explo.GetId(),
-                        ObjectType = 2,
+                        ObjectType = (int) GameHandler.GameEntities.geExplosion,
                         ObjectVelocity = 0,
                         ObjectPosition = explo.GetPositionVector(),
                         ObjectRotationX = new float3(0, 0, 0),

@@ -24,6 +24,13 @@ namespace Examples.TheGame
 
         internal readonly Dictionary<uint, Explosion> Explosions;
 
+        internal enum GameEntities
+        {
+            geBullet=0,
+            geHealthItem=1,
+            geExplosion=2
+        }
+
         internal readonly List<uint> RemoveBullets;
         internal readonly List<uint> RemovePlayers;
         internal readonly List<uint> RemoveHealthItems;
@@ -250,9 +257,9 @@ namespace Examples.TheGame
                         var objectID = objectSpawnData.ObjectID;
                         var ownerID = objectSpawnData.UserID;
 
-                        switch (objectSpawnData.ObjectType)
+                        switch ((GameEntities) objectSpawnData.ObjectType)
                         {
-                            case 0:
+                            case GameEntities.geBullet:
                                 if (!Bullets.ContainsKey(objectID))
                                 {
                                     var b = new Bullet(this, float4x4.Identity, 0, ownerID, objectID);
@@ -269,7 +276,7 @@ namespace Examples.TheGame
 
                                 break;
 
-                            case 2:
+                            case GameEntities.geExplosion:
                                 if (!Explosions.ContainsKey(objectID))
                                 {
                                     var b = new Explosion(this, float4x4.Identity, objectID);
