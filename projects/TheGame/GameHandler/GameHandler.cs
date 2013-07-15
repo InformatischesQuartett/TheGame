@@ -276,6 +276,17 @@ namespace Examples.TheGame
 
                                 break;
 
+                            case GameEntities.geHealthItem:
+                                if (!HealthItems.ContainsKey(objectID))
+                                {
+                                    var b = new HealthItem(this, float4x4.Identity, objectID);
+                                    HealthItems.Add(objectID, b);
+                                }
+
+                                HealthItems[objectID].SetPosition(objectSpawnData.ObjectPosition);
+
+                                break;
+
                             case GameEntities.geExplosion:
                                 if (!Explosions.ContainsKey(objectID))
                                 {
@@ -296,9 +307,9 @@ namespace Examples.TheGame
 
                         var objectUpdateID = objectUpdateData.ObjectID;
 
-                        switch (objectUpdateData.ObjectType)
+                        switch ((GameEntities) objectUpdateData.ObjectType)
                         {
-                            case 0:
+                            case GameEntities.geBullet:
                                 if (Bullets.ContainsKey(objectUpdateID))
                                 {
                                     if (objectUpdateData.ObjectRemoved)

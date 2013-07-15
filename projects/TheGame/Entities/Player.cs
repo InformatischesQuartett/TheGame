@@ -27,6 +27,12 @@ namespace Examples.TheGame
             _frameCounter = 0;
             
             ResetLife();
+
+            if (System.Math.Abs(_speed) <= _speedMin)
+            {
+                var sign = System.Math.Sign(_speed);
+                _speed = _speedMin * (sign == 0 ? -1 : sign);
+            }
         }
 
         internal int GetLife()
@@ -111,7 +117,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GameHandler, GetPosition(), -150, GetId());
+                var bullet = new Bullet(GameHandler, GetPosition(), -200, GetId());
 
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
@@ -123,7 +129,7 @@ namespace Examples.TheGame
                 {
                     UserID = GetId(),
                     ObjectID = bullet.GetId(),
-                    ObjectType = 0,
+                    ObjectType = (int) GameHandler.GameEntities.geBullet,
                     ObjectVelocity = bullet.GetAbsoluteSpeed(),
                     ObjectPosition = GetPositionVector(),
                     ObjectRotationX = GetRotationFromMatrix(0),
@@ -132,7 +138,7 @@ namespace Examples.TheGame
                 };
 
                 var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                GameHandler.Mediator.AddToSendingBuffer(packet, false);
             }
         }
 
@@ -187,7 +193,7 @@ namespace Examples.TheGame
                 };
            
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                GameHandler.Mediator.AddToSendingBuffer(packet, false);
             }
         }
         /*internal override void InstructShader()

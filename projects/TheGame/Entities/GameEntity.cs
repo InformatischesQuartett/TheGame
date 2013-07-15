@@ -19,8 +19,11 @@ namespace Examples.TheGame
         private float3 _nRotYV; // normalisierter Richtungsvektor
         private float3 _nRotZV; // normalisierter Richtungsvektor
         private float _scale = 1;
-        private float _speed;
+        protected float _speed;
+
         private readonly float _speedMax;
+        protected readonly float _speedMin;
+
         protected RenderContext Rc;
         protected ShaderProgram Sp;
 
@@ -31,7 +34,9 @@ namespace Examples.TheGame
             SetPosition(position);
             _speed = speed;
  
-            _speedMax = 200;
+            _speedMax = 150;
+            _speedMin = 20;
+
             Rc = gameHandler.RContext;
             Sp = gameHandler.BasicSp;
 
@@ -137,22 +142,22 @@ namespace Examples.TheGame
         internal void SetSpeed(int i)
         {
             // All speeds are negative
-            if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
+            if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > _speedMin))
             {
                 // Vorwärts und bremsen rückwärts
                 var newSpeed = _speed + (-100*(float) Time.Instance.DeltaTime*1.2f);
 
-                _speed = i == 0 ? System.Math.Max(+0.2f, newSpeed) : newSpeed;
+                _speed = i == 0 ? System.Math.Max(_speedMin, newSpeed) : newSpeed;
             }
-            else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -0.2f))
+            else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -_speedMin))
             {
                 // Rückwärts und bremsen vorwärts
                 var newSpeed = _speed + (50 * (float)Time.Instance.DeltaTime * 1.2f);
-                _speed = i == 0 ? System.Math.Min(-0.2f, newSpeed) : newSpeed;
+                _speed = i == 0 ? System.Math.Min(-_speedMin, newSpeed) : newSpeed;
             }
- 
-            if (i == 0 && System.Math.Abs(_speed) <= 0.2f)
-                _speed = -0.2f*System.Math.Sign(_speed);
+
+            if (i == 0 && System.Math.Abs(_speed) <= _speedMin)
+                _speed = _speedMin * System.Math.Sign(_speed);
         }
 
         internal int GetSpeed()
