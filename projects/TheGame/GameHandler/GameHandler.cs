@@ -116,10 +116,6 @@ namespace Examples.TheGame
 
             _camMatrix = float4x4.Identity;
 
-          //  StartGame();
-           // this.AddNewPlayer();
-
-            Debug.WriteLine("_playerId: " + _playerId);
         }
 
         internal void Update()
@@ -178,7 +174,6 @@ namespace Examples.TheGame
                         // either a spawning position for this client - or someone needs a new spawning position
                         if (!recvPacket.Value)
                         {
-                            Debug.WriteLine("This player shall spawn at: " + playerSpawnData.SpawnPosition);
                             Players[_playerId].SetPosition(playerSpawnData.SpawnPosition);
                         }
                         else
@@ -243,12 +238,10 @@ namespace Examples.TheGame
                 if (go.Key != _playerId)
                 {
                     go.Value.RenderUpdate(RContext, _camMatrix);
-                    // Debug.WriteLine("Playerrender: "+ go.Value.GetId());
                 }
             }
 
             Players[_playerId].RenderUpdate(RContext, _camMatrix);
-            // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
 
             // Render SkyBox
             RContext.SetShader(TextureSp);
