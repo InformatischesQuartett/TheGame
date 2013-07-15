@@ -21,7 +21,7 @@ namespace Examples.TheGame
         /// <summary>
         /// The size increase of the explosion per time step
         /// </summary>
-        private const float SizeIncrease = 600f;
+        private float SizeIncrease = 600f;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Explosion"/> class.
@@ -34,6 +34,22 @@ namespace Examples.TheGame
             SetScale(100);
             Sp = gameHandler.CustomSp;
             SetId(gameHandler.Mediator.GetObjectId());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Explosion"/> class.
+        /// </summary>
+        /// <param name="gameHandler">The GameHandler</param>
+        /// <param name="position">The position.</param>
+        /// <param name="sizeIncrease">Increase in size of the explosion</param>
+        internal Explosion(GameHandler gameHandler, float4x4 position, float sizeIncrease)
+            : base(gameHandler, position, 0)
+        {
+            EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            SetScale(100);
+            Sp = gameHandler.CustomSp;
+            SetId(gameHandler.Mediator.GetObjectId());
+            SizeIncrease = sizeIncrease;
         }
 
         /// <summary>
