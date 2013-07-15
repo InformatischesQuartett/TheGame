@@ -1,4 +1,5 @@
-﻿using Fusee.Math;
+﻿using Fusee.Engine;
+using Fusee.Math;
 
 namespace Examples.TheGame
 {
@@ -24,6 +25,11 @@ namespace Examples.TheGame
         {
             GameHandler.Players[id].SetLife(+_health);
             DestroyEnity();
+        }
+        internal override void InstructShader()
+        {
+            IShaderParam vColorParam = Sp.GetShaderParam("vColor");
+            Rc.SetShaderParam(vColorParam, new float4(0.2f, 0.8f, 0.2f, 1));
         }
     }
 }

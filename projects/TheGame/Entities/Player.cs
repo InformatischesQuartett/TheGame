@@ -23,6 +23,7 @@ namespace Examples.TheGame
             this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
+            Sp = gameHandler.TextureSp;
 
             _frameCounter = 0;
         }
@@ -179,6 +180,11 @@ namespace Examples.TheGame
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
                 GameHandler.Mediator.AddToSendingBuffer(packet, true);
             }
+        }
+        internal override void InstructShader()
+        {
+            //Rc.SetShader(Sp);
+            Rc.SetShaderParamTexture(GameHandler.PlayerShaderParam, GameHandler.PlayerTexture);
         }
     }
 }
