@@ -218,6 +218,7 @@ namespace Examples.TheGame
                         {
                             // SERVER ACTIVITY!
                             _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
+                            
                         }
 
                         break;
@@ -392,9 +393,7 @@ namespace Examples.TheGame
             if (UserID == 0)
             {
                 _gameHandlerServer = new GameHandlerServer(this);
-                _gameHandlerServer.RespawnPlayer(Mediator.UserID);
             }
-
         }
     }
 }

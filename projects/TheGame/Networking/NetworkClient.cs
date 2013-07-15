@@ -113,7 +113,7 @@ namespace Examples.TheGame
                         msgDelivery = objectUpdateData.MsgDelivery;
                         channelID = objectUpdateData.ChannelID;
 
-                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.ObjectUpdate,
                                                                                objectUpdateData);
 
                         Network.Instance.SendMessage(objectUpdatePacket, msgDelivery, channelID);

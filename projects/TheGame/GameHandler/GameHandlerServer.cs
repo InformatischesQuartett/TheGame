@@ -54,6 +54,22 @@ namespace Examples.TheGame
         {
             var hi = new HealthItem(_gameHandler, float4x4.Identity * float4x4.CreateTranslation(RandomPosition()), 0);
             _gameHandler.HealthItems.Add(hi.GetId(), hi);
+
+            // Inform other Players
+            var data = new DataPacketObjectSpawn
+            {
+                UserID = 0,
+                ObjectID = hi.GetId(),
+                ObjectType = (int)GameHandler.GameEntities.geHealthItem,
+                ObjectVelocity = 0,
+                ObjectPosition = hi.GetPositionVector(),
+                ObjectRotationX = new float3(0, 0, 0),
+                ObjectRotationY = new float3(0, 0, 0),
+                ObjectRotationZ = new float3(0, 0, 0)
+            };
+
+            var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
+            _gameHandler.Mediator.AddToSendingBuffer(packet, false);
         }
 
         internal bool CheckCollision(GameEntity oe1, GameEntity oe2)
@@ -150,7 +166,7 @@ namespace Examples.TheGame
                                 _gameHandler.Explosions.Add(explo.GetId(), explo);
                                 _gameHandler.AudioExplosion.Play();
 
-                                _gameHandler._gameHandlerServer.RespawnPlayer(0);
+                                _gameHandler._gameHandlerServer.RespawnPlayer(player.Value.GetId());
                             }
                             else
                             {
@@ -242,7 +258,7 @@ namespace Examples.TheGame
                 };
 
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
-                _gameHandler.Mediator.AddToSendingBuffer(packet, false);
+                _gameHandler.Mediator.AddToSendingBuffer(packet, true);
 
                 // reset life
                 if (!_gameHandler.Players.ContainsKey(getId))
