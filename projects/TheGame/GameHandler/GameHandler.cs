@@ -34,9 +34,11 @@ namespace Examples.TheGame
         internal readonly ShaderProgram CustomSp;
 
         private readonly IShaderParam _skyBoxShaderParam;
+        internal readonly IShaderParam PlayerShaderParam;
 
         private readonly ITexture _skyBoxTexture;
         internal readonly ITexture TextureExplosionHandle;
+        internal readonly ITexture PlayerTexture;
 
         internal readonly IAudioStream AudioSoundtrack;
         internal readonly IAudioStream AudioExplosion;
@@ -89,12 +91,15 @@ namespace Examples.TheGame
             CustomSp = rc.CreateShader(ShaderCode.GetVertexShader(), ShaderCode.GetFragmentShader());
 
             _skyBoxShaderParam = rc.GetShaderParam(TextureSp, "texture1");
+            PlayerShaderParam = rc.GetShaderParam(TextureSp, "texture1");
 
             ImageData texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
             TextureExplosionHandle = rc.CreateTexture(texture);
 
             texture = rc.LoadImage("Assets/skybox.png");
             _skyBoxTexture = rc.CreateTexture(texture);
+            texture = rc.LoadImage("Assets/playertex.jpg");
+            PlayerTexture = rc.CreateTexture(texture);
 
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
