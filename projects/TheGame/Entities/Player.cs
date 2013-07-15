@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -16,13 +15,12 @@ namespace Examples.TheGame
         private int _frameCounter;
         private const int FrameUpdate = 10;
 
-        internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
-                      float impact, uint id)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+        internal Player(GameHandler gameHandler, float4x4 position, float speed, uint id)
+            : base(gameHandler, position, speed)
         {
             SetId(id);
             _life = 5;
-            collisionRadius = 10;
+            this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
 
@@ -102,7 +100,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GameHandler, 4, GetPosition(), -150, 5, GetId());
+                var bullet = new Bullet(GameHandler, GetPosition(), -150, GetId());
 
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
@@ -138,17 +136,9 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 50;
-            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 50;
+            _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX) / 50;
+            _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY) / 50;
 
-            _mousePos.x *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
-            _mousePos.y *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
-
-            if (Math.Abs(xDiff) > MathHelper.EpsilonFloat)
-                _mousePos.x = Math.Sign(xDiff) * Math.Min(0.01f, Math.Abs(xDiff));
-
-            if (Math.Abs(yDiff) > MathHelper.EpsilonFloat)
-                _mousePos.y = Math.Sign(yDiff) * Math.Min(0.01f, Math.Abs(yDiff));
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
                 SetSpeed(1);
@@ -159,7 +149,7 @@ namespace Examples.TheGame
             else
                 SetSpeed(0);
 
-            if (Input.Instance.OnButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
 
             SetRotation(_mousePos);

@@ -12,22 +12,21 @@ namespace Examples.TheGame
         private readonly uint _ownerId;
 
         // own bullet
-        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
-                        float impact, uint ownerId)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+        internal Bullet(GameHandler gameHandler, float4x4 position, float speed, uint ownerId)
+            : base(gameHandler, position, speed)
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
             _maxDist = 5000;
             _ownerId = ownerId;
-
+            this._collisionRadius = 100;
             EntityMesh = gameHandler.BulletMesh;
         }
 
         // other user's bullet
         internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
                         uint ownerId, uint id)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+            : base(gameHandler, position, speed)
         {
             SetId(id);
 

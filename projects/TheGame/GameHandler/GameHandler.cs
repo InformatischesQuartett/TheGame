@@ -207,7 +207,7 @@ namespace Examples.TheGame
 
                         if (!Players.ContainsKey(userID))
                         {
-                            var p = new Player(this, 100, float4x4.Identity, 0, 0, userID);
+                            var p = new Player(this, float4x4.Identity, 0, userID);
                             Players.Add(userID, p);
                         }
 
@@ -301,7 +301,7 @@ namespace Examples.TheGame
         {
             UserID = Mediator.UserID;
 
-            var p = new Player(this, 100, float4x4.Identity, 0, 0, Mediator.UserID);
+            var p = new Player(this, float4x4.Identity, 0, Mediator.UserID);
             Players.Add(Mediator.UserID, p);
 
             if (UserID == 0)
@@ -315,19 +315,19 @@ namespace Examples.TheGame
 
         internal void AddNewPlayer()
         {
-            var p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(600, 0, 0), 0, 0, 11);
+            var p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(600, 0, 0), 0, 11);
             Players.Add(p.GetId(), p);
             RespawnPlayer(p.GetId());
 
-            p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(300f, 0, 0), 0, 0, 22);
+            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(300f, 0, 0), 0, 22);
             Players.Add(p.GetId(), p);
             RespawnPlayer(p.GetId());
 
-            p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(0, 300f, 0), 0, 0, 33);
+            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(0, 300f, 0), 0, 33);
             Players.Add(p.GetId(), p);
             RespawnPlayer(p.GetId());
 
-            p = new Player(this, 100, float4x4.Identity*float4x4.CreateTranslation(0, 0, -300f), 0, 0, 44);
+            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(0, 0, -300f), 0, 44);
             Players.Add(p.GetId(), p);
             RespawnPlayer(p.GetId());
         }

@@ -11,7 +11,7 @@ namespace Examples.TheGame
         protected GameHandler GameHandler;
 
         protected Mesh EntityMesh;
-        private readonly float _collisionRadius;
+       internal float _collisionRadius;
         private float4x4 _position; //z = Vorne Hinten
         private float4x4 _camMatrix;
         private float2 _rotation; // x = Links Rechts, y = Hoch Runter
@@ -25,18 +25,14 @@ namespace Examples.TheGame
         protected RenderContext Rc;
         protected ShaderProgram Sp;
 
-        internal GameEntity(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact)
+        internal GameEntity(GameHandler gameHandler, float4x4 position, float speed)
         {
             //Attribute initialisieren
             GameHandler = gameHandler;
-
-            _collisionRadius = collisionRadius;
             SetPosition(position);
-
             _speed = speed;
-            _impact = impact;
-            _speedMax = 100;
-
+ 
+            _speedMax = 200;
             Rc = gameHandler.RContext;
             Sp = gameHandler.BasicSp;
         }
@@ -135,18 +131,18 @@ namespace Examples.TheGame
             return _scale;
         }
 
-        internal void SetSpeed(int i)
+        internal void SetSpeed(float i)
         {
             //All speeds are negative
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
                 //Vorwärts und bremsen rückwärts
-                _speed += -2* (float)Time.Instance.DeltaTime * 1.2f;
+                _speed += -100* (float)Time.Instance.DeltaTime * 1.2f;
             }
             else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -0.2f))
             {
                 //Rückwärts und bremsen vorwärts
-                _speed -= -2* (float)Time.Instance.DeltaTime * 1.2f;
+                _speed -= -50* (float)Time.Instance.DeltaTime * 1.2f;
             }
         }
 
