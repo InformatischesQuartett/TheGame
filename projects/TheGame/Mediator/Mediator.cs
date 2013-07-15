@@ -31,6 +31,7 @@ namespace Examples.TheGame
         internal int Width { set; get; }
 
         internal bool Blending { set; get; }
+        public bool Fullscreen { set; get; }
 
         /// <summary>
         ///     The last assigned objectID.
@@ -58,6 +59,7 @@ namespace Examples.TheGame
             _gameHandler.AudioInitiated.Play();
 
             _networkActive = networkActive;
+
             if (networkActive)
                 _networkHandler = new NetworkHandler(rContext, this);
 
@@ -80,6 +82,8 @@ namespace Examples.TheGame
             _gameHandler.AudioConnectionEstablished.Play();
 
             Blending = false;
+            Fullscreen = true;
+
             _gameHandler.GameState.CurState = GameState.State.InGame;
             _gameHandler.StartGame();
         }

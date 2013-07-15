@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
-using OpenTK.Input;
 
 namespace Examples.TheGame
 {
