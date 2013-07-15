@@ -6,12 +6,12 @@ namespace Examples.TheGame
     {
         private readonly int _health;
 
-        public HealthItem(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
+        public HealthItem(GameHandler gameHandler, float4x4 position, float speed,
                           float impact, int health)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+            : base(gameHandler, position, speed)
         {
             SetId(gameHandler.Mediator.GetObjectId());
-
+            this._collisionRadius = 100;
             _health = health;
         }
 
