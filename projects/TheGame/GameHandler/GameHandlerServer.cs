@@ -242,7 +242,7 @@ namespace Examples.TheGame
                 };
 
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
-                _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+                _gameHandler.Mediator.AddToSendingBuffer(packet, false);
 
                 // reset life
                 if (!_gameHandler.Players.ContainsKey(getId))

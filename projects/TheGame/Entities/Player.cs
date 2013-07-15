@@ -13,7 +13,7 @@ namespace Examples.TheGame
         private float2 _mousePos;
 
         private int _frameCounter;
-        private const int FrameUpdate = 3;
+        private const int FrameUpdate = 10;
 
         internal Player(GameHandler gameHandler, float4x4 position, float speed, uint id)
             : base(gameHandler, position, speed)
@@ -138,7 +138,7 @@ namespace Examples.TheGame
                 };
 
                 var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                GameHandler.Mediator.AddToSendingBuffer(packet, false);
             }
         }
 
@@ -193,7 +193,7 @@ namespace Examples.TheGame
                 };
            
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                GameHandler.Mediator.AddToSendingBuffer(packet, false);
             }
         }
         internal override void InstructShader()
