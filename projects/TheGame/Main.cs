@@ -22,8 +22,8 @@ namespace Examples.TheGame
             Height = 700;
             Width = 750;
 
-            Input.Instance.CursorVisible = false;
-            Input.Instance.FixMouseAtCenter = true;
+            Input.Instance.CursorVisible = true;
+            Input.Instance.FixMouseAtCenter = false;
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 

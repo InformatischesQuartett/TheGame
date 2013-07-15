@@ -90,7 +90,7 @@ namespace Examples.TheGame
                             };
 
                             var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
-                            _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+                            _gameHandler.Mediator.AddToSendingBuffer(packet, false);
 
                             _gameHandler.Explosions.Add(explo.GetId(), explo);
                             _gameHandler.AudioExplosion.Play();
@@ -116,12 +116,12 @@ namespace Examples.TheGame
                             {
                                 UserID = bullet.Value.GetOwnerId(),
                                 ObjectID = bullet.Value.GetId(),
-                                ObjectType = 0,
+                                ObjectType = (int) GameHandler.GameEntities.geBullet,
                                 ObjectRemoved = true
                             };
 
                             var packet1 = new DataPacket { PacketType = DataPacketTypes.ObjectUpdate, Packet = data1 };
-                            _gameHandler.Mediator.AddToSendingBuffer(packet1, true);
+                            _gameHandler.Mediator.AddToSendingBuffer(packet1, false);
 
                             _gameHandler.Players[player.Value.GetId()].SetLife(-10);
                             var newHealth = _gameHandler.Players[player.Value.GetId()].GetLife();
@@ -145,7 +145,7 @@ namespace Examples.TheGame
                                 };
 
                                 var packet2 = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data2 };
-                                _gameHandler.Mediator.AddToSendingBuffer(packet2, true);
+                                _gameHandler.Mediator.AddToSendingBuffer(packet2, false);
 
                                 _gameHandler.Explosions.Add(explo.GetId(), explo);
                                 _gameHandler.AudioExplosion.Play();
@@ -169,7 +169,7 @@ namespace Examples.TheGame
                                     };
 
                                     var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                                    _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+                                    _gameHandler.Mediator.AddToSendingBuffer(packet, false);
                                 }
                             }
 
@@ -184,10 +184,21 @@ namespace Examples.TheGame
             foreach (var player in _gameHandler.Players)
             {
                 foreach (var health in _gameHandler.HealthItems)
-                {  
+                {
                     if (CheckCollision(player.Value, health.Value))
                     {
-                       health.Value.OnCollisionEnter(player.Value.GetId());
+                        var data1 = new DataPacketObjectUpdate
+                            {
+                                UserID = player.Value.GetId(),
+                                ObjectID = health.Value.GetId(),
+                                ObjectType = (int) GameHandler.GameEntities.geHealthItem,
+                                ObjectRemoved = true
+                            };
+
+                        var packet1 = new DataPacket {PacketType = DataPacketTypes.ObjectUpdate, Packet = data1};
+                        _gameHandler.Mediator.AddToSendingBuffer(packet1, false);
+
+                        health.Value.OnCollisionEnter(player.Value.GetId());
                     }
                 }
             }

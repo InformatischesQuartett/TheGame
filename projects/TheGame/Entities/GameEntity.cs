@@ -34,7 +34,7 @@ namespace Examples.TheGame
             SetPosition(position);
             _speed = speed;
  
-            _speedMax = 200;
+            _speedMax = 150;
             _speedMin = 20;
 
             Rc = gameHandler.RContext;

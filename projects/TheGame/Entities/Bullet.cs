@@ -17,7 +17,7 @@ namespace Examples.TheGame
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
-            _maxDist = 5000;
+            _maxDist = 50;
             _ownerId = ownerId;
             this._collisionRadius = 100;
             EntityMesh = gameHandler.BulletMesh;
@@ -48,6 +48,17 @@ namespace Examples.TheGame
             if (_distCounter > _maxDist)
             {
                 DestroyEnity();
+
+                var data1 = new DataPacketObjectUpdate
+                {
+                    UserID = GetOwnerId(),
+                    ObjectID = GetId(),
+                    ObjectType = (int) GameHandler.GameEntities.geBullet,
+                    ObjectRemoved = true
+                };
+
+                var packet1 = new DataPacket { PacketType = DataPacketTypes.ObjectUpdate, Packet = data1 };
+                GameHandler.Mediator.AddToSendingBuffer(packet1, false);
             }
         }
         internal override void OnCollisionEnter(uint id)
