@@ -118,11 +118,11 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 100;
-            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 100;
+            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 10;
+            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 10;
 
-            _mousePos.x *= (float)Math.Exp(-0.98 * Time.Instance.DeltaTime); 
-            _mousePos.y *= (float)Math.Exp(-0.98 * Time.Instance.DeltaTime); 
+            _mousePos.x *= (float)Math.Exp(-1.30 * Time.Instance.DeltaTime); 
+            _mousePos.y *= (float)Math.Exp(-1.30 * Time.Instance.DeltaTime); 
 
             if (Math.Abs(xDiff) > MathHelper.EpsilonFloat)
                 _mousePos.x = xDiff;

@@ -35,7 +35,7 @@ namespace Examples.TheGame
 
             _speed = speed;
             _impact = impact;
-            _speedMax = 10;
+            _speedMax = 100;
 
             Rc = gameHandler.RContext;
             Sp = gameHandler.BasicSp;
@@ -106,7 +106,7 @@ namespace Examples.TheGame
         internal void SetSpeed(int i)
         {
             //All speeds are negative
-
+            Debug.WriteLine(_speed);
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
                 //Vorwärts und bremsen rückwärts
@@ -116,10 +116,6 @@ namespace Examples.TheGame
             {
                 //Rückwärts und bremsen vorwärts
                 _speed -= -2* (float)Time.Instance.DeltaTime * 1.2f;
-            }
-            else
-            {
-                _speed = 0;
             }
         }
 
