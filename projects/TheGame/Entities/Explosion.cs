@@ -30,7 +30,7 @@ namespace Examples.TheGame
         /// <param name="position">The position.</param>
         internal Explosion(GameHandler gameHandler, float4x4 position) : base(gameHandler, position, 0)
         {
-            EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            EntityMesh = gameHandler.ExplosionMesh;
             SetScale(100);
             Sp = gameHandler.CustomSp;
             SetId(gameHandler.Mediator.GetObjectId());

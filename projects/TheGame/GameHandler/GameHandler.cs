@@ -48,6 +48,7 @@ namespace Examples.TheGame
         internal Mesh SpaceShipMesh;
         internal Mesh BulletMesh;
         internal Mesh ExplosionMesh;
+        internal Mesh HealthItemMesh;
         private readonly Mesh _skyBoxMesh;
 
         /// <summary>
@@ -105,6 +106,7 @@ namespace Examples.TheGame
             SpaceShipMesh = MeshReader.LoadMesh("Assets/spaceshuttle.obj.model");
             BulletMesh = MeshReader.LoadMesh("Assets/bullet.obj.model");
             ExplosionMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            HealthItemMesh = MeshReader.LoadMesh("Assets/item.obj.model");
             _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
 
             // Start soundtrack

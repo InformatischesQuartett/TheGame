@@ -13,6 +13,7 @@ namespace Examples.TheGame
             SetId(gameHandler.Mediator.GetObjectId());
             this._collisionRadius = 100;
             _health = health;
+            EntityMesh = gameHandler.HealthItemMesh;
         }
 
         public int GetHealth()

@@ -136,8 +136,8 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX) / 50;
-            _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY) / 50;
+            _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX);
+            _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
