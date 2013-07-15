@@ -88,7 +88,7 @@ namespace Examples.TheGame
             _gameHandler.AudioConnectionEstablished.Play();
 
             Blending = true;
-            Fullscreen = false;
+            Fullscreen = true;
 
             _gameHandler.GameState.CurState = GameState.State.InGame;
             _gameHandler.StartGame();

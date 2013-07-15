@@ -13,7 +13,7 @@ namespace Examples.TheGame
         private float2 _mousePos;
 
         private int _frameCounter;
-        private const int FrameUpdate = 10;
+        private const int FrameUpdate = 3;
 
         internal Player(GameHandler gameHandler, float4x4 position, float speed, uint id)
             : base(gameHandler, position, speed)
@@ -27,6 +27,12 @@ namespace Examples.TheGame
             _frameCounter = 0;
             
             ResetLife();
+
+            if (System.Math.Abs(_speed) <= _speedMin)
+            {
+                var sign = System.Math.Sign(_speed);
+                _speed = _speedMin * (sign == 0 ? -1 : sign);
+            }
         }
 
         internal int GetLife()
@@ -123,7 +129,7 @@ namespace Examples.TheGame
                 {
                     UserID = GetId(),
                     ObjectID = bullet.GetId(),
-                    ObjectType = 0,
+                    ObjectType = (int) GameHandler.GameEntities.geBullet,
                     ObjectVelocity = bullet.GetAbsoluteSpeed(),
                     ObjectPosition = GetPositionVector(),
                     ObjectRotationX = GetRotationFromMatrix(0),

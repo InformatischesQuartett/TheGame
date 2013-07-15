@@ -296,9 +296,9 @@ namespace Examples.TheGame
 
                         var objectUpdateID = objectUpdateData.ObjectID;
 
-                        switch (objectUpdateData.ObjectType)
+                        switch ((GameEntities) objectUpdateData.ObjectType)
                         {
-                            case 0:
+                            case GameEntities.geBullet:
                                 if (Bullets.ContainsKey(objectUpdateID))
                                 {
                                     if (objectUpdateData.ObjectRemoved)
