@@ -28,7 +28,6 @@ namespace Examples.TheGame
             const int max = PlayAreaRange;
 
             float rndNum = _random.Next(min, max);
-            Debug.WriteLine("RandomNumber" + rndNum);
 
             return rndNum;
         }
@@ -38,8 +37,6 @@ namespace Examples.TheGame
             var rndNum1 = RandomNumber();
             var rndNum2 = RandomNumber();
             var rndNum3 = RandomNumber();
-
-            Debug.WriteLine("RespawnPlayer: " + rndNum1 + ", " + rndNum2 + ", " + rndNum3);
             
             return new float3(rndNum1, rndNum2, rndNum3);
         }

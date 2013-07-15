@@ -35,7 +35,6 @@ namespace Examples.TheGame
             if (_distCounter > _maxDist)
             {
                 DestroyEnity();
-                Debug.WriteLine("Bullet Destroyed");
             }
         }
         internal override void OnCollisionEnter(int id)

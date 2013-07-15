@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -119,17 +118,9 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 50;
-            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 50;
+            _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX);
+            _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
-            _mousePos.x *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
-            _mousePos.y *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
-
-            if (Math.Abs(xDiff) > MathHelper.EpsilonFloat)
-                _mousePos.x = Math.Sign(xDiff) * Math.Min(0.01f, Math.Abs(xDiff));
-
-            if (Math.Abs(yDiff) > MathHelper.EpsilonFloat)
-                _mousePos.y = Math.Sign(yDiff) * Math.Min(0.01f, Math.Abs(yDiff));
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
                 SetSpeed(1);

@@ -86,7 +86,7 @@ namespace Examples.TheGame
 
         internal void SetRotation(float2 rotation)
         {
-            _rotation = 300*rotation * (float)Time.Instance.DeltaTime;
+            _rotation = rotation;
         }
 
         internal void SetScale(float scale)
@@ -102,7 +102,7 @@ namespace Examples.TheGame
         internal void SetSpeed(int i)
         {
             //All speeds are negative
-            Debug.WriteLine(_speed);
+
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
                 //Vorwärts und bremsen rückwärts
