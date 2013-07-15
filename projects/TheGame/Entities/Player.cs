@@ -110,7 +110,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(_gameHandler, 4, GetPosition(), -2, 5, GetId());
+                var bullet = new Bullet(_gameHandler, 4, GetPosition(), -150, 5, GetId());
 
                 // add Bullet to ItemDict
                 _gameHandler.Bullets.Add(bullet.GetId(), bullet);

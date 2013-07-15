@@ -7,10 +7,10 @@ namespace Examples.TheGame
     internal class Bullet : GameEntity
     {
 
-        private float _maxDist;
+        private readonly float _maxDist;
         private float4x4 _endPos;
         private float _distCounter;
-        private int _ownerId;
+        private readonly int _ownerId;
 
         internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
                      int ownerId)
@@ -18,11 +18,11 @@ namespace Examples.TheGame
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
-            _maxDist = 500;
+            _maxDist = 5000;
             _ownerId = ownerId;
 
-            this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
-            Debug.WriteLine("New Bullet");
+            this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            Debug.WriteLine("New Bullet: " + position.Row3 + ", Speed: " + speed + ", Owner: " + _ownerId);
         }
 
         internal int GetOwnerId()
@@ -34,6 +34,7 @@ namespace Examples.TheGame
         {
             base.Update();
             _distCounter += -0.5f*(this.GetSpeed());
+            Debug.WriteLine("New Bullet: " + this.GetPosition().Row3 + ", Speed: " + this.GetSpeed() + ", Owner: " + _ownerId);
             if (_distCounter > _maxDist)
             {
                 this.DestroyEnity();
