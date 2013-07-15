@@ -9,7 +9,7 @@ namespace Examples.TheGame
     {
         private float _life;
         private float _shotTimer;
-        private int score;
+        private int _score;
 
         private float2 _mousePos;
 
@@ -18,9 +18,9 @@ namespace Examples.TheGame
             : base(gameHandler, collisionRadius, position, speed, impact)
         {
             SetId(id);
-            this._life = 5;
+            _life = 5;
             collisionRadius = 10;
-            this.EntityMesh = gameHandler.SpaceShipMesh;
+            EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
         }
 
@@ -40,46 +40,38 @@ namespace Examples.TheGame
 
         internal void SetScore()
         {
-            this.score++;
+            _score++;
         }
 
         internal int GetScore()
         {
-            return score;
+            return _score;
         }
 
         internal void CheckAllCollision()
         {
             foreach (var go in _gameHandler.Players)
             {
-                if (this.GetId() != go.Value.GetId())
+                if (GetId() != go.Value.GetId())
                 {
                     if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("Collision: Player " + this.GetId() + " BAM with " + go.Value.GetId());
+                        Debug.WriteLine("Collision: Player " + GetId() + " BAM with " + go.Value.GetId());
                         // Kill both players
-                        this.DestroyEnity();
-                    }
-                    else
-                    {
-                        //Debug.WriteLine("Collision: Player " + this.GetId() + " clear");
+                        DestroyEnity();
                     }
                 }
             }
 
             foreach (var go in _gameHandler.Bullets)
             {
-                if (this.GetId() != go.Value.GetOwnerId())
+                if (GetId() != go.Value.GetOwnerId())
                 {
                     if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("Collision: Bullet " + this.GetId() + " BAM");
-                        go.Value.OnCollisionEnter(this.GetId());
+                        Debug.WriteLine("Collision: Bullet " + GetId() + " BAM");
+                        go.Value.OnCollisionEnter(GetId());
                         // Kill bullet
-                    }
-                    else
-                    {
-                        //Debug.WriteLine("Collision: Bullet " + go.Value.GetId() + " clear");
                     }
                 }
             }
@@ -92,10 +84,6 @@ namespace Examples.TheGame
                     go.Value.OnCollisionEnter(go.Value.GetId());
                     // Kill healthitem and heal player by impact
                 }
-                else
-                {
-                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " clear");
-                }
             }
         }
 
@@ -103,7 +91,7 @@ namespace Examples.TheGame
         {
             SetLife(-1);
 
-            Explosion explo = new Explosion(_gameHandler, GetPosition());
+            var explo = new Explosion(_gameHandler, GetPosition());
             _gameHandler.Explosions.Add(explo.GetId(), explo);
         }
 
@@ -124,9 +112,9 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            if (this.GetLife() <= 0)
+            if (GetLife() <= 0)
             {
-                this.DestroyEnity();
+                DestroyEnity();
             }
 
             CheckAllCollision();
@@ -147,27 +135,6 @@ namespace Examples.TheGame
             if (Math.Abs(yDiff) > MathHelper.EpsilonFloat)
                 _mousePos.y = yDiff;
 
-
-
-            //Up  Down
-            Point mp = Input.Instance.GetMousePos();
-            //Debug.WriteLine("mousepops: " + mp.x + " "+mp.y);
-            //Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
-            var w = _gameHandler.Mediator.Width;
-            var h = _gameHandler.Mediator.Height;
-            /*if (mp.x >= _gameHandler.Mediator.Width-1 || mp.x <= 1)
-            {
-                Debug.WriteLine("mousepops: " + mp.x + " " + mp.y);
-                Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
-            }
-            if (mp.y >= _gameHandler.Mediator.Height - 1 || mp.y <= 1)
-            {
-                Mouse.SetPosition(w, h*0.5);
-            }*/
-            
-            //if (mp.y )
-
-            //Speed
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
             {
                 SetSpeed(1);
@@ -183,14 +150,14 @@ namespace Examples.TheGame
             //Shoot on left mouse button
             if (Input.Instance.OnButtonDown(MouseButtons.Left))
             {
-                this.Shoot();
+                Shoot();
             }
             /*if (Input.Instance.IsKeyPressed(KeyCodes.E))
             {
                 Explosion explo = new Explosion(_gameHandler, GetPosition());
                 _gameHandler.Explosions.Add(explo.GetId(), explo);
             }*/
-            this.SetRotation(_mousePos);
+            SetRotation(_mousePos);
         }
     }
 }
