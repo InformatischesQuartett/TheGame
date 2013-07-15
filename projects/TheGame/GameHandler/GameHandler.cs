@@ -148,8 +148,10 @@ namespace Examples.TheGame
                 Players.Remove(removePlayer);
 
             foreach (var removeItem in RemoveHealthItems)
-                RemoveHealthItems.Remove(removeItem);
-
+            {
+                HealthItems.Remove(removeItem);
+                _gameHandlerServer.SpawnHealthItem();
+            }
             foreach (var removeBullet in RemoveBullets)
                 Bullets.Remove(removeBullet);
 
@@ -180,11 +182,11 @@ namespace Examples.TheGame
                         else
                         {
                             // SERVER ACTIVITY!
-                            var respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
+                            var respawnPosition = _gameHandlerServer.RandomPosition();
 
                             while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
                             {
-                                respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
+                                respawnPosition = _gameHandlerServer.RandomPosition();
                             }
 
                             // send back to user
@@ -297,11 +299,11 @@ namespace Examples.TheGame
         {
             if (UserID == 0)
             {
-                var respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                var respawnPosition = _gameHandlerServer.RandomPosition();
 
                 while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
                 {
-                    respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                    respawnPosition = _gameHandlerServer.RandomPosition();
                 }
 
                 Players[getId].SetPosition(respawnPosition);
