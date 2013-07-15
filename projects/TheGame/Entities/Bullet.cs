@@ -39,7 +39,7 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(int id)
         {
-            GameHandler.Players[id].SetLife(-0.5f);
+            GameHandler.Players[id].SetLife(-10f);
             GameHandler.Players[_ownerId].SetScore();
             DestroyEnity();
         }

@@ -12,8 +12,7 @@ namespace Examples.TheGame
 
         private float2 _mousePos;
 
-        internal Player(GameHandler gameHandler, float4x4 position, float speed,
-                      float impact, int id)
+        internal Player(GameHandler gameHandler, float4x4 position, float speed,int id)
             : base(gameHandler, position, speed)
         {
             SetId(id);
@@ -34,7 +33,7 @@ namespace Examples.TheGame
 
         internal void ResetLife()
         {
-            _life = 5;
+            _life = 100;
         }
 
         internal void SetScore()
