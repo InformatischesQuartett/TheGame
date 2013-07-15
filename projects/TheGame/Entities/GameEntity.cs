@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -9,7 +8,7 @@ namespace Examples.TheGame
     {
         private int _id;
 
-        protected GameHandler _gameHandler;
+        protected GameHandler GameHandler;
 
         protected Mesh EntityMesh;
         private readonly float _collisionRadius;
@@ -21,26 +20,25 @@ namespace Examples.TheGame
         private float3 _nRotZV; // normalisierter Richtungsvektor
         private float _scale = 1;
         private float _speed;
-        private float _speedMax;
+        private readonly float _speedMax;
         private float _impact;
-        protected RenderContext _rc;
-        protected ShaderProgram _sp;
+        protected RenderContext Rc;
+        protected ShaderProgram Sp;
 
         internal GameEntity(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact)
         {
             //Attribute initialisieren
-            _gameHandler = gameHandler;
-            //_id = _mediator.GetObjectId();
+            GameHandler = gameHandler;
 
             _collisionRadius = collisionRadius;
-            this.SetPosition(position);
+            SetPosition(position);
 
             _speed = speed;
             _impact = impact;
             _speedMax = 10;
 
-            _rc = gameHandler.RContext;
-            _sp = gameHandler.BasicSp;
+            Rc = gameHandler.RContext;
+            Sp = gameHandler.BasicSp;
         }
 
         internal int GetId()
@@ -60,7 +58,7 @@ namespace Examples.TheGame
 
         internal void SetPosition(float4x4 position)
         {
-            this._position = position;
+            _position = position;
         }
 
         internal void SetPosition(float3 position)
@@ -80,9 +78,9 @@ namespace Examples.TheGame
 
         internal bool CheckCollision(GameEntity other)
         {
-            return (other.GetPositionVector() - this.GetPositionVector()).LengthSquared <=
+            return (other.GetPositionVector() - GetPositionVector()).LengthSquared <=
                    other.GetCollisionRadius() * other.GetCollisionRadius() +
-                   this.GetCollisionRadius() * this.GetCollisionRadius();
+                   GetCollisionRadius() * GetCollisionRadius();
         }
 
         internal virtual void OnCollisionEnter(int id)
@@ -108,7 +106,6 @@ namespace Examples.TheGame
         internal void SetSpeed(int i)
         {
             //All speeds are negative
-            //Debug.WriteLine("Speed: " + _speed);
 
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
@@ -129,39 +126,34 @@ namespace Examples.TheGame
 
         internal float GetSpeed()
         {
-            return this._speed;
+            return _speed;
         }
 
         internal void DestroyEnity()
         {
             //Adding Items to RemoveLists
-            if (this.GetType() == typeof (Player))
+            if (GetType() == typeof (Player))
             {
-                // Spawn a new explosion
-                Explosion explo = new Explosion(_gameHandler, GetPosition());
-                _gameHandler.Explosions.Add(explo.GetId(), explo);
-                _gameHandler.AudioExplosion.Play();
+                var explo = new Explosion(GameHandler, GetPosition());
+                GameHandler.Explosions.Add(explo.GetId(), explo);
+                GameHandler.AudioExplosion.Play();
 
-                //GameHandler.RemovePlayers.Add(this.GetId());
-                //Call RespawnPlayer
-
-                _gameHandler.RespawnPlayer(GetId());
+                GameHandler.RespawnPlayer(GetId());
             }
 
-            if (this.GetType() == typeof (HealthItem))
+            if (GetType() == typeof (HealthItem))
             {
-                _gameHandler.RemoveHealthItems.Add(this.GetId());
+                GameHandler.RemoveHealthItems.Add(GetId());
             }
 
-            if (this.GetType() == typeof(Explosion))
+            if (GetType() == typeof(Explosion))
             {
-                //remove explosion from Dict
-                _gameHandler.RemoveExplosions.Add(this.GetId());
+                GameHandler.RemoveExplosions.Add(GetId());
             }
 
-            if (this.GetType() == typeof (Bullet))
+            if (GetType() == typeof (Bullet))
             {
-                _gameHandler.RemoveBullets.Add(this.GetId());               
+                GameHandler.RemoveBullets.Add(GetId());               
             }
         }
 
@@ -172,7 +164,7 @@ namespace Examples.TheGame
             _nRotZV = float3.Normalize(new float3(_position.Row2));
 
             _position *= float4x4.CreateTranslation(- new float3(_position.Row3)) *
-                         float4x4.CreateFromAxisAngle(_nRotYV, -_rotation.x) * float4x4.CreateFromAxisAngle(_nRotXV, -_rotation.y) * //float4x4.CreateRotationX(_rotation.x) *
+                         float4x4.CreateFromAxisAngle(_nRotYV, -_rotation.x) * float4x4.CreateFromAxisAngle(_nRotXV, -_rotation.y) *
                          float4x4.CreateTranslation(_position.M41, _position.M42, _position.M43)*
                          float4x4.CreateTranslation(_nRotZV * _speed);
         }
@@ -182,8 +174,8 @@ namespace Examples.TheGame
         /// </summary>
         internal virtual void InstructShader()
         {
-            IShaderParam vColorParam = _sp.GetShaderParam("vColor");
-            _rc.SetShaderParam(vColorParam, new float4(0.2f, 0.5f, 0.5f, 1));
+            IShaderParam vColorParam = Sp.GetShaderParam("vColor");
+            Rc.SetShaderParam(vColorParam, new float4(0.2f, 0.5f, 0.5f, 1));
         }
 
         /// <summary>
@@ -193,19 +185,14 @@ namespace Examples.TheGame
         /// <param name="camMatrix">The cam matrix.</param>
         internal virtual void RenderUpdate(RenderContext rc, float4x4 camMatrix)
         {
-            
             _camMatrix = camMatrix;
-            //Debug.WriteLine("RenderUpdate");
-            //rendern
-            rc.SetShader(_sp);
-            InstructShader();
-            
-            //Debug.WriteLine("mtxcam"+(_camMatrix.ToString()));
 
-            _rc.ModelView = float4x4.Scale(_scale) * _position * _camMatrix;
-            //Debug.WriteLine("ModelView" + _rc.ModelView.ToString());
-            //Debug.WriteLine("Position" + _position);
-            _rc.Render(EntityMesh);
+            rc.SetShader(Sp);
+            InstructShader();
+
+            Rc.ModelView = float4x4.Scale(_scale) * _position * _camMatrix;
+
+            Rc.Render(EntityMesh);
         }
 
         internal float4x4 GetCamMatrix()
