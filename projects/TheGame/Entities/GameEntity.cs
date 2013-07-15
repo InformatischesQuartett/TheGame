@@ -21,7 +21,6 @@ namespace Examples.TheGame
         private float _scale = 1;
         private float _speed;
         private readonly float _speedMax;
-        private float _impact;
         protected RenderContext Rc;
         protected ShaderProgram Sp;
 
@@ -131,23 +130,38 @@ namespace Examples.TheGame
             return _scale;
         }
 
-        internal void SetSpeed(float i)
+        internal void SetSpeed(int i)
         {
-            //All speeds are negative
+            // All speeds are negative
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
-                //Vorwärts und bremsen rückwärts
-                _speed += -100* (float)Time.Instance.DeltaTime * 1.2f;
+                // Vorwärts und bremsen rückwärts
+                var newSpeed = _speed + (-100*(float) Time.Instance.DeltaTime*1.2f);
+
+                _speed = i == 0 ? System.Math.Max(+0.2f, newSpeed) : newSpeed;
             }
             else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -0.2f))
             {
-                //Rückwärts und bremsen vorwärts
-                _speed -= -50* (float)Time.Instance.DeltaTime * 1.2f;
+                // Rückwärts und bremsen vorwärts
+                var newSpeed = _speed + (50 * (float)Time.Instance.DeltaTime * 1.2f);
+                _speed = i == 0 ? System.Math.Min(-0.2f, newSpeed) : newSpeed;
             }
+ 
+            if (i == 0 && System.Math.Abs(_speed) <= 0.2f)
+                _speed = -0.2f*System.Math.Sign(_speed);
         }
 
+        internal int GetSpeed()
+        {
+            return System.Math.Sign(_speed);
+        }
 
-        internal float GetSpeed()
+        internal void SetAbsoluteSpeed(float speed)
+        {
+            _speed = speed;
+        }
+
+        internal float GetAbsoluteSpeed()
         {
             return _speed;
         }

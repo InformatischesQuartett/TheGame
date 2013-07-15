@@ -219,7 +219,7 @@ namespace Examples.TheGame
                         Players[userID].SetRotationInMatrix(1, playerUpdateData.PlayerRotationY);
                         Players[userID].SetRotationInMatrix(2, playerUpdateData.PlayerRotationZ);
 
-                        Players[userID].SetSpeed(-(int) System.Math.Round(playerUpdateData.PlayerVelocity));
+                        Players[userID].SetAbsoluteSpeed(playerUpdateData.PlayerVelocity);
 
                         break;
 
@@ -244,7 +244,7 @@ namespace Examples.TheGame
                                 Bullets[objectID].SetRotationInMatrix(1, objectSpawnData.ObjectRotationY);
                                 Bullets[objectID].SetRotationInMatrix(2, objectSpawnData.ObjectRotationZ);
 
-                                Bullets[objectID].SetSpeed((int) System.Math.Round(objectSpawnData.ObjectVelocity));
+                                Bullets[objectID].SetAbsoluteSpeed(objectSpawnData.ObjectVelocity);
 
                                 break;
                         }
@@ -312,7 +312,7 @@ namespace Examples.TheGame
                 RespawnPlayer(Mediator.UserID);
             }
 
-            this.AddNewPlayer();
+            //this.AddNewPlayer();
         }
 
         internal void AddNewPlayer()

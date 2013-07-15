@@ -111,8 +111,8 @@ namespace Examples.TheGame
                 var data = new DataPacketObjectSpawn
                 {
                     UserID = GetId(),
-                    ObjectID = (uint) bullet.GetId(),
-                    ObjectVelocity = bullet.GetSpeed(),
+                    ObjectID = bullet.GetId(),
+                    ObjectVelocity = bullet.GetAbsoluteSpeed(),
                     ObjectPosition = GetPositionVector(),
                     ObjectRotationX = GetRotationFromMatrix(0),
                     ObjectRotationY = GetRotationFromMatrix(1),
@@ -127,6 +127,10 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
+
+            if (GetId() != GameHandler.UserID)
+                SetSpeed(0);
+
             if (GetLife() <= 0)
                 DestroyEnity();
 
@@ -139,15 +143,14 @@ namespace Examples.TheGame
             _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX);
             _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
+            var speed = 0;
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
-                SetSpeed(1);
+                speed = 1;
+           if (Input.Instance.IsKeyPressed(KeyCodes.S))
+                speed = -1;
 
-            else if (Input.Instance.IsKeyPressed(KeyCodes.S))
-                SetSpeed(-1);
-
-            else
-                SetSpeed(0);
+            SetSpeed(speed);
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
@@ -164,13 +167,13 @@ namespace Examples.TheGame
                     Timestamp = GameHandler.Mediator.GetUnixTimestamp(),
                     PlayerHealth = (int) _life,
                     PlayerActive = true,
-                    PlayerVelocity = GetSpeed(),
+                    PlayerVelocity = GetAbsoluteSpeed(),
                     PlayerPosition = GetPositionVector(),
                     PlayerRotationX = GetRotationFromMatrix(0),
                     PlayerRotationY = GetRotationFromMatrix(1),
                     PlayerRotationZ = GetRotationFromMatrix(2),
                 };
-
+           
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
                 GameHandler.Mediator.AddToSendingBuffer(packet, true);
             }
