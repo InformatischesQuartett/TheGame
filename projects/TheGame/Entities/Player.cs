@@ -118,17 +118,17 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 10;
-            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 10;
+            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 50;
+            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 50;
 
-            _mousePos.x *= (float)Math.Exp(-1.30 * Time.Instance.DeltaTime); 
-            _mousePos.y *= (float)Math.Exp(-1.30 * Time.Instance.DeltaTime); 
+            _mousePos.x *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
+            _mousePos.y *= (float)Math.Exp(-1.00 * Time.Instance.DeltaTime); 
 
             if (Math.Abs(xDiff) > MathHelper.EpsilonFloat)
-                _mousePos.x = xDiff;
+                _mousePos.x = Math.Sign(xDiff) * Math.Min(0.01f, Math.Abs(xDiff));
 
             if (Math.Abs(yDiff) > MathHelper.EpsilonFloat)
-                _mousePos.y = yDiff;
+                _mousePos.y = Math.Sign(yDiff) * Math.Min(0.01f, Math.Abs(yDiff));
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
                 SetSpeed(1);
