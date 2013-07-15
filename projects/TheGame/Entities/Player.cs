@@ -119,6 +119,7 @@ namespace Examples.TheGame
             _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX);
             _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
+            SetRotation(_mousePos);
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
                 SetSpeed(1);
@@ -131,8 +132,6 @@ namespace Examples.TheGame
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
-
-            SetRotation(_mousePos);
         }
     }
 }

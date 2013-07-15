@@ -23,6 +23,7 @@ namespace Examples.TheGame
         internal override void OnCollisionEnter(int id)
         {
             GameHandler.Players[id].SetLife(+_health);
+
             DestroyEnity();
         }
     }
