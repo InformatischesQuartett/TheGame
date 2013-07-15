@@ -224,7 +224,7 @@ namespace Examples.TheGame
             RContext.Viewport(0, 0, Mediator.Width, Mediator.Height);
 
             var aspectRatio = Mediator.Width / (float) Mediator.Height;
-            RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
+            RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 1000000);
 
             // Render all Objects
             foreach (var go in HealthItems)

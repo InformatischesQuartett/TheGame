@@ -91,7 +91,7 @@ namespace Examples.TheGame
 
                 if (Network.Instance.Config.SysType == SysType.Server)
                     msg += "IP of the Server:\n\n              " + ConnectToIp + "\n\nPlayers: " +
-                           Network.Instance.Connections.Count + "             (Press Space)";
+                           Network.Instance.Connections.Count + "             (Press Return)";
 
                 if (Network.Instance.Config.SysType == SysType.Client)
                     if (Network.Instance.Status.Connected)
@@ -123,7 +123,7 @@ namespace Examples.TheGame
             _renderContext.Viewport(0, 0, _networkHandler.Mediator.Width, _networkHandler.Mediator.Height);
 
             var aspectRatio = _networkHandler.Mediator.Width/_networkHandler.Mediator.Height;
-            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 1000000);
             
             // Set Shader and ModelView
             xPos = (xPos < -500) ? 500 : xPos - (float) Time.Instance.DeltaTime*0.75f;
@@ -139,7 +139,7 @@ namespace Examples.TheGame
                                     _networkHandler.Mediator.Height/2 - 436/2,
                                     848, 436);
 
-            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 100000);
+            _renderContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 848/436, 1, 1000000);
 
             // Set Shader and ModelView
             _renderContext.Clear(ClearFlags.Depth);
@@ -207,7 +207,7 @@ namespace Examples.TheGame
             // SysType "Server"
             if (Network.Instance.Config.SysType == SysType.Server)
             {
-                if (Input.Instance.IsKeyDown(KeyCodes.Space))
+                if (Input.Instance.IsKeyDown(KeyCodes.Return))
                 {
                     _menuSound2.Play();
                     _networkHandler.Mediator.StartGame();

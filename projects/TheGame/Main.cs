@@ -59,7 +59,7 @@ namespace Examples.TheGame
             RC.Viewport(0, 0, Width, Height);
 
             var aspectRatio = Width/(float) Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 100000);
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 1000000);
         }
         
         /// <summary>
