@@ -37,6 +37,10 @@ namespace Examples.TheGame
 
         private readonly ITexture _skyBoxTexture;
         internal readonly ITexture TextureExplosionHandle;
+        internal ITexture _healthBarGreenTexture;
+        internal ITexture _healthBarOrangeTexture;
+        internal ITexture _healthBarRedTexture;
+        internal ITexture _currentHealthBarTexture;
 
         internal readonly IAudioStream AudioSoundtrack;
         internal readonly IAudioStream AudioExplosion;
@@ -50,6 +54,7 @@ namespace Examples.TheGame
         internal Mesh ExplosionMesh;
         internal Mesh HealthItemMesh;
         private readonly Mesh _skyBoxMesh;
+        private Mesh _guiCube;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -96,6 +101,15 @@ namespace Examples.TheGame
             texture = rc.LoadImage("Assets/skybox.png");
             _skyBoxTexture = rc.CreateTexture(texture);
 
+            texture = rc.LoadImage("Assets/Topbar_green.png");
+            _healthBarGreenTexture = rc.CreateTexture(texture);
+            texture = rc.LoadImage("Assets/Topbar_orange.png");
+            _healthBarOrangeTexture = rc.CreateTexture(texture);
+            texture = rc.LoadImage("Assets/Topbar_red.png");
+            _healthBarRedTexture = rc.CreateTexture(texture);
+            _currentHealthBarTexture = _healthBarGreenTexture;
+
+
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
             AudioShoot = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
@@ -108,6 +122,7 @@ namespace Examples.TheGame
             ExplosionMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             HealthItemMesh = MeshReader.LoadMesh("Assets/item.obj.model");
             _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
+            _guiCube = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
@@ -247,12 +262,31 @@ namespace Examples.TheGame
             // Render SkyBox
             RContext.SetShader(TextureSp);
             RContext.SetShaderParamTexture(_skyBoxShaderParam, _skyBoxTexture);
-
             var rotation = _camMatrix;
             rotation.Row3 = new float4(0, 0, 0, 1);
             RContext.ModelView = float4x4.Scale(50, 50, 50) * rotation;
-
             RContext.Render(_skyBoxMesh);
+           
+            //Render Gui Cube for Healthbar
+
+            if (Players[_playerId].GetLife() >= 70)
+            {
+                _currentHealthBarTexture = _healthBarGreenTexture;
+            }
+            if (Players[_playerId].GetLife() < 70)
+            {
+                _currentHealthBarTexture = _healthBarOrangeTexture;
+            }
+            if (Players[_playerId].GetLife() <= 40)
+            {
+                _currentHealthBarTexture = _healthBarRedTexture;
+            }
+            Debug.WriteLine("Live " + Players[_playerId].GetLife());
+            RContext.SetShader(TextureSp);
+            RContext.SetShaderParamTexture(_skyBoxShaderParam, _currentHealthBarTexture);
+            RContext.ModelView = float4x4.Scale(1, 0.075f, 0.001f) * float4x4.CreateTranslation(0, 75, -200);
+            RContext.Render(_guiCube);
+            
         }
 
         internal void StartGame()

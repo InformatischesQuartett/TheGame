@@ -37,6 +37,7 @@ namespace Examples.TheGame
                 DestroyEnity();
             }
         }
+
         internal override void OnCollisionEnter(int id)
         {
             GameHandler.Players[id].SetLife(-10f);

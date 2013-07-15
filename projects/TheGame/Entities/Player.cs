@@ -16,7 +16,6 @@ namespace Examples.TheGame
             : base(gameHandler, position, speed)
         {
             SetId(id);
-            _life = 5;
             this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
