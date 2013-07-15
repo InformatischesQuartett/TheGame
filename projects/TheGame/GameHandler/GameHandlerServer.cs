@@ -124,5 +124,52 @@ namespace Examples.TheGame
         {
             CheckAllCollision();
         }
+
+        public void RespawnPlayer(uint getId)
+        {
+            if (getId == 0 && _gameHandler.UserID == 0)
+            {
+                var respawnPosition = RandomPosition();
+
+                while (_gameHandler.Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
+                {
+                    respawnPosition = RandomPosition();
+                }
+
+                _gameHandler.Players[getId].SetPosition(respawnPosition);
+                _gameHandler.Players[getId].ResetLife();
+            }
+            else
+            {
+                // SERVER ACTIVITY!
+                var respawnPosition = RandomPosition();
+
+                while (_gameHandler.Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
+                {
+                    respawnPosition = RandomPosition();
+                }
+
+                // send back to user
+                var data = new DataPacketPlayerSpawn
+                {
+                    UserID = getId,
+                    Spawn = true,
+                    SpawnPosition = respawnPosition
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
+                _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+
+                // reset life
+                if (!_gameHandler.Players.ContainsKey(getId))
+                {
+                    var p = new Player(_gameHandler, float4x4.Identity, 0, getId);
+                    _gameHandler.Players.Add(getId, p);
+                }
+
+                _gameHandler.Players[getId].SetPosition(respawnPosition);
+                _gameHandler.Players[getId].ResetLife();
+            }
+        }
     }
 }

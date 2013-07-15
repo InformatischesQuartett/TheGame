@@ -176,7 +176,7 @@ namespace Examples.TheGame
             if (GetType() == typeof (Player))
             {
                 if (GetId() == 0)
-                    GameHandler.RespawnPlayer(GetId());
+                    GameHandler._gameHandlerServer.RespawnPlayer(GetId());
             }
 
             if (GetType() == typeof (HealthItem))
