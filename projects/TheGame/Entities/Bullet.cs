@@ -22,7 +22,7 @@ namespace Examples.TheGame
             _ownerId = ownerId;
 
             this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            Debug.WriteLine("New Bullet: " + position.Row3 + ", Speed: " + speed + ", Owner: " + _ownerId);
+            //Debug.WriteLine("New Bullet: " + position.Row3 + ", Speed: " + speed + ", Owner: " + _ownerId);
         }
 
         internal int GetOwnerId()
@@ -34,7 +34,7 @@ namespace Examples.TheGame
         {
             base.Update();
             _distCounter += -0.5f*(this.GetSpeed());
-            Debug.WriteLine("New Bullet: " + this.GetPosition().Row3 + ", Speed: " + this.GetSpeed() + ", Owner: " + _ownerId);
+            //Debug.WriteLine("New Bullet: " + this.GetPosition().Row3 + ", Speed: " + this.GetSpeed() + ", Owner: " + _ownerId);
             if (_distCounter > _maxDist)
             {
                 this.DestroyEnity();
