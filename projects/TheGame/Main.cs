@@ -10,14 +10,6 @@ namespace Examples.TheGame
     /// </summary>
     public class TheGame : RenderCanvas
     {
-        //public const int GameSize = 10;
-
-
-        private static float _red, _green, _blue;
-        protected ShaderMaterial M;
-        protected IShaderParam[] Param;
-        protected ShaderProgram Sp;
-
         private Mediator _mediator;
 
         /// <summary>
@@ -25,20 +17,15 @@ namespace Examples.TheGame
         /// </summary>
         public override void Init()
         {
-            Sp = MoreShaders.GetShader("diffuse", RC);
-            RC.SetShader(Sp);
-            _red = _green = _blue = 0.1f;
-            RC.SetLightActive(0, 1);
-            RC.SetLightPosition(0, new float3(500, 0, 0));
-            RC.SetLightAmbient(0, new float4(0.3f, 0.3f, 0.3f, 1));
-            RC.SetLightSpecular(0, new float4(0.1f, 0.1f, 0.1f, 1));
-            RC.SetLightDiffuse(0, new float4(_red, _green, _blue, 1));
-            RC.SetLightDirection(0, new float3(-1, 0, 0));
-
-            M = new ShaderMaterial(Sp);
-
-            EnableBlending = true;
+            // Settings for the GameWindow
+            Blending = true;
             VSync = true;
+
+            Height = 700;
+            Width = 750;
+
+            Input.Instance.CursorVisible = false;
+            Input.Instance.FixMouseAtCenter = false;
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 
@@ -54,7 +41,9 @@ namespace Examples.TheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            EnableBlending = _mediator.Blending;
+            Blending = _mediator.Blending;
+            Fullscreen = _mediator.Fullscreen;
+
             _mediator.Update();
 
             Present();
