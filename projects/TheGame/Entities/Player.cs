@@ -27,7 +27,15 @@ namespace Examples.TheGame
         }
         internal void SetLife(float value)
         {
-            _life += value;
+            if (_life + value > 100)
+            {
+                _life = 100;
+            }
+            else
+            {
+                _life += value;
+            }
+            
         }
 
         internal void ResetLife()
