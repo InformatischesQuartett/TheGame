@@ -22,7 +22,7 @@ namespace Examples.TheGame
             this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
-            Sp = gameHandler.TextureSp;
+            Sp = gameHandler.CustomSp;
 
             _frameCounter = 0;
             
@@ -196,10 +196,32 @@ namespace Examples.TheGame
                 GameHandler.Mediator.AddToSendingBuffer(packet, false);
             }
         }
-        internal override void InstructShader()
+        /*internal override void InstructShader()
         {
             //Rc.SetShader(Sp);
             Rc.SetShaderParamTexture(GameHandler.PlayerShaderParam, GameHandler.PlayerTexture);
+        }*/
+
+        /// <summary>
+        /// Instructs the shader prior to rendering
+        /// </summary>
+        internal override void InstructShader()
+        {
+            Rc.SetShaderParamTexture(Sp.GetShaderParam("tex"), GameHandler.PlayerTexture);
+            Rc.SetShaderParam(Sp.GetShaderParam("calcLighting"), 0);
+            Rc.SetShaderParam(Sp.GetShaderParam("ambientLight"), new float4(0.2f, 0.2f, 0.25f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("matAmbient"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("noiseStrength"), 0.0f);
+            Rc.SetShaderParam(Sp.GetShaderParam("light1Position"), Rc.View * new float4(1000, 1000, -1000, 1));
+            Rc.SetShaderParam(Sp.GetShaderParam("light1Direction"), Rc.InvTransView * new float3(-1, -1, 1));
+            Rc.SetShaderParam(Sp.GetShaderParam("light1Diffuse"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("light1Specular"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("matDiffuse"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("matSpecular"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("matShininess"), 5);
+            Rc.SetShaderParam(Sp.GetShaderParam("amountOfLights"), 1);
+            //Rc.SetShaderParam(Sp.GetShaderParam("light1Aperture"), 0f);
+            Rc.SetShaderParam(Sp.GetShaderParam("light1Falloff"), 0);
         }
     }
 }
