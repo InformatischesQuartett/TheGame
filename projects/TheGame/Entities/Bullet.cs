@@ -7,10 +7,9 @@ namespace Examples.TheGame
     internal class Bullet : GameEntity
     {
 
-        private float _maxDist;
-        private float4x4 _endPos;
+        private readonly float _maxDist;
         private float _distCounter;
-        private int _ownerId;
+        private readonly int _ownerId;
 
         internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
                      int ownerId)
@@ -18,11 +17,10 @@ namespace Examples.TheGame
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
-            _maxDist = 500;
+            _maxDist = 5000;
             _ownerId = ownerId;
 
-            this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
-            Debug.WriteLine("New Bullet");
+            EntityMesh = gameHandler.BulletMesh;
         }
 
         internal int GetOwnerId()
@@ -33,18 +31,19 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            _distCounter += -0.5f*(this.GetSpeed());
+            _distCounter += -0.5f*(GetSpeed());
+
             if (_distCounter > _maxDist)
             {
-                this.DestroyEnity();
+                DestroyEnity();
                 Debug.WriteLine("Bullet Destroyed");
             }
         }
         internal override void OnCollisionEnter(int id)
         {
-            _gameHandler.Players[id].SetLife(-0.5f);
-            _gameHandler.Players[_ownerId].SetScore();
-            this.DestroyEnity();
+            GameHandler.Players[id].SetLife(-0.5f);
+            GameHandler.Players[_ownerId].SetScore();
+            DestroyEnity();
         }
     }
 }

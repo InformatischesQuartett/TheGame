@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Fusee.Engine;
+﻿using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
@@ -31,9 +30,9 @@ namespace Examples.TheGame
         /// <param name="position">The position.</param>
         internal Explosion(GameHandler gameHandler, float4x4 position) : base(gameHandler, 0, position, 0, 0)
         {
-            this.EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             SetScale(100);
-            _sp = gameHandler.CustomSp;
+            Sp = gameHandler.CustomSp;
             SetId(gameHandler.Mediator.GetObjectId());
         }
 
@@ -48,21 +47,13 @@ namespace Examples.TheGame
 
             // Scale up or down
             if (_elapsedTime <= MaxTime/2.0f)
-            {
                 SetScale(GetScale() + (float) (SizeIncrease * Time.Instance.DeltaTime));
-                Debug.WriteLine("Explosion increase: " + GetScale());
-            }
-            else if (_elapsedTime > MaxTime / 2.0f)
-            {
-                SetScale(GetScale() - (float)(SizeIncrease * Time.Instance.DeltaTime));
-                Debug.WriteLine("Explosion decrease: " + GetScale());
-            }
-            if (_elapsedTime >= MaxTime)
-            {
-                Debug.WriteLine("Explosion destroyed");
 
-                this.DestroyEnity();
-            }
+            else if (_elapsedTime > MaxTime / 2.0f)
+                SetScale(GetScale() - (float)(SizeIncrease * Time.Instance.DeltaTime));
+
+            if (_elapsedTime >= MaxTime)
+                DestroyEnity();
         }
 
         /// <summary>
@@ -70,13 +61,13 @@ namespace Examples.TheGame
         /// </summary>
         internal override void InstructShader()
         {
-            _rc.SetShaderParamTexture(_sp.GetShaderParam("tex"), _gameHandler.TextureExplosionHandle);
-            _rc.SetShaderParam(_sp.GetShaderParam("calcLighting"), 1);
-            _rc.SetShaderParam(_sp.GetShaderParam("ambientLight"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            _rc.SetShaderParam(_sp.GetShaderParam("matAmbient"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            _rc.SetShaderParam(_sp.GetShaderParam("noiseStrength"), 1.0f);
-            _rc.SetShaderParam(_sp.GetShaderParam("noiseTime"), (float)_elapsedTime/5);
-            _rc.SetShaderParam(_sp.GetShaderParam("noiseOffset"), new float2(0, 0));
+            Rc.SetShaderParamTexture(Sp.GetShaderParam("tex"), GameHandler.TextureExplosionHandle);
+            Rc.SetShaderParam(Sp.GetShaderParam("calcLighting"), 1);
+            Rc.SetShaderParam(Sp.GetShaderParam("ambientLight"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("matAmbient"), new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            Rc.SetShaderParam(Sp.GetShaderParam("noiseStrength"), 1.5f);
+            Rc.SetShaderParam(Sp.GetShaderParam("noiseTime"), (float)_elapsedTime/5);
+            Rc.SetShaderParam(Sp.GetShaderParam("noiseOffset"), new float2(0, 0));
         }
     }
 }
