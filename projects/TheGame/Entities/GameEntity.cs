@@ -6,7 +6,7 @@ namespace Examples.TheGame
 {
     internal class GameEntity
     {
-        private int _id;
+        private uint _id;
 
         protected GameHandler GameHandler;
 
@@ -41,12 +41,12 @@ namespace Examples.TheGame
             Sp = gameHandler.BasicSp;
         }
 
-        internal int GetId()
+        internal uint GetId()
         {
             return _id;
         }
 
-        internal void SetId(int id)
+        internal void SetId(uint id)
         {
             _id = id;
         }
@@ -83,7 +83,7 @@ namespace Examples.TheGame
                    GetCollisionRadius() * GetCollisionRadius();
         }
 
-        internal virtual void OnCollisionEnter(int id)
+        internal virtual void OnCollisionEnter(uint id)
         {
             Debug.WriteLine("OnCollisionEnter");
         }
@@ -138,7 +138,6 @@ namespace Examples.TheGame
         internal void SetSpeed(int i)
         {
             //All speeds are negative
-            Debug.WriteLine(_speed);
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > 0.2f))
             {
                 //Vorwärts und bremsen rückwärts

@@ -9,7 +9,7 @@ namespace Examples.TheGame
         private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
-        private int _userID;
+        private uint _userID;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="NetworkClient" /> class.
@@ -26,7 +26,7 @@ namespace Examples.TheGame
             Network.Instance.Config.ConnectOnDiscovery = true;
             Network.Instance.Config.DefaultPort = 54954;
 
-            _userID = -1;
+            _userID = 0;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Examples.TheGame
         {
             // Debug.WriteLine("KeepAlive bekommen. ID: " + keepAlive.KeepAliveID);
 
-            if (_userID != -1)
+            if (_userID != 0)
             {
                 var data = new DataPacketKeepAlive {KeepAliveID = keepAlive.KeepAliveID, UserID = _userID};
                 var packet = NetworkProtocol.MessageEncode(DataPacketTypes.KeepAlive, data);

@@ -29,7 +29,7 @@ namespace Examples.TheGame
     internal partial struct DataPacketPlayerSpawn
     {
         // Data
-        internal int UserID;
+        internal uint UserID;
         internal bool Spawn;
         internal float3 SpawnPosition;
     }
@@ -40,7 +40,7 @@ namespace Examples.TheGame
     internal partial struct DataPacketPlayerUpdate
     {
         // Data
-        internal int UserID;
+        internal uint UserID;
         internal uint Timestamp;
         internal bool PlayerActive;
         internal int PlayerHealth;
@@ -57,12 +57,14 @@ namespace Examples.TheGame
     internal partial struct DataPacketObjectSpawn
     {
         // Data
-        internal int UserID;
+        internal uint UserID;
         internal uint ObjectID;
         internal int ObjectType;
+        internal float ObjectVelocity;
         internal float3 ObjectPosition;
-        internal float3 ObjectRotation;
-        internal float3 ObjectVelocity;
+        internal float3 ObjectRotationX;
+        internal float3 ObjectRotationY;
+        internal float3 ObjectRotationZ;
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ namespace Examples.TheGame
     internal partial struct DataPacketObjectUpdate
     {
         // Data
-        internal int UserID;
+        internal uint UserID;
         internal uint ObjectID;
         internal int ObjectType;
         internal bool ObjectRemoved;

@@ -9,10 +9,11 @@ namespace Examples.TheGame
 
         private readonly float _maxDist;
         private float _distCounter;
-        private readonly int _ownerId;
+        private readonly uint _ownerId;
 
-        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
-                     int ownerId)
+        // own bullet
+        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
+                        float impact, uint ownerId)
             : base(gameHandler, collisionRadius, position, speed, impact)
         {
             SetId(gameHandler.Mediator.GetObjectId());
@@ -23,7 +24,20 @@ namespace Examples.TheGame
             EntityMesh = gameHandler.BulletMesh;
         }
 
-        internal int GetOwnerId()
+        // other user's bullet
+        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
+                        uint ownerId, uint id)
+            : base(gameHandler, collisionRadius, position, speed, impact)
+        {
+            SetId(id);
+
+            _maxDist = 5000;
+            _ownerId = ownerId;
+
+            EntityMesh = gameHandler.BulletMesh;
+        }
+
+        internal uint GetOwnerId()
         {
             return _ownerId;
         }
@@ -39,7 +53,7 @@ namespace Examples.TheGame
                 Debug.WriteLine("Bullet Destroyed");
             }
         }
-        internal override void OnCollisionEnter(int id)
+        internal override void OnCollisionEnter(uint id)
         {
             GameHandler.Players[id].SetLife(-0.5f);
             GameHandler.Players[_ownerId].SetScore();

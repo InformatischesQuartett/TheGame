@@ -12,7 +12,7 @@ namespace Examples.TheGame
         private readonly Mediator _mediator;
         private readonly NetworkGUI _networkGUI;
 
-        private readonly Dictionary<int, INetworkConnection> _userIDs;
+        private readonly Dictionary<uint, INetworkConnection> _userIDs;
 
         private readonly Timer _keepAliveTimer;
         private readonly Dictionary<INetworkConnection, bool> _keepAliveResponses;
@@ -35,7 +35,7 @@ namespace Examples.TheGame
             Network.Instance.Config.Discovery = true;
             Network.Instance.Config.DefaultPort = 14242;
 
-            _userIDs = new Dictionary<int, INetworkConnection>();
+            _userIDs = new Dictionary<uint, INetworkConnection>();
             Network.Instance.OnConnectionUpdate += ConnectionUpdate;
 
             _random = new Random();
@@ -109,7 +109,7 @@ namespace Examples.TheGame
             KeyValuePair<DataPacket, bool> sendingPacket;
             while ((sendingPacket = _mediator.GetFromSendingBuffer()).Key.Packet != null)
             {
-                int userID;
+                uint userID;
 
                 switch (sendingPacket.Key.PacketType)
                 {
@@ -197,7 +197,7 @@ namespace Examples.TheGame
 
                 if (msg.Type == MessageType.Data)
                 {
-                    int userID;
+                    uint userID;
                     var decodedMessage = NetworkProtocol.MessageDecode(msg);
 
                     switch (decodedMessage.PacketType)
@@ -262,9 +262,9 @@ namespace Examples.TheGame
         {
             if (connectionStatus == ConnectionStatus.Connected)
             {
-                var newUserID = _random.Next(1, 256);
+                var newUserID = (uint) _random.Next(1, 256);
                 while (_userIDs.ContainsKey(newUserID))
-                    newUserID = _random.Next(1, 256);
+                    newUserID = (uint) _random.Next(1, 256);
 
                 _userIDs.Add(newUserID, senderConnection);
 

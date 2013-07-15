@@ -34,7 +34,7 @@ Method:	   Reliable, Sequenced
 Channel:   0
 Direction: Server -> Clients
 
-## UserID         ## int    ## 0 as UserID is the server        ##
+## UserID         ## uint   ## 0 as UserID is the server        ##
 ## KeepAliveID    ## int    ## 10000000 - 99999999              ##
 ## Timestamp      ## uint   ## Unix-Timestamp                   ##
 
@@ -51,7 +51,7 @@ Method:	   Reliable, Sequenced
 Channel:   1
 Direction: Server -> Client
 
-## UserID         ## int    ## A number between 1 and 255       ##
+## UserID         ## uint   ## A number between 1 and 255       ##
 ## Spawn          ## bool   ## false if client just connected   ##
 ## SpawnPosition  ## float3 ## Coordinates within the 3D space  ##
 
@@ -76,7 +76,7 @@ Channel:   2
 Direction: Client -> Server -> Clients
 	   Server -> Clients
 
-## UserID          ## int    ## A number between 1 and 255      ##
+## UserID          ## uint   ## A number between 1 and 255      ##
 ## Timestamp       ## uint   ## Unix-Timestamp                  ##
 ## PlayerActive    ## bool   ## false if player disconnected    ##
 ## PlayerHealth    ## int    ## A number between 0 and 100      ##
@@ -101,18 +101,20 @@ until any new information is available.
 ## OBJECT SPAWN ##################################################
 
 Packet ID: 0x03
-Length:    16 - 52 Bytes
+Length:    16 - 52 Bytes ???!
 Method:	   Reliable, Ordered
 Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Clients
 
-## UserID         ## int    ## A number between 1 and 255       ##
-## ObjectID       ## uint   ## A number in a specific range     ##
-## ObjectType     ## int    ## A number between 0 and 255       ##
-## ObjectPosition ## float3 ## Coordinates within the 3D space  ##
-## ObjectRotation ## float3 ## Coordinates within the 3D space  ##
-## ObjectVelocity ## float3 ## Vector; Length is speed in px/f  ##
+## UserID          ## uint   ## A number between 1 and 255      ##
+## ObjectID        ## uint   ## A number in a specific range    ##
+## ObjectType      ## int    ## A number between 0 and 255      ##
+## ObjectVelocity  ## float  ##                                 ##
+## ObjectPosition  ## float3 ## Coordinates in the 3D space     ##
+## ObjectRotationX ## float3 ## Coordinates in the 3D space     ##
+## ObjectRotationY ## float3 ## Coordinates in the 3D space     ##
+## ObjectRotationZ ## float3 ## Coordinates in the 3D space     ##
 
 Whenever a player shoots a bullet, the client sends an ObjectSpawn
 packet. The server then updates his own game state and sends an
@@ -138,7 +140,7 @@ Channel:   3
 Direction: Client -> Server -> Clients
            Server -> Clients
 
-## UserID         ## int    ## A number between 1 and 255       ##
+## UserID         ## uint   ## A number between 1 and 255       ##
 ## ObjectID       ## uint   ## A number in a specific range     ##
 ## ObjectType     ## int    ## A number between 0 and 255       ##
 ## ObjectRemoved  ## bool   ## true if the object was removed   ##

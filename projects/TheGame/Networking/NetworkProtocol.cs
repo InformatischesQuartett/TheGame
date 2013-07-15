@@ -13,7 +13,7 @@ namespace Examples.TheGame
     internal struct DataPacketKeepAlive
     {
         // Data
-        internal int UserID;
+        internal uint UserID;
         internal int KeepAliveID;
         internal uint Timestamp;
 
@@ -190,17 +190,20 @@ namespace Examples.TheGame
                 using (var stream = new MemoryStream())
                 {
                     Serializer.SerializeWithLengthPrefix(stream, data.ObjectPosition, PrefixStyle.Base128);
-                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectRotation, PrefixStyle.Base128);
-                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectVelocity, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectRotationX, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectRotationY, PrefixStyle.Base128);
+                    Serializer.SerializeWithLengthPrefix(stream, data.ObjectRotationZ, PrefixStyle.Base128);
 
                     encObjectData = stream.ToArray();
                 }
 
                 var objectIDBytes = BitConverter.GetBytes(data.ObjectID);
+                var velocityBytes = BitConverter.GetBytes(data.ObjectVelocity);
 
-                var packet = new byte[objectIDBytes.Length + encObjectData.Length + 7];
+                var packet = new byte[objectIDBytes.Length + velocityBytes.Length + encObjectData.Length + 3];
                 Buffer.BlockCopy(objectIDBytes, 0, packet, 2, objectIDBytes.Length);
-                Buffer.BlockCopy(encObjectData, 0, packet, 7, encObjectData.Length);
+                Buffer.BlockCopy(velocityBytes, 0, packet, 7, velocityBytes.Length);
+                Buffer.BlockCopy(encObjectData, 0, packet, 11, encObjectData.Length);
 
                 packet[0] = (byte) msgType;                 // PacketType
                 packet[1] = (byte) (data.UserID & 255);     // UserID
@@ -317,17 +320,19 @@ namespace Examples.TheGame
                 if (packetType == DataPacketTypes.ObjectSpawn)
                 {
                     float3 decObjectPosition;
-                    float3 decObjectRotation;
-                    float3 decObjectVelocity;
+                    float3 decObjectRotationX;
+                    float3 decObjectRotationY;
+                    float3 decObjectRotationZ;
 
                     using (var ms = new MemoryStream())
                     {
-                        ms.Write(msgData, 7, msgData.Length - 7);
+                        ms.Write(msgData, 11, msgData.Length - 11);
                         ms.Position = 0;
 
                         decObjectPosition = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
-                        decObjectRotation = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
-                        decObjectVelocity = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decObjectRotationX = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decObjectRotationY = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
+                        decObjectRotationZ = Serializer.DeserializeWithLengthPrefix<float3>(ms, PrefixStyle.Base128);
                     }
 
                     var objectSpawnPacket = new DataPacketObjectSpawn
@@ -335,9 +340,11 @@ namespace Examples.TheGame
                             UserID = msgData[1],
                             ObjectID = BitConverter.ToUInt32(msgData, 2),
                             ObjectType = msgData[6],
+                            ObjectVelocity = BitConverter.ToSingle(msgData, 7),
                             ObjectPosition = decObjectPosition,
-                            ObjectRotation = decObjectRotation,
-                            ObjectVelocity = decObjectVelocity
+                            ObjectRotationX = decObjectRotationX,
+                            ObjectRotationY = decObjectRotationY,
+                            ObjectRotationZ = decObjectRotationZ
                         };
 
                     decodedMessage.Packet = objectSpawnPacket;

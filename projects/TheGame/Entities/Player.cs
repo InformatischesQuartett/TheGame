@@ -13,8 +13,11 @@ namespace Examples.TheGame
 
         private float2 _mousePos;
 
+        private int _frameCounter;
+        private const int FrameUpdate = 10;
+
         internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
-                      float impact, int id)
+                      float impact, uint id)
             : base(gameHandler, collisionRadius, position, speed, impact)
         {
             SetId(id);
@@ -22,6 +25,8 @@ namespace Examples.TheGame
             collisionRadius = 10;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
+
+            _frameCounter = 0;
         }
 
         internal float GetLife()
@@ -84,7 +89,7 @@ namespace Examples.TheGame
             }
         }
 
-        internal override void OnCollisionEnter(int id)
+        internal override void OnCollisionEnter(uint id)
         {
             SetLife(-1);
 
@@ -103,6 +108,21 @@ namespace Examples.TheGame
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
                 GameHandler.AudioShoot.Play();
+
+                // Inform other Players
+                var data = new DataPacketObjectSpawn
+                {
+                    UserID = GetId(),
+                    ObjectID = (uint) bullet.GetId(),
+                    ObjectVelocity = bullet.GetSpeed(),
+                    ObjectPosition = GetPositionVector(),
+                    ObjectRotationX = GetRotationFromMatrix(0),
+                    ObjectRotationY = GetRotationFromMatrix(1),
+                    ObjectRotationZ = GetRotationFromMatrix(2),
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
+                GameHandler.Mediator.AddToSendingBuffer(packet, true);
             }
         }
 
@@ -145,12 +165,13 @@ namespace Examples.TheGame
             SetRotation(_mousePos);
 
             // Send update to all clients.
-            if (Math.Abs(GetSpeed()) > 0 || f != new float2(0, 0))
-            {
+            _frameCounter = ++_frameCounter%FrameUpdate;
+
+            if (_frameCounter == 0) {
                 var data = new DataPacketPlayerUpdate
                 {
                     UserID = GetId(),
-                    Timestamp = _gameHandler.Mediator.GetUnixTimestamp(),
+                    Timestamp = GameHandler.Mediator.GetUnixTimestamp(),
                     PlayerHealth = (int) _life,
                     PlayerActive = true,
                     PlayerVelocity = GetSpeed(),
@@ -161,7 +182,7 @@ namespace Examples.TheGame
                 };
 
                 var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+                GameHandler.Mediator.AddToSendingBuffer(packet, true);
             }
         }
     }

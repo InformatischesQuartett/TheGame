@@ -17,17 +17,17 @@ namespace Examples.TheGame
         /// <summary>
         ///     Disctionarires mit allen Items und Playern
         /// </summary>
-        internal readonly Dictionary<int, HealthItem> HealthItems;
+        internal readonly Dictionary<uint, HealthItem> HealthItems;
 
-        internal readonly Dictionary<int, Bullet> Bullets;
-        internal readonly Dictionary<int, Player> Players;
+        internal readonly Dictionary<uint, Bullet> Bullets;
+        internal readonly Dictionary<uint, Player> Players;
 
-        internal readonly Dictionary<int, Explosion> Explosions;
+        internal readonly Dictionary<uint, Explosion> Explosions;
 
-        internal readonly List<int> RemoveBullets;
-        internal readonly List<int> RemovePlayers;
-        internal readonly List<int> RemoveHealthItems;
-        internal readonly List<int> RemoveExplosions;
+        internal readonly List<uint> RemoveBullets;
+        internal readonly List<uint> RemovePlayers;
+        internal readonly List<uint> RemoveHealthItems;
+        internal readonly List<uint> RemoveExplosions;
 
         internal readonly ShaderProgram TextureSp;
         internal readonly ShaderProgram BasicSp;
@@ -55,7 +55,7 @@ namespace Examples.TheGame
         /// </summary>
         internal GameState GameState { get; set; }
 
-        internal int UserID { get; set; }
+        internal uint UserID { get; set; }
 
         internal readonly Mediator Mediator;
 
@@ -65,7 +65,7 @@ namespace Examples.TheGame
         internal readonly RenderContext RContext;
 
         private float4x4 _camMatrix;
-        private int _playerId;
+
 
         internal GameHandler(RenderContext rc, Mediator mediator)
         {
@@ -73,15 +73,15 @@ namespace Examples.TheGame
             RContext = rc;
             Mediator = mediator;
 
-            HealthItems = new Dictionary<int, HealthItem>();
-            Bullets = new Dictionary<int, Bullet>();
-            Players = new Dictionary<int, Player>();
-            Explosions = new Dictionary<int, Explosion>();
+            HealthItems = new Dictionary<uint, HealthItem>();
+            Bullets = new Dictionary<uint, Bullet>();
+            Players = new Dictionary<uint, Player>();
+            Explosions = new Dictionary<uint, Explosion>();
 
-            RemoveBullets = new List<int>();
-            RemovePlayers = new List<int>();
-            RemoveHealthItems = new List<int>();
-            RemoveExplosions = new List<int>();
+            RemoveBullets = new List<uint>();
+            RemovePlayers = new List<uint>();
+            RemoveHealthItems = new List<uint>();
+            RemoveExplosions = new List<uint>();
 
             TextureSp = MoreShaders.GetShader("texture2", rc);
             BasicSp = MoreShaders.GetShader("simple", rc);
@@ -117,7 +117,7 @@ namespace Examples.TheGame
             //  StartGame();
             // this.AddNewPlayer();
 
-            Debug.WriteLine("_playerId: " + _playerId);
+            Debug.WriteLine("_playerId: " + UserID);
         }
 
         internal void Update()
@@ -137,13 +137,13 @@ namespace Examples.TheGame
 
             foreach (var go in Players)
             {
-                if (go.Key != _playerId)
+                if (go.Key != UserID)
                     go.Value.Update();
             }
 
-            Players[_playerId].PlayerInput();
-            Players[_playerId].Update();
-            _camMatrix = Players[_playerId].GetCamMatrix();
+            Players[UserID].PlayerInput();
+            Players[UserID].Update();
+            _camMatrix = Players[UserID].GetCamMatrix();
 
             foreach (var removePlayer in RemovePlayers)
                 Players.Remove(removePlayer);
@@ -175,7 +175,7 @@ namespace Examples.TheGame
 
                         // either a spawning position for this client - or someone needs a new spawning position
                         if (!recvPacket.Value)
-                            Players[_playerId].SetPosition(playerSpawnData.SpawnPosition);
+                            Players[UserID].SetPosition(playerSpawnData.SpawnPosition);
                         else
                         {
                             // SERVER ACTIVITY!
@@ -207,7 +207,7 @@ namespace Examples.TheGame
 
                         if (!Players.ContainsKey(userID))
                         {
-                            var p = new Player(this, 100, float4x4.Identity * float4x4.CreateTranslation(300f, 0, 0), 0, 0, userID);
+                            var p = new Player(this, 100, float4x4.Identity, 0, 0, userID);
                             Players.Add(userID, p);
                         }
 
@@ -217,12 +217,36 @@ namespace Examples.TheGame
                         Players[userID].SetRotationInMatrix(1, playerUpdateData.PlayerRotationY);
                         Players[userID].SetRotationInMatrix(2, playerUpdateData.PlayerRotationZ);
 
-                        // Players[UserID].SetSpeed();
+                        Players[userID].SetSpeed(-(int) System.Math.Round(playerUpdateData.PlayerVelocity));
 
                         break;
 
                     case DataPacketTypes.ObjectSpawn:
-                        // TODO: ObjectSpawn
+                        var objectSpawnData = (DataPacketObjectSpawn) recvPacket.Key.Packet;
+
+                        var objectID = objectSpawnData.ObjectID;
+                        var ownerID = objectSpawnData.UserID;
+
+                        switch (objectSpawnData.ObjectType)
+                        {
+                            case 0:
+                                if (!Bullets.ContainsKey(objectID))
+                                {
+                                    var b = new Bullet(this, 100, float4x4.Identity, 0, 100, ownerID, objectID);
+                                    Bullets.Add(objectID, b);
+                                }
+
+                                Bullets[objectID].SetPosition(objectSpawnData.ObjectPosition);
+
+                                Bullets[objectID].SetRotationInMatrix(0, objectSpawnData.ObjectRotationX);
+                                Bullets[objectID].SetRotationInMatrix(1, objectSpawnData.ObjectRotationY);
+                                Bullets[objectID].SetRotationInMatrix(2, objectSpawnData.ObjectRotationZ);
+
+                                Bullets[objectID].SetSpeed((int) System.Math.Round(objectSpawnData.ObjectVelocity));
+
+                                break;
+                        }
+
                         break;
 
                     case DataPacketTypes.ObjectUpdate:
@@ -252,14 +276,14 @@ namespace Examples.TheGame
 
             foreach (var go in Players)
             {
-                if (go.Key != _playerId)
+                if (go.Key != UserID)
                 {
                     go.Value.RenderUpdate(RContext, _camMatrix);
                     // Debug.WriteLine("Playerrender: "+ go.Value.GetId());
                 }
             }
 
-            Players[_playerId].RenderUpdate(RContext, _camMatrix);
+            Players[UserID].RenderUpdate(RContext, _camMatrix);
             // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
 
             // Render SkyBox
@@ -276,18 +300,15 @@ namespace Examples.TheGame
         internal void StartGame()
         {
             UserID = Mediator.UserID;
-            _playerId = Mediator.UserID;
 
             var p = new Player(this, 100, float4x4.Identity, 0, 0, Mediator.UserID);
-
             Players.Add(Mediator.UserID, p);
 
-            if (_playerId == 0)
+            if (UserID == 0)
             {
                 _gameHandlerServer = new GameHandlerServer(this);
                 RespawnPlayer(Mediator.UserID);
             }
-
 
             this.AddNewPlayer();
         }
@@ -311,7 +332,7 @@ namespace Examples.TheGame
             RespawnPlayer(p.GetId());
         }
 
-        public void RespawnPlayer(int getId)
+        public void RespawnPlayer(uint getId)
         {
             if (UserID == 0)
             {

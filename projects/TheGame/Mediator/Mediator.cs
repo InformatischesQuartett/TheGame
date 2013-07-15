@@ -15,9 +15,9 @@ namespace Examples.TheGame
 
         private readonly bool _networkActive;
 
-        private int _userID;
+        private uint _userID;
 
-        internal int UserID
+        internal uint UserID
         {
             get { return _userID; }
             set
@@ -36,7 +36,7 @@ namespace Examples.TheGame
         /// <summary>
         ///     The last assigned objectID.
         /// </summary>
-        private int _objectID;
+        private uint _objectID;
 
         /// <summary>
         ///     Amount of objects a client can spawn.
@@ -63,8 +63,8 @@ namespace Examples.TheGame
             if (networkActive)
                 _networkHandler = new NetworkHandler(rContext, this);
 
-            UserID = (networkActive) ? -1 : 0;
-            _objectID = -1;
+            UserID = 0;
+            _objectID = 0;
 
             if (networkActive)
             {
@@ -82,7 +82,7 @@ namespace Examples.TheGame
             _gameHandler.AudioConnectionEstablished.Play();
 
             Blending = false;
-            Fullscreen = true;
+            Fullscreen = false;
 
             _gameHandler.GameState.CurState = GameState.State.InGame;
             _gameHandler.StartGame();
@@ -116,13 +116,10 @@ namespace Examples.TheGame
         ///     Gets a new ObjectID which is based on the UserID
         /// </summary>
         /// <returns></returns>
-        internal int GetObjectId()
+        internal uint GetObjectId()
         {
-            if (UserID == -1)
-                return -1;
-
-            if (_objectID == -1 || _objectID == ((UserID + 1)*ObjectRange) - 1)
-                return _objectID = UserID*ObjectRange;
+            if (_objectID == 0 || _objectID == ((UserID + 1)*ObjectRange) - 1)
+                return _objectID = (UserID*ObjectRange)+1;
 
             return ++_objectID;
         }

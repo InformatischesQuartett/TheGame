@@ -32,7 +32,7 @@ namespace Examples.TheGame
             return rndNum;
         }
 
-        public float3 RespawnPlayer(int id)
+        public float3 RespawnPlayer(uint id)
         {
             var rndNum1 = RandomNumber();
             var rndNum2 = RandomNumber();

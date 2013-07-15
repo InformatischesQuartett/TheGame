@@ -20,7 +20,7 @@ namespace Examples.TheGame
             return _health;
         }
 
-        internal override void OnCollisionEnter(int id)
+        internal override void OnCollisionEnter(uint id)
         {
             GameHandler.Players[id].SetLife(+1);
             DestroyEnity();
