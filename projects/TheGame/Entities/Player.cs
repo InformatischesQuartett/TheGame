@@ -12,13 +12,13 @@ namespace Examples.TheGame
 
         private float2 _mousePos;
 
-        internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
+        internal Player(GameHandler gameHandler, float4x4 position, float speed,
                       float impact, int id)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+            : base(gameHandler, position, speed)
         {
             SetId(id);
             _life = 5;
-            collisionRadius = 10;
+            this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
         }
@@ -96,7 +96,7 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(GameHandler, 4, GetPosition(), -150, 5, GetId());
+                var bullet = new Bullet(GameHandler, GetPosition(), -150, GetId());
 
                 // add Bullet to ItemDict
                 GameHandler.Bullets.Add(bullet.GetId(), bullet);
@@ -130,7 +130,7 @@ namespace Examples.TheGame
             else
                 SetSpeed(0);
 
-            if (Input.Instance.OnButtonDown(MouseButtons.Left))
+            if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
 
             SetRotation(_mousePos);

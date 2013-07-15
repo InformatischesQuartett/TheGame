@@ -28,7 +28,7 @@ namespace Examples.TheGame
         /// </summary>
         /// <param name="gameHandler">The GameHandler</param>
         /// <param name="position">The position.</param>
-        internal Explosion(GameHandler gameHandler, float4x4 position) : base(gameHandler, 0, position, 0, 0)
+        internal Explosion(GameHandler gameHandler, float4x4 position) : base(gameHandler, position, 0)
         {
             EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             SetScale(100);

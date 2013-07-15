@@ -11,15 +11,14 @@ namespace Examples.TheGame
         private float _distCounter;
         private readonly int _ownerId;
 
-        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
-                     int ownerId)
-            : base(gameHandler, collisionRadius, position, speed, impact)
+        internal Bullet(GameHandler gameHandler, float4x4 position, float speed, int ownerId)
+            : base(gameHandler, position, speed)
         {
             SetId(gameHandler.Mediator.GetObjectId());
 
             _maxDist = 5000;
             _ownerId = ownerId;
-
+            this._collisionRadius = 100;
             EntityMesh = gameHandler.BulletMesh;
         }
 
