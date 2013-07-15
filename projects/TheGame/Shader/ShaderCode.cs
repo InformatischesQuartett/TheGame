@@ -18,9 +18,9 @@
              */
 
             // uniforms
-            uniform mat4 FUSEE_M; // model matrix
+            uniform mat4 FUSEE_MV; // model-view-projection matrix
             uniform mat4 FUSEE_MVP; // model-view-projection matrix
-            uniform mat4 FUSEE_ITMV; // inverse transpose model view matrix
+            uniform mat4 FUSEE_ITMV; // inverse transposed model view matrix
 
             // attributes
             attribute vec4 fuColor; // vertex albedo
@@ -29,26 +29,22 @@
             attribute vec2 fuUV; // vertex UV coordinates
 
             // varyings
-            varying vec4 worldVertexPos; // vertex position in world space
-            varying vec3 worldVertexNormal; // vertex normal in world space
+            varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
             varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
 
             // main entry point
             void main()
-            {
-	            // calculate vertex position and normal in world space
-	            worldVertexPos = vec4(fuVertex, 1.0);
-	            worldVertexNormal = fuNormal;
-
-	            // calculate vertex position and normal in screen space
-	            gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                vertexNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
-	
+            {                 
 	            // Pass color and UV to fragment shader
 	            vertexColor = fuColor;
 	            vertexUV = fuUV;
+
+                // calculate vertex position and normal in screen space
+                vertexNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+                vertexPos = FUSEE_MV * vec4(fuVertex, 1.0);
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
             }";
 
         /// <summary>
@@ -68,7 +64,7 @@
             // structs
             struct spotlight
             {
-	            vec4 position; // light position in world space
+	            vec4 position; // light position in eye space
 	            vec3 direction; // spot direction
 	            vec4 diffuse; // diffuse color of the light
 	            vec4 specular; // specular color of the light
@@ -89,7 +85,7 @@
             uniform float matShininess; // specular shininess
             uniform vec4 matAlbedo = vec4(0.5, 0.5, 1, 1); // Albedo of the material
 
-            uniform vec4 camPosition; // camera position in world space
+            uniform vec4 camPosition; // camera position in eye space
 
             uniform int amountOfLights = 8; // Amount of lights to calculate
 
@@ -147,8 +143,7 @@
             uniform vec2 noiseOffset = vec2(0, 0);
 					
             // varyings
-            varying vec4 worldVertexPos; // vertex position in world space
-            varying vec3 worldVertexNormal; // vertex normal in world space
+            varying vec4 vertexPos; // vertex position in screen space
             varying vec3 vertexNormal; // vertex normal in screen space
             varying vec4 vertexColor; // vertex albedo
             varying vec2 vertexUV; // vertex UV coordinates
@@ -169,35 +164,35 @@
 			            // This is awful :(
 			            if(i == 0)
 			            {
-				            lights[i] = spotlight(light1Position, light1Direction, light1Diffuse, light1Specular, light1Aperture, light1Falloff);
+				            lights[i] = spotlight(light1Position, normalize(light1Direction), light1Diffuse, light1Specular, light1Aperture, light1Falloff);
 			            }
 			            if(i == 1)
 			            {
-				            lights[i] = spotlight(light2Position, light2Direction, light2Diffuse, light2Specular, light2Aperture, light2Falloff);
+				            lights[i] = spotlight(light2Position, normalize(light2Direction), light2Diffuse, light2Specular, light2Aperture, light2Falloff);
 			            }
 			            if(i == 2)
 			            {
-				            lights[i] = spotlight(light3Position, light3Direction, light3Diffuse, light3Specular, light3Aperture, light3Falloff);
+				            lights[i] = spotlight(light3Position, normalize(light3Direction), light3Diffuse, light3Specular, light3Aperture, light3Falloff);
 			            }
 			            if(i == 3)
 			            {
-				            lights[i] = spotlight(light4Position, light4Direction, light4Diffuse, light4Specular, light4Aperture, light4Falloff);
+				            lights[i] = spotlight(light4Position, normalize(light4Direction), light4Diffuse, light4Specular, light4Aperture, light4Falloff);
 			            }
 			            if(i == 4)
 			            {
-				            lights[i] = spotlight(light5Position, light5Direction, light5Diffuse, light5Specular, light5Aperture, light5Falloff);
+				            lights[i] = spotlight(light5Position, normalize(light5Direction), light5Diffuse, light5Specular, light5Aperture, light5Falloff);
 			            }
 			            if(i == 5)
 			            {
-				            lights[i] = spotlight(light6Position, light6Direction, light6Diffuse, light6Specular, light6Aperture, light6Falloff);
+				            lights[i] = spotlight(light6Position, normalize(light6Direction), light6Diffuse, light6Specular, light6Aperture, light6Falloff);
 			            }
 			            if(i == 6)
 			            {
-				            lights[i] = spotlight(light7Position, light7Direction, light7Diffuse, light7Specular, light7Aperture, light7Falloff);
+				            lights[i] = spotlight(light7Position, normalize(light7Direction), light7Diffuse, light7Specular, light7Aperture, light7Falloff);
 			            }
 			            if(i == 7)
 			            {
-				            lights[i] = spotlight(light8Position, light8Direction, light8Diffuse, light8Specular, light8Aperture, light8Falloff);
+				            lights[i] = spotlight(light8Position, normalize(light8Direction), light8Diffuse, light8Specular, light8Aperture, light8Falloff);
 			            }
 		            }
 	            }
@@ -206,6 +201,7 @@
             // Checks if a point is inside the cone of light
             bool isInConeOfLight(in vec3 point, in spotlight light)
             {
+                return true;
 	            vec3 apexToPoint = normalize(point - vec3(light.position));
 	            return dot(apexToPoint, light.direction) / length(apexToPoint) / length(light.direction) > cos(light.aperture);
             }
@@ -213,7 +209,7 @@
             // diffuse light calculation for a single light
             vec4 calcDiffuse(in spotlight light, float falloff)
             {
-	            float variance = max(0.0, dot(light.direction, worldVertexNormal));
+	            float variance = max(0.0, dot(-light.direction, normalize(vertexNormal)));
 		
 	            return matDiffuse * light.diffuse * variance * falloff;
             }
@@ -222,15 +218,15 @@
             vec4 calcSpecular(in spotlight light, float falloff)
             {
 	            vec4 specular;
-	            if(dot(worldVertexNormal, light.direction) < 0.0)
+	            if(dot(vertexNormal, light.direction) < 0.0)
 	            {
 		            // light source is on the wrong side so there is no specular component
 		            specular = vec4(0.0, 0.0, 0.0, 0.0);
 	            }
 	            else
 	            {
-		            vec3 viewDirection = vec3(normalize(worldVertexPos - camPosition));
-		            vec3 normalDirection = normalize(worldVertexNormal);
+		            vec3 viewDirection = vec3(normalize(vertexPos - camPosition));
+		            vec3 normalDirection = normalize(vertexNormal);
 		            specular = falloff * light.specular * matSpecular * pow(max(0.0, dot(reflect(-light.direction, normalDirection), viewDirection)), matShininess);
 	            }
 	            return specular;
@@ -359,21 +355,23 @@
 	            {
 		            // add all available lights into the array
 		            initLights();
-		
+
 		            // Calculate lighting
 		            for (int i = 0; i < maxLights; i++)
 		            {
 			            if(i < amountOfLights)
 			            {
-				            //if(isInConeOfLight(vec3(worldVertexPos), lights[i]))
-				            //{
+				            if(isInConeOfLight(vec3(vertexPos), lights[i]))
+				            {
 					            // calculate falloff
-					            float dist = length(worldVertexPos - lights[i].position);
+					            float dist = length(vec3(vertexPos) - vec3(lights[i].position));
 					            float falloff = max(0.0, (-dist / lights[i].falloff) + 1);
+                                if(lights[i].falloff == 0)
+                                    falloff = 1;
 	
 					            totalLighting += calcDiffuse(lights[i], falloff);
 					            totalLighting += calcSpecular(lights[i], falloff);
-				            //}
+				            }
 			            }
 			            else
 			            {

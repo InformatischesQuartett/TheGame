@@ -46,6 +46,8 @@ namespace Examples.TheGame
         private float _light1Aperture = 0.1f;
         private float _noiseTime = 0.0f;
 
+        private float _yRot = 0;
+
         /// <summary>
         ///     The main game handler
         /// </summary>
@@ -104,19 +106,19 @@ namespace Examples.TheGame
             RC.SetShaderParam(AmbientLightShaderParam, new float4(0.0f, 0.0f, 0.0f, 1.0f));
             RC.SetShaderParam(MaterialAmbientShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
             RC.SetShaderParam(MaterialDiffuseShaderParam, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(MaterialSpecularShaderParam, new float4(0.1f, 0.1f, 0.2f, 1.0f));
-            RC.SetShaderParam(MaterialShininessShaderParam, 5.0f);
+            //RC.SetShaderParam(MaterialSpecularShaderParam, new float4(0.1f, 0.1f, 0.2f, 1.0f));
+            //RC.SetShaderParam(MaterialShininessShaderParam, 5.0f);
 
-            RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
+            //RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
 
             RC.SetShaderParam(AmountOfLightsShaderParam, 1);
 
-            RC.SetShaderParam(LightShaderParams[0].Position, new float4(1000, -1000, -1000, 1));
-            RC.SetShaderParam(LightShaderParams[0].Direction, new float3(-1, 1, 1));
+            //RC.SetShaderParam(LightShaderParams[0].Position, new float4(1000, 1000, -1000, 1));
+            RC.SetShaderParam(LightShaderParams[0].Direction, new float3(-1, -1, 1));
             RC.SetShaderParam(LightShaderParams[0].Diffuse, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(LightShaderParams[0].Specular, new float4(1.0f, 1.0f, 1.0f, 1.0f));
-            RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
-            RC.SetShaderParam(LightShaderParams[0].Falloff, _light1Falloff);
+            //RC.SetShaderParam(LightShaderParams[0].Specular, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
+            //RC.SetShaderParam(LightShaderParams[0].Falloff, _light1Falloff);
 
             RC.SetShaderParam(NoiseStrengthShaderParam, 0.5f);
             RC.SetShaderParam(NoiseTimeShaderParam, 0.0f);
@@ -162,19 +164,34 @@ namespace Examples.TheGame
                 _noiseTime -= 0.1f * (float)Time.Instance.DeltaTime;
             }
 
+            if (Input.Instance.IsKeyDown(KeyCodes.Q))
+            {
+                _yRot -= 0.5f * (float)Time.Instance.DeltaTime;
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.E))
+            {
+                _yRot += 0.5f * (float)Time.Instance.DeltaTime;
+            }
 
-            float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(0) * float4x4.CreateRotationX(0);
+
+            float4x4 mtxRot = float4x4.CreateRotationZ(0) * float4x4.CreateRotationY(_yRot) * float4x4.CreateRotationX(0);
             float4x4 mtxCam = float4x4.LookAt(_cameraPos, new float3(0, 0, 0), new float3(0, 1, 0));
             float4x4 mtxScale = float4x4.Scale(1f, 1f, 1f);
             float4x4 mtxPos = float4x4.CreateTranslation(0, 0, 0);
 
             RC.ModelView = mtxScale * mtxRot * mtxPos * mtxCam;
 
-            RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
+            RC.SetShaderParam(LightShaderParams[0].Position, RC.View * new float4(1000, 1000, -1000, 1));
+            RC.SetShaderParam(LightShaderParams[0].Direction, RC.InvTransView * new float3(1, -1, -1));
+            RC.SetShaderParam(LightShaderParams[0].Diffuse, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(LightShaderParams[0].Specular, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+            //RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
             RC.SetShaderParam(LightShaderParams[0].Falloff, _light1Falloff);
-            RC.SetShaderParam(LightShaderParams[0].Aperture, _light1Aperture);
+
+            //RC.SetShaderParam(CamPositionShaderParam, new float4(_cameraPos.x, _cameraPos.y, _cameraPos.z, 0.0f));
             RC.SetShaderParamTexture(TextureShaderParam, TextureHandle);
             RC.SetShaderParam(NoiseTimeShaderParam, _noiseTime);
+
             RC.Render(Mesh);
 
             Present();
