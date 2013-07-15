@@ -19,13 +19,14 @@ namespace Examples.TheGame
             : base(gameHandler, position, speed)
         {
             SetId(id);
-            _life = 5;
             this._collisionRadius = 350;
             EntityMesh = gameHandler.SpaceShipMesh;
             _mousePos = new float2(0, 0);
             Sp = gameHandler.TextureSp;
 
             _frameCounter = 0;
+            
+            ResetLife();
         }
 
         internal int GetLife()
@@ -34,7 +35,15 @@ namespace Examples.TheGame
         }
         internal void SetLife(int value)
         {
-            _life += value;
+            if (_life + value > 100)
+            {
+                ResetLife();
+            }
+            else
+            {
+                _life += value;
+            }
+            
         }
 
         internal void ResetLife()

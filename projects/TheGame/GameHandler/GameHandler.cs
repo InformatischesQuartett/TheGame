@@ -40,6 +40,11 @@ namespace Examples.TheGame
         internal readonly ITexture TextureExplosionHandle;
         internal readonly ITexture PlayerTexture;
 
+        private readonly ITexture _healthBarGreenTexture;
+        private readonly ITexture _healthBarOrangeTexture;
+        private readonly ITexture _healthBarRedTexture;
+        private ITexture _currentHealthBarTexture;
+
         internal readonly IAudioStream AudioSoundtrack;
         internal readonly IAudioStream AudioExplosion;
         internal readonly IAudioStream AudioShoot;
@@ -52,6 +57,7 @@ namespace Examples.TheGame
         internal Mesh ExplosionMesh;
         internal Mesh HealthItemMesh;
         private readonly Mesh _skyBoxMesh;
+        private readonly Mesh _guiCube;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -101,6 +107,16 @@ namespace Examples.TheGame
             texture = rc.LoadImage("Assets/playertex.jpg");
             PlayerTexture = rc.CreateTexture(texture);
 
+            texture = rc.LoadImage("Assets/Topbar_green.png");
+            _healthBarGreenTexture = rc.CreateTexture(texture);
+            texture = rc.LoadImage("Assets/Topbar_orange.png");
+            _healthBarOrangeTexture = rc.CreateTexture(texture);
+            texture = rc.LoadImage("Assets/Topbar_red.png");
+            _healthBarRedTexture = rc.CreateTexture(texture);
+
+            _currentHealthBarTexture = _healthBarGreenTexture;
+
+
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
             AudioShoot = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
@@ -113,6 +129,7 @@ namespace Examples.TheGame
             ExplosionMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             HealthItemMesh = MeshReader.LoadMesh("Assets/item.obj.model");
             _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
+            _guiCube = MeshReader.LoadMesh("Assets/Cube.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
@@ -158,8 +175,10 @@ namespace Examples.TheGame
                 Players.Remove(removePlayer);
 
             foreach (var removeItem in RemoveHealthItems)
-                RemoveHealthItems.Remove(removeItem);
-
+            {
+                HealthItems.Remove(removeItem);
+                _gameHandlerServer.SpawnHealthItem();
+            }
             foreach (var removeBullet in RemoveBullets)
                 Bullets.Remove(removeBullet);
 
@@ -326,6 +345,23 @@ namespace Examples.TheGame
             }
 
             Players[UserID].RenderUpdate(RContext, _camMatrix);
+           
+            //Render Gui Cube for Healthbar
+            RContext.Clear(ClearFlags.Depth);
+
+            if (Players[UserID].GetLife() >= 70)
+                _currentHealthBarTexture = _healthBarGreenTexture;
+
+            if (Players[UserID].GetLife() < 70)
+                _currentHealthBarTexture = _healthBarOrangeTexture;
+
+            if (Players[UserID].GetLife() <= 40)
+                _currentHealthBarTexture = _healthBarRedTexture;
+
+            RContext.SetShader(TextureSp);
+            RContext.SetShaderParamTexture(_skyBoxShaderParam, _currentHealthBarTexture);
+            RContext.ModelView = float4x4.Scale(1, 0.075f, 0.001f) * float4x4.CreateTranslation(0, 75, -200);
+            RContext.Render(_guiCube);
         }
 
         internal void StartGame()
@@ -367,11 +403,11 @@ namespace Examples.TheGame
         {
             if (getId == 0 && UserID == 0)
             {
-                var respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                var respawnPosition = _gameHandlerServer.RandomPosition();
 
                 while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
                 {
-                    respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                    respawnPosition = _gameHandlerServer.RandomPosition();
                 }
 
                 Players[getId].SetPosition(respawnPosition);
@@ -380,11 +416,11 @@ namespace Examples.TheGame
             else
             {
                 // SERVER ACTIVITY!
-                var respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                var respawnPosition = _gameHandlerServer.RandomPosition();
 
                 while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
                 {
-                    respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                    respawnPosition = _gameHandlerServer.RandomPosition();
                 }
 
                 // send back to user

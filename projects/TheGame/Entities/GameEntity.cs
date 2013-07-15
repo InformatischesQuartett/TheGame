@@ -175,7 +175,8 @@ namespace Examples.TheGame
             //Adding Items to RemoveLists
             if (GetType() == typeof (Player))
             {
-                GameHandler.RespawnPlayer(GetId());
+                if (GetId() == 0)
+                    GameHandler.RespawnPlayer(GetId());
             }
 
             if (GetType() == typeof (HealthItem))

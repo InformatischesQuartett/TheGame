@@ -20,6 +20,7 @@ namespace Examples.TheGame
         {
             _random = new Random();
             _gameHandler = gameHandler;
+            SpawnInitialHealthItems();
         }
 
         public float RandomNumber()
@@ -32,7 +33,7 @@ namespace Examples.TheGame
             return rndNum;
         }
 
-        public float3 RespawnPlayer(uint id)
+        public float3 RandomPosition()
         {
             var rndNum1 = RandomNumber();
             var rndNum2 = RandomNumber();
@@ -41,7 +42,19 @@ namespace Examples.TheGame
             return new float3(rndNum1, rndNum2, rndNum3);
         }
 
+        private void SpawnInitialHealthItems()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                SpawnHealthItem();
+            }
+        }
 
+        public void SpawnHealthItem()
+        {
+            var hi = new HealthItem(_gameHandler, float4x4.Identity * float4x4.CreateTranslation(RandomPosition()), 0);
+            _gameHandler.HealthItems.Add(hi.GetId(), hi);
+        }
 
         internal bool CheckCollision(GameEntity oe1, GameEntity oe2)
         {

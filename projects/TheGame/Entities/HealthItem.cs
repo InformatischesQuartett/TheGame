@@ -11,7 +11,7 @@ namespace Examples.TheGame
             : base(gameHandler, position, speed)
         {
             SetId(gameHandler.Mediator.GetObjectId());
-            this._collisionRadius = 100;
+            this._collisionRadius = 50;
             _health = 50;
             EntityMesh = gameHandler.HealthItemMesh;
         }
@@ -24,6 +24,7 @@ namespace Examples.TheGame
         internal override void OnCollisionEnter(uint id)
         {
             GameHandler.Players[id].SetLife(+_health);
+
             DestroyEnity();
         }
         internal override void InstructShader()
