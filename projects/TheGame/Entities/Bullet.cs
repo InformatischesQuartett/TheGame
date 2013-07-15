@@ -52,58 +52,6 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(uint id)
         {
-            GameHandler.Players[id].SetLife(-10);
-            var newHealth = GameHandler.Players[id].GetLife();
-
-            // Inform specific player!
-            if (newHealth <= 0)
-            {
-                var explo = new Explosion(GameHandler, GetPosition());
-
-                // Inform other Players
-                var data = new DataPacketObjectSpawn
-                    {
-                        UserID = GetId(),
-                        ObjectID = explo.GetId(),
-                        ObjectType = (int) GameHandler.GameEntities.geExplosion,
-                        ObjectVelocity = 0,
-                        ObjectPosition = explo.GetPositionVector(),
-                        ObjectRotationX = new float3(0, 0, 0),
-                        ObjectRotationY = new float3(0, 0, 0),
-                        ObjectRotationZ = new float3(0, 0, 0)
-                    };
-
-                var packet = new DataPacket {PacketType = DataPacketTypes.ObjectSpawn, Packet = data};
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
-
-                GameHandler.Explosions.Add(explo.GetId(), explo);
-                GameHandler.AudioExplosion.Play();
-
-                GameHandler._gameHandlerServer.RespawnPlayer(id);
-            }
-            else
-            {
-                if (id != GameHandler.UserID)
-                {
-                    var data = new DataPacketPlayerUpdate
-                        {
-                            UserID = id,
-                            PlayerActive = true,
-                            PlayerHealth = newHealth,
-                            PlayerVelocity = 0,
-                            PlayerPosition = new float3(0, 0, 0),
-                            PlayerRotationX = new float3(0, 0, 0),
-                            PlayerRotationY = new float3(0, 0, 0),
-                            PlayerRotationZ = new float3(0, 0, 0)
-                        };
-
-                    var packet = new DataPacket {PacketType = DataPacketTypes.PlayerUpdate, Packet = data};
-                    GameHandler.Mediator.AddToSendingBuffer(packet, true);
-                }
-            }
-
-            // GameHandler.Players[_ownerId].SetScore();
-
             DestroyEnity();
         }
     }
