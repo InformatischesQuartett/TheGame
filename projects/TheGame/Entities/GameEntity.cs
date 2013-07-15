@@ -86,7 +86,7 @@ namespace Examples.TheGame
 
         internal void SetRotation(float2 rotation)
         {
-            _rotation = 300*rotation * (float)Time.Instance.DeltaTime;
+            _rotation = rotation;
         }
 
         internal void SetScale(float scale)
