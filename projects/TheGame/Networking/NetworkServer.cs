@@ -167,7 +167,7 @@ namespace Examples.TheGame
                         msgDelivery = objectUpdateData.MsgDelivery;
                         channelID = objectUpdateData.ChannelID;
 
-                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.PlayerUpdate,
+                        var objectUpdatePacket = NetworkProtocol.MessageEncode(DataPacketTypes.ObjectUpdate,
                                                                                objectUpdateData);
 
                         foreach (var connection in _userIDs.Where(connection => connection.Key != userID))

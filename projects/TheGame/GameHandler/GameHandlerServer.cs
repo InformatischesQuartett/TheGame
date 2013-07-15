@@ -57,7 +57,6 @@ namespace Examples.TheGame
             {
                 foreach (var go2 in _gameHandler.Players)
                 {
-
                     if (go1.Value.GetId() != go2.Value.GetId())
                     {
                         if (CheckCollision(go1.Value, go2.Value))
@@ -70,7 +69,6 @@ namespace Examples.TheGame
                 }
             }
 
-
             foreach (var player in _gameHandler.Players)
             {
                 foreach (var bullet in _gameHandler.Bullets)
@@ -79,6 +77,18 @@ namespace Examples.TheGame
                     {
                         if (CheckCollision(player.Value, bullet.Value))
                         {
+                            // Inform other players
+                            var data = new DataPacketObjectUpdate
+                            {
+                                UserID = bullet.Value.GetOwnerId(),
+                                ObjectID = bullet.Value.GetId(),
+                                ObjectType = 0,
+                                ObjectRemoved = true
+                            };
+
+                            var packet = new DataPacket { PacketType = DataPacketTypes.ObjectUpdate, Packet = data };
+                            _gameHandler.Mediator.AddToSendingBuffer(packet, true);
+
                             bullet.Value.OnCollisionEnter(player.Value.GetId());
                         }   
                     }
@@ -96,7 +106,6 @@ namespace Examples.TheGame
                 }
             }
         }
-
 
         public void Update()
         {

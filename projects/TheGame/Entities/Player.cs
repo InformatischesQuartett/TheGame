@@ -6,7 +6,7 @@ namespace Examples.TheGame
 {
     internal class Player : GameEntity
     {
-        private float _life;
+        private int _life;
         private float _shotTimer;
         private int _score;
 
@@ -27,11 +27,11 @@ namespace Examples.TheGame
             _frameCounter = 0;
         }
 
-        internal float GetLife()
+        internal int GetLife()
         {
             return _life;
         }
-        internal void SetLife(float value)
+        internal void SetLife(int value)
         {
             _life += value;
         }
@@ -113,6 +113,7 @@ namespace Examples.TheGame
                 {
                     UserID = GetId(),
                     ObjectID = bullet.GetId(),
+                    ObjectType = 0,
                     ObjectVelocity = bullet.GetAbsoluteSpeed(),
                     ObjectPosition = GetPositionVector(),
                     ObjectRotationX = GetRotationFromMatrix(0),

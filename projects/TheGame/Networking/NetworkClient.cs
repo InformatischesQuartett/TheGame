@@ -157,7 +157,9 @@ namespace Examples.TheGame
                             {
                                 // spawning, so start the game
                                 _mediator.AddToReceivingBuffer(decodedMessage, false);
-                                _mediator.StartGame();
+
+                                if (!_mediator.ActiveGame)
+                                    _mediator.StartGame();
                             }
 
                             break;

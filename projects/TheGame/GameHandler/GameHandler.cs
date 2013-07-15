@@ -122,8 +122,13 @@ namespace Examples.TheGame
         {
             // Handle Network
             HandleIncomingMessage();
-            // Handle Game Server
-            _gameHandlerServer.Update();
+
+            if (UserID == 0)
+            {
+                // Handle Game Server
+                _gameHandlerServer.Update();
+            }
+
             // Handle Game
             foreach (var go in HealthItems)
                 go.Value.Update();
@@ -174,27 +179,14 @@ namespace Examples.TheGame
 
                         // either a spawning position for this client - or someone needs a new spawning position
                         if (!recvPacket.Value)
+                        {
                             Players[UserID].SetPosition(playerSpawnData.SpawnPosition);
+                            Players[UserID].ResetLife();
+                        }
                         else
                         {
                             // SERVER ACTIVITY!
-                            var respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
-
-                            while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
-                            {
-                                respawnPosition = _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
-                            }
-
-                            // send back to user
-                            var data = new DataPacketPlayerSpawn
-                                {
-                                    UserID = playerSpawnData.UserID,
-                                    Spawn = true,
-                                    SpawnPosition = respawnPosition
-                                };
-
-                            var packet = new DataPacket {PacketType = DataPacketTypes.PlayerSpawn, Packet = data};
-                            Mediator.AddToSendingBuffer(packet, true);
+                            RespawnPlayer(playerSpawnData.UserID);
                         }
 
                         break;
@@ -203,6 +195,14 @@ namespace Examples.TheGame
                         var playerUpdateData = (DataPacketPlayerUpdate) recvPacket.Key.Packet;
 
                         var userID = playerUpdateData.UserID;
+
+                        // This player got hit!
+                        if (userID == UserID)
+                        {
+                            Debug.WriteLine("Setze Gesundheit auf: " + playerUpdateData.PlayerHealth);
+                            Players[userID].SetLife(playerUpdateData.PlayerHealth);
+                            break;
+                        }
 
                         if (!Players.ContainsKey(userID))
                         {
@@ -244,12 +244,39 @@ namespace Examples.TheGame
                                 Bullets[objectID].SetAbsoluteSpeed(objectSpawnData.ObjectVelocity);
 
                                 break;
+
+                            case 2:
+                                if (!Explosions.ContainsKey(objectID))
+                                {
+                                    var b = new Explosion(this, float4x4.Identity);
+                                    Explosions.Add(objectID, b);
+                                }
+
+                                Explosions[objectID].SetPosition(objectSpawnData.ObjectPosition);
+                                AudioExplosion.Play();
+
+                                break;
                         }
 
                         break;
 
                     case DataPacketTypes.ObjectUpdate:
-                        // TODO: ObjectUpdate
+                        var objectUpdateData = (DataPacketObjectUpdate) recvPacket.Key.Packet;
+
+                        var objectUpdateID = objectUpdateData.ObjectID;
+
+                        switch (objectUpdateData.ObjectType)
+                        {
+                            case 0:
+                                if (Bullets.ContainsKey(objectUpdateID))
+                                {
+                                    if (objectUpdateData.ObjectRemoved)
+                                        RemoveBullets.Add(objectUpdateData.ObjectID);
+                                }
+
+                                break;
+                        }
+
                         break;
                 }
             }
@@ -331,7 +358,7 @@ namespace Examples.TheGame
 
         public void RespawnPlayer(uint getId)
         {
-            if (UserID == 0)
+            if (getId == 0 && UserID == 0)
             {
                 var respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
 
@@ -345,7 +372,34 @@ namespace Examples.TheGame
             }
             else
             {
-                // TODO: Vom Server anfordern...
+                // SERVER ACTIVITY!
+                var respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+
+                while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
+                {
+                    respawnPosition = _gameHandlerServer.RespawnPlayer(getId);
+                }
+
+                // send back to user
+                var data = new DataPacketPlayerSpawn
+                {
+                    UserID = getId,
+                    Spawn = true,
+                    SpawnPosition = respawnPosition
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
+                Mediator.AddToSendingBuffer(packet, true);
+
+                // reset life
+                if (!Players.ContainsKey(getId))
+                {
+                    var p = new Player(this, float4x4.Identity, 0, getId);
+                    Players.Add(getId, p);
+                }
+
+                Players[getId].SetPosition(respawnPosition);
+                Players[getId].ResetLife();
             }
         }
     }

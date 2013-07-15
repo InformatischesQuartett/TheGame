@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Fusee.Engine;
 
@@ -31,7 +32,9 @@ namespace Examples.TheGame
         internal int Width { set; get; }
 
         internal bool Blending { set; get; }
-        public bool Fullscreen { set; get; }
+        internal bool Fullscreen { set; get; }
+
+        internal bool ActiveGame { get; set; }
 
         /// <summary>
         ///     The last assigned objectID.
@@ -68,6 +71,7 @@ namespace Examples.TheGame
 
             if (networkActive)
             {
+                ActiveGame = false;
                 Blending = true;
                 _gameHandler.GameState.CurState = GameState.State.StartMenu;
             } else
@@ -79,6 +83,8 @@ namespace Examples.TheGame
         /// </summary>
         public void StartGame()
         {
+            ActiveGame = true;
+
             _gameHandler.AudioConnectionEstablished.Play();
 
             Blending = false;

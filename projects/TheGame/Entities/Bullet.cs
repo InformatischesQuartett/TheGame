@@ -52,8 +52,34 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(uint id)
         {
-            GameHandler.Players[id].SetLife(-10f);
-            GameHandler.Players[_ownerId].SetScore();
+            Debug.WriteLine("Kollision");
+
+            GameHandler.Players[id].SetLife(-10);
+            var newHealth = GameHandler.Players[id].GetLife();
+            Debug.WriteLine("Gesundheit: " + newHealth);
+            // Inform specific player!
+            if (newHealth <= 0)
+                GameHandler.RespawnPlayer(id);
+            else
+            {
+                var data = new DataPacketPlayerUpdate
+                {
+                    UserID = id,
+                    PlayerActive = true,
+                    PlayerHealth = newHealth,
+                    PlayerVelocity = 0,
+                    PlayerPosition = new float3(0, 0, 0),
+                    PlayerRotationX = new float3(0, 0, 0),
+                    PlayerRotationY = new float3(0, 0, 0),
+                    PlayerRotationZ = new float3(0, 0, 0)
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
+                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+            }
+
+            // GameHandler.Players[_ownerId].SetScore();
+
             DestroyEnity();
         }
     }
