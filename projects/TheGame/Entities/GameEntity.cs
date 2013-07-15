@@ -211,7 +211,7 @@ namespace Examples.TheGame
         internal float4x4 GetCamMatrix()
         {
             return float4x4.LookAt(_position.M41 + (_nRotZV.x * 1000), _position.M42 + (_nRotZV.y * 1000), _position.M43 + (_nRotZV.z * 1000), _position.M41,
-                                              _position.M42, _position.M43, _position.M21, _position.M22, _position.M23);
+                                              _position.M42, _position.M43, _position.M21, _position.M22, _position.M23) * float4x4.CreateTranslation(0, -300, 0);
         }
     }
 }

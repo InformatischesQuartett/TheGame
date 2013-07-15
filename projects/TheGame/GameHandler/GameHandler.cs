@@ -89,7 +89,7 @@ namespace Examples.TheGame
             AudioInitiated = Audio.Instance.LoadFile("Assets/VoiceActInitiated.wav");
             AudioMissionComplete = Audio.Instance.LoadFile("Assets/VoiceActMissionComplete.wav");
 
-            SpaceShipMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            SpaceShipMesh = MeshReader.LoadMesh("Assets/spaceshuttle2.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
