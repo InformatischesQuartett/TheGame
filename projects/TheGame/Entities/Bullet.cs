@@ -54,5 +54,10 @@ namespace Examples.TheGame
         {
             DestroyEnity();
         }
+        internal override void InstructShader()
+        {
+            IShaderParam vColorParam = Sp.GetShaderParam("vColor");
+            Rc.SetShaderParam(vColorParam, new float4(1f, 0f, 0f, 1));
+        }
     }
 }
