@@ -124,7 +124,8 @@ namespace Examples.TheGame
         {
             // Handle Network
             HandleIncomingMessage();
-
+            // Handle Game Server
+            _gameHandlerServer.Update();
             // Handle Game
             foreach (var go in HealthItems)
                 go.Value.Update();

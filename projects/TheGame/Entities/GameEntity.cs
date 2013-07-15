@@ -72,12 +72,12 @@ namespace Examples.TheGame
             return _collisionRadius;
         }
 
-        internal bool CheckCollision(GameEntity other)
+        /*internal bool CheckCollision(GameEntity other)
         {
             return (other.GetPositionVector() - GetPositionVector()).LengthSquared <=
                    other.GetCollisionRadius() * other.GetCollisionRadius() +
                    GetCollisionRadius() * GetCollisionRadius();
-        }
+        }*/
 
         internal virtual void OnCollisionEnter(int id)
         {
@@ -99,7 +99,7 @@ namespace Examples.TheGame
             return _scale;
         }
 
-        internal void SetSpeed(float i)
+        internal void SetSpeed(int i)
         {
             //All speeds are negative
             Debug.WriteLine(_speed);

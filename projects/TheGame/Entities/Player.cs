@@ -48,7 +48,7 @@ namespace Examples.TheGame
             return _score;
         }
 
-        internal void CheckAllCollision()
+      /*  internal void CheckAllCollision()
         {
             foreach (var go in GameHandler.Players)
             {
@@ -83,6 +83,7 @@ namespace Examples.TheGame
                 }
             }
         }
+       */
 
         internal override void OnCollisionEnter(int id)
         {
@@ -112,7 +113,7 @@ namespace Examples.TheGame
             if (GetLife() <= 0)
                 DestroyEnity();
 
-            CheckAllCollision();
+            //CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
         }
 
