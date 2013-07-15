@@ -11,7 +11,7 @@ namespace Examples.TheGame
     {
         private readonly GameHandler _gameHandler;
 
-        private const int PlayAreaRange = 1000;
+        private const int PlayAreaRange = 2000;
 
         private readonly Random _random;
 

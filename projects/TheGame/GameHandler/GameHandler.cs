@@ -232,7 +232,7 @@ namespace Examples.TheGame
                             case 0:
                                 if (!Bullets.ContainsKey(objectID))
                                 {
-                                    var b = new Bullet(this, 100, float4x4.Identity, 0, 100, ownerID, objectID);
+                                    var b = new Bullet(this, float4x4.Identity, 0, ownerID, objectID);
                                     Bullets.Add(objectID, b);
                                 }
 

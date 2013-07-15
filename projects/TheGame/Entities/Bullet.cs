@@ -24,8 +24,7 @@ namespace Examples.TheGame
         }
 
         // other user's bullet
-        internal Bullet(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed, float impact,
-                        uint ownerId, uint id)
+        internal Bullet(GameHandler gameHandler, float4x4 position, float speed, uint ownerId, uint id)
             : base(gameHandler, position, speed)
         {
             SetId(id);
