@@ -34,6 +34,10 @@ namespace Examples.TheGame
             _speedMax = 200;
             Rc = gameHandler.RContext;
             Sp = gameHandler.BasicSp;
+
+            _nRotXV = float3.Normalize(new float3(_position.Row0));
+            _nRotYV = float3.Normalize(new float3(_position.Row1));
+            _nRotZV = float3.Normalize(new float3(_position.Row2));
         }
 
         internal uint GetId()
@@ -71,12 +75,12 @@ namespace Examples.TheGame
             return _collisionRadius;
         }
 
-        internal bool CheckCollision(GameEntity other)
+        /*internal bool CheckCollision(GameEntity other)
         {
             return (other.GetPositionVector() - GetPositionVector()).LengthSquared <=
                    other.GetCollisionRadius() * other.GetCollisionRadius() +
                    GetCollisionRadius() * GetCollisionRadius();
-        }
+        }*/
 
         internal virtual void OnCollisionEnter(uint id)
         {
@@ -196,14 +200,17 @@ namespace Examples.TheGame
 
         internal virtual void Update()
         {
+            var oldPos3 = new float3(_position.Row3);
+
+            _position *= float4x4.CreateTranslation(-oldPos3) *
+                         float4x4.CreateFromAxisAngle(_nRotYV, -_rotation.x) *
+                         float4x4.CreateFromAxisAngle(_nRotXV, -_rotation.y) *
+                         float4x4.CreateTranslation(oldPos3) *
+                         float4x4.CreateTranslation(_nRotZV * _speed);
+
             _nRotXV = float3.Normalize(new float3(_position.Row0));
             _nRotYV = float3.Normalize(new float3(_position.Row1));
             _nRotZV = float3.Normalize(new float3(_position.Row2));
-
-            _position *= float4x4.CreateTranslation(- new float3(_position.Row3)) *
-                         float4x4.CreateFromAxisAngle(_nRotYV, -_rotation.x) * float4x4.CreateFromAxisAngle(_nRotXV, -_rotation.y) *
-                         float4x4.CreateTranslation(_position.M41, _position.M42, _position.M43)*
-                         float4x4.CreateTranslation(_nRotZV * _speed);
         }
 
         /// <summary>
@@ -234,8 +241,10 @@ namespace Examples.TheGame
 
         internal float4x4 GetCamMatrix()
         {
-            return float4x4.LookAt(_position.M41 + (_nRotZV.x * 1000), _position.M42 + (_nRotZV.y * 1000), _position.M43 + (_nRotZV.z * 1000), _position.M41,
-                                              _position.M42, _position.M43, _position.M21, _position.M22, _position.M23) * float4x4.CreateTranslation(0, -300, 0);
+            return float4x4.LookAt(_position.M41 + (_nRotZV.x * 1000), _position.M42 + (_nRotZV.y * 1000), _position.M43 + (_nRotZV.z * 1000),
+                                   _position.M41,                      _position.M42,                      _position.M43,
+                                   _position.M21,                      _position.M22,                      _position.M23)
+                                   * float4x4.CreateTranslation(0, -300, 0);
         }
     }
 }

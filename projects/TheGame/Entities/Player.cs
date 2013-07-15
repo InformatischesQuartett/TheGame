@@ -38,7 +38,7 @@ namespace Examples.TheGame
 
         internal void ResetLife()
         {
-            _life = 5;
+            _life = 100;
         }
 
         internal void SetScore()
@@ -51,7 +51,7 @@ namespace Examples.TheGame
             return _score;
         }
 
-        internal void CheckAllCollision()
+      /*  internal void CheckAllCollision()
         {
             foreach (var go in GameHandler.Players)
             {
@@ -86,6 +86,7 @@ namespace Examples.TheGame
                 }
             }
         }
+       */
 
         internal override void OnCollisionEnter(uint id)
         {
@@ -134,7 +135,7 @@ namespace Examples.TheGame
             if (GetLife() <= 0)
                 DestroyEnity();
 
-            CheckAllCollision();
+            //CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
         }
 
@@ -143,6 +144,8 @@ namespace Examples.TheGame
             _mousePos.x = Input.Instance.GetAxis(InputAxis.MouseX);
             _mousePos.y = Input.Instance.GetAxis(InputAxis.MouseY);
 
+            SetRotation(_mousePos);
+            
             var speed = 0;
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
@@ -154,8 +157,6 @@ namespace Examples.TheGame
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
-
-            SetRotation(_mousePos);
 
             // Send update to all clients.
             _frameCounter = ++_frameCounter%FrameUpdate;

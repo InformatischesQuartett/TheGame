@@ -116,17 +116,14 @@ namespace Examples.TheGame
 
             _camMatrix = float4x4.Identity;
 
-            //  StartGame();
-            // this.AddNewPlayer();
-
-            Debug.WriteLine("_playerId: " + UserID);
         }
 
         internal void Update()
         {
             // Handle Network
             HandleIncomingMessage();
-
+            // Handle Game Server
+            _gameHandlerServer.Update();
             // Handle Game
             foreach (var go in HealthItems)
                 go.Value.Update();
@@ -281,12 +278,10 @@ namespace Examples.TheGame
                 if (go.Key != UserID)
                 {
                     go.Value.RenderUpdate(RContext, _camMatrix);
-                    // Debug.WriteLine("Playerrender: "+ go.Value.GetId());
                 }
             }
 
             Players[UserID].RenderUpdate(RContext, _camMatrix);
-            // Debug.WriteLine("Playerrenderlast: " + Players[_playerId].GetId());
 
             // Render SkyBox
             RContext.SetShader(TextureSp);

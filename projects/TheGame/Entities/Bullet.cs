@@ -48,12 +48,11 @@ namespace Examples.TheGame
             if (_distCounter > _maxDist)
             {
                 DestroyEnity();
-                Debug.WriteLine("Bullet Destroyed");
             }
         }
         internal override void OnCollisionEnter(uint id)
         {
-            GameHandler.Players[id].SetLife(-0.5f);
+            GameHandler.Players[id].SetLife(-10f);
             GameHandler.Players[_ownerId].SetScore();
             DestroyEnity();
         }
