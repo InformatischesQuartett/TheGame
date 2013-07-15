@@ -172,7 +172,7 @@ namespace Examples.TheGame
             _nRotZV = float3.Normalize(new float3(_position.Row2));
 
             _position *= float4x4.CreateTranslation(- new float3(_position.Row3)) *
-                         float4x4.CreateFromAxisAngle(_nRotYV, _rotation.y) * float4x4.CreateFromAxisAngle(_nRotXV, _rotation.x) * //float4x4.CreateRotationX(_rotation.x) *
+                         float4x4.CreateFromAxisAngle(_nRotYV, -_rotation.x) * float4x4.CreateFromAxisAngle(_nRotXV, -_rotation.y) * //float4x4.CreateRotationX(_rotation.x) *
                          float4x4.CreateTranslation(_position.M41, _position.M42, _position.M43)*
                          float4x4.CreateTranslation(_nRotZV * _speed);
         }

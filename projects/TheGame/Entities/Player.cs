@@ -11,6 +11,8 @@ namespace Examples.TheGame
         private float _shotTimer;
         private int score;
 
+        private float2 _mousePos;
+
         internal Player(GameHandler gameHandler, float collisionRadius, float4x4 position, float speed,
                       float impact, int id)
             : base(gameHandler, collisionRadius, position, speed, impact)
@@ -19,6 +21,7 @@ namespace Examples.TheGame
             this._life = 5;
             collisionRadius = 10;
             this.EntityMesh = gameHandler.SpaceShipMesh;
+            _mousePos = new float2(0, 0);
         }
 
         internal float GetLife()
@@ -132,11 +135,21 @@ namespace Examples.TheGame
 
         internal void PlayerInput()
         {
-            var f = new float2(0, 0);
-            
+            var xDiff = Input.Instance.GetAxis(InputAxis.MouseX) / 100;
+            var yDiff = Input.Instance.GetAxis(InputAxis.MouseY) / 100;
+
+            _mousePos.x *= (float)Math.Exp(-0.98 * Time.Instance.DeltaTime); 
+            _mousePos.y *= (float)Math.Exp(-0.98 * Time.Instance.DeltaTime); 
+
+            if (Math.Abs(xDiff) > MathHelper.EpsilonFloat)
+                _mousePos.x = xDiff;
+
+            if (Math.Abs(yDiff) > MathHelper.EpsilonFloat)
+                _mousePos.y = yDiff;
+
+
+
             //Up  Down
-            f.y = Input.Instance.GetAxis(InputAxis.MouseX) * (float) Time.Instance.DeltaTime * 10;
-            f.x = -Input.Instance.GetAxis(InputAxis.MouseY) * (float) Time.Instance.DeltaTime * 10;
             Point mp = Input.Instance.GetMousePos();
             //Debug.WriteLine("mousepops: " + mp.x + " "+mp.y);
             //Debug.WriteLine("Width: " + _gameHandler.Mediator.Width);
@@ -177,7 +190,7 @@ namespace Examples.TheGame
                 Explosion explo = new Explosion(_gameHandler, GetPosition());
                 _gameHandler.Explosions.Add(explo.GetId(), explo);
             }*/
-            this.SetRotation(f);
+            this.SetRotation(_mousePos);
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Fusee.Engine;
 using Fusee.Math;
 
-
-
 namespace Examples.TheGame
 {
     /// <summary>
@@ -25,7 +23,7 @@ namespace Examples.TheGame
             Width = 750;
 
             Input.Instance.CursorVisible = false;
-            Input.Instance.FixMouseAtCenter = false;
+            Input.Instance.FixMouseAtCenter = true;
 
             RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
 

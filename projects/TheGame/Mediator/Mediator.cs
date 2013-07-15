@@ -105,8 +105,6 @@ namespace Examples.TheGame
                     return;
                 }
 
-            Blending = false;
-
             _gameHandler.Update();
             _gameHandler.Render();
 
