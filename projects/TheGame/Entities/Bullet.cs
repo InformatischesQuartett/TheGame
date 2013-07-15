@@ -8,7 +8,6 @@ namespace Examples.TheGame
     {
 
         private readonly float _maxDist;
-        private float4x4 _endPos;
         private float _distCounter;
         private readonly int _ownerId;
 
@@ -21,8 +20,7 @@ namespace Examples.TheGame
             _maxDist = 5000;
             _ownerId = ownerId;
 
-            this.EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
-            //Debug.WriteLine("New Bullet: " + position.Row3 + ", Speed: " + speed + ", Owner: " + _ownerId);
+            EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
         }
 
         internal int GetOwnerId()
@@ -33,19 +31,19 @@ namespace Examples.TheGame
         internal override void Update()
         {
             base.Update();
-            _distCounter += -0.5f*(this.GetSpeed());
-            //Debug.WriteLine("New Bullet: " + this.GetPosition().Row3 + ", Speed: " + this.GetSpeed() + ", Owner: " + _ownerId);
+            _distCounter += -0.5f*(GetSpeed());
+
             if (_distCounter > _maxDist)
             {
-                this.DestroyEnity();
+                DestroyEnity();
                 Debug.WriteLine("Bullet Destroyed");
             }
         }
         internal override void OnCollisionEnter(int id)
         {
-            _gameHandler.Players[id].SetLife(-0.5f);
-            _gameHandler.Players[_ownerId].SetScore();
-            this.DestroyEnity();
+            GameHandler.Players[id].SetLife(-0.5f);
+            GameHandler.Players[_ownerId].SetScore();
+            DestroyEnity();
         }
     }
 }

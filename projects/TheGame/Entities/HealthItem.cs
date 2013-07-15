@@ -1,5 +1,4 @@
-﻿using Fusee.Engine;
-using Fusee.Math;
+﻿using Fusee.Math;
 
 namespace Examples.TheGame
 {
@@ -23,8 +22,8 @@ namespace Examples.TheGame
 
         internal override void OnCollisionEnter(int id)
         {
-            _gameHandler.Players[id].SetLife(+1);
-            this.DestroyEnity();
+            GameHandler.Players[id].SetLife(+1);
+            DestroyEnity();
         }
     }
 }

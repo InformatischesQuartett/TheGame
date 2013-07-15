@@ -50,7 +50,7 @@ namespace Examples.TheGame
 
         internal void CheckAllCollision()
         {
-            foreach (var go in _gameHandler.Players)
+            foreach (var go in GameHandler.Players)
             {
                 if (GetId() != go.Value.GetId())
                 {
@@ -63,26 +63,23 @@ namespace Examples.TheGame
                 }
             }
 
-            foreach (var go in _gameHandler.Bullets)
+            foreach (var go in GameHandler.Bullets)
             {
                 if (GetId() != go.Value.GetOwnerId())
                 {
                     if (CheckCollision(go.Value))
                     {
-                        Debug.WriteLine("Collision: Bullet " + GetId() + " BAM");
                         go.Value.OnCollisionEnter(GetId());
-                        // Kill bullet
                     }
+                       
                 }
             }
 
-            foreach (var go in _gameHandler.HealthItems)
+            foreach (var go in GameHandler.HealthItems)
             {
                 if (CheckCollision(go.Value))
                 {
-                    //Debug.WriteLine("Collision: HealthItem " + this.GetId() + " BAM");
                     go.Value.OnCollisionEnter(go.Value.GetId());
-                    // Kill healthitem and heal player by impact
                 }
             }
         }
@@ -91,8 +88,8 @@ namespace Examples.TheGame
         {
             SetLife(-1);
 
-            var explo = new Explosion(_gameHandler, GetPosition());
-            _gameHandler.Explosions.Add(explo.GetId(), explo);
+            var explo = new Explosion(GameHandler, GetPosition());
+            GameHandler.Explosions.Add(explo.GetId(), explo);
         }
 
         internal void Shoot()
@@ -100,12 +97,12 @@ namespace Examples.TheGame
             if (_shotTimer >= 0.25f)
             {
                 // new Bullet
-                var bullet = new Bullet(_gameHandler, 4, GetPosition(), -150, 5, GetId());
+                var bullet = new Bullet(GameHandler, 4, GetPosition(), -150, 5, GetId());
 
                 // add Bullet to ItemDict
-                _gameHandler.Bullets.Add(bullet.GetId(), bullet);
+                GameHandler.Bullets.Add(bullet.GetId(), bullet);
                 _shotTimer = 0;
-                _gameHandler.AudioShoot.Play();
+                GameHandler.AudioShoot.Play();
             }
         }
 
@@ -113,9 +110,7 @@ namespace Examples.TheGame
         {
             base.Update();
             if (GetLife() <= 0)
-            {
                 DestroyEnity();
-            }
 
             CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
@@ -136,27 +131,17 @@ namespace Examples.TheGame
                 _mousePos.y = yDiff;
 
             if (Input.Instance.IsKeyPressed(KeyCodes.W))
-            {
                 SetSpeed(1);
-            }
+
             else if (Input.Instance.IsKeyPressed(KeyCodes.S))
-            {
                 SetSpeed(-1);
-            }
+
             else
-            {
                 SetSpeed(0);
-            }
-            //Shoot on left mouse button
+
             if (Input.Instance.OnButtonDown(MouseButtons.Left))
-            {
                 Shoot();
-            }
-            /*if (Input.Instance.IsKeyPressed(KeyCodes.E))
-            {
-                Explosion explo = new Explosion(_gameHandler, GetPosition());
-                _gameHandler.Explosions.Add(explo.GetId(), explo);
-            }*/
+
             SetRotation(_mousePos);
         }
     }
