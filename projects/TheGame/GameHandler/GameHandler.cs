@@ -12,7 +12,7 @@ namespace Examples.TheGame
     /// </summary>
     internal class GameHandler
     {
-        private GameHandlerServer _gameHandlerServer;
+        internal GameHandlerServer _gameHandlerServer;
 
         /// <summary>
         ///     Disctionarires mit allen Items und Playern
@@ -217,7 +217,7 @@ namespace Examples.TheGame
                         else
                         {
                             // SERVER ACTIVITY!
-                            RespawnPlayer(playerSpawnData.UserID);
+                            _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
                         }
 
                         break;
@@ -381,76 +381,9 @@ namespace Examples.TheGame
             if (UserID == 0)
             {
                 _gameHandlerServer = new GameHandlerServer(this);
-                RespawnPlayer(Mediator.UserID);
+                _gameHandlerServer.RespawnPlayer(Mediator.UserID);
             }
 
-            //this.AddNewPlayer();
-        }
-
-        internal void AddNewPlayer()
-        {
-            var p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(600, 0, 0), 0, 11);
-            Players.Add(p.GetId(), p);
-            RespawnPlayer(p.GetId());
-
-            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(300f, 0, 0), 0, 22);
-            Players.Add(p.GetId(), p);
-            RespawnPlayer(p.GetId());
-
-            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(0, 300f, 0), 0, 33);
-            Players.Add(p.GetId(), p);
-            RespawnPlayer(p.GetId());
-
-            p = new Player(this, float4x4.Identity*float4x4.CreateTranslation(0, 0, -300f), 0, 44);
-            Players.Add(p.GetId(), p);
-            RespawnPlayer(p.GetId());
-        }
-
-        public void RespawnPlayer(uint getId)
-        {
-            if (getId == 0 && UserID == 0)
-            {
-                var respawnPosition = _gameHandlerServer.RandomPosition();
-
-                while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
-                {
-                    respawnPosition = _gameHandlerServer.RandomPosition();
-                }
-
-                Players[getId].SetPosition(respawnPosition);
-                Players[getId].ResetLife();
-            }
-            else
-            {
-                // SERVER ACTIVITY!
-                var respawnPosition = _gameHandlerServer.RandomPosition();
-
-                while (Players.Any(player => respawnPosition == player.Value.GetPositionVector()))
-                {
-                    respawnPosition = _gameHandlerServer.RandomPosition();
-                }
-
-                // send back to user
-                var data = new DataPacketPlayerSpawn
-                {
-                    UserID = getId,
-                    Spawn = true,
-                    SpawnPosition = respawnPosition
-                };
-
-                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerSpawn, Packet = data };
-                Mediator.AddToSendingBuffer(packet, true);
-
-                // reset life
-                if (!Players.ContainsKey(getId))
-                {
-                    var p = new Player(this, float4x4.Identity, 0, getId);
-                    Players.Add(getId, p);
-                }
-
-                Players[getId].SetPosition(respawnPosition);
-                Players[getId].ResetLife();
-            }
         }
     }
 }

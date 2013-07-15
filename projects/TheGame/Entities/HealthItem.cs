@@ -14,6 +14,24 @@ namespace Examples.TheGame
             this._collisionRadius = 50;
             _health = 50;
             EntityMesh = gameHandler.HealthItemMesh;
+
+            var explo = new Explosion(GameHandler, GetPosition());
+
+            // Inform other Players
+            var data = new DataPacketObjectSpawn
+            {
+                UserID = GetId(),
+                ObjectID = explo.GetId(),
+                ObjectType = (int)GameHandler.GameEntities.geHealthItem,
+                ObjectVelocity = 0,
+                ObjectPosition = explo.GetPositionVector(),
+                ObjectRotationX = new float3(0, 0, 0),
+                ObjectRotationY = new float3(0, 0, 0),
+                ObjectRotationZ = new float3(0, 0, 0)
+            };
+
+            var packet = new DataPacket { PacketType = DataPacketTypes.ObjectSpawn, Packet = data };
+            GameHandler.Mediator.AddToSendingBuffer(packet, true);
         }
 
         public int GetHealth()

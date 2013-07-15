@@ -79,7 +79,7 @@ namespace Examples.TheGame
                 GameHandler.Explosions.Add(explo.GetId(), explo);
                 GameHandler.AudioExplosion.Play();
 
-                GameHandler.RespawnPlayer(id);
+                GameHandler._gameHandlerServer.RespawnPlayer(id);
             }
             else
             {
