@@ -20,7 +20,7 @@ namespace Examples.TheGame
             _maxDist = 5000;
             _ownerId = ownerId;
 
-            EntityMesh = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            EntityMesh = gameHandler.BulletMesh;
         }
 
         internal int GetOwnerId()

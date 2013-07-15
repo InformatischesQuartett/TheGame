@@ -46,6 +46,8 @@ namespace Examples.TheGame
         internal readonly IAudioStream AudioMissionComplete;
 
         internal Mesh SpaceShipMesh;
+        internal Mesh BulletMesh;
+        internal Mesh ExplosionMesh;
         private readonly Mesh _skyBoxMesh;
 
         /// <summary>
@@ -100,7 +102,9 @@ namespace Examples.TheGame
             AudioInitiated = Audio.Instance.LoadFile("Assets/VoiceActInitiated.wav");
             AudioMissionComplete = Audio.Instance.LoadFile("Assets/VoiceActMissionComplete.wav");
 
-            SpaceShipMesh = MeshReader.LoadMesh("Assets/spaceshuttle2.obj.model");
+            SpaceShipMesh = MeshReader.LoadMesh("Assets/spaceshuttle.obj.model");
+            BulletMesh = MeshReader.LoadMesh("Assets/bullet.obj.model");
+            ExplosionMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
             _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
 
             // Start soundtrack
