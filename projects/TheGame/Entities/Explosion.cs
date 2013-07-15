@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System.Diagnostics;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.TheGame
@@ -36,6 +37,15 @@ namespace Examples.TheGame
             SetId(gameHandler.Mediator.GetObjectId());
         }
 
+        internal Explosion(GameHandler gameHandler, float4x4 position, uint id)
+            : base(gameHandler, position, 0)
+        {
+            EntityMesh = gameHandler.ExplosionMesh;
+            SetScale(100);
+            Sp = gameHandler.CustomSp;
+            SetId(id);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Explosion"/> class.
         /// </summary>
@@ -45,7 +55,7 @@ namespace Examples.TheGame
         internal Explosion(GameHandler gameHandler, float4x4 position, float sizeIncrease)
             : base(gameHandler, position, 0)
         {
-            EntityMesh = MeshReader.LoadMesh("Assets/Sphere.obj.model");
+            EntityMesh = gameHandler.ExplosionMesh;
             SetScale(100);
             Sp = gameHandler.CustomSp;
             SetId(gameHandler.Mediator.GetObjectId());
@@ -63,10 +73,9 @@ namespace Examples.TheGame
 
             // Scale up or down
             if (_elapsedTime <= MaxTime/2.0f)
-                SetScale(GetScale() + (float) (SizeIncrease * Time.Instance.DeltaTime));
-
-            else if (_elapsedTime > MaxTime / 2.0f)
-                SetScale(GetScale() - (float)(SizeIncrease * Time.Instance.DeltaTime));
+                SetScale(GetScale() + (float)(SizeIncrease * Time.Instance.DeltaTime));
+            else if (_elapsedTime > MaxTime/2.0f)
+                SetScale(GetScale() - (float) (SizeIncrease*Time.Instance.DeltaTime));
 
             if (_elapsedTime >= MaxTime)
                 DestroyEnity();

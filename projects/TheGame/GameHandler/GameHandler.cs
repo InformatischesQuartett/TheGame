@@ -248,7 +248,7 @@ namespace Examples.TheGame
                             case 2:
                                 if (!Explosions.ContainsKey(objectID))
                                 {
-                                    var b = new Explosion(this, float4x4.Identity);
+                                    var b = new Explosion(this, float4x4.Identity, objectID);
                                     Explosions.Add(objectID, b);
                                 }
 
@@ -290,6 +290,18 @@ namespace Examples.TheGame
             var aspectRatio = Mediator.Width/(float) Mediator.Height;
             RContext.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 1000000);
 
+            // Render SkyBox
+            RContext.SetShader(TextureSp);
+            RContext.SetShaderParamTexture(_skyBoxShaderParam, _skyBoxTexture);
+
+            var rotation = _camMatrix;
+            rotation.Row3 = new float4(0, 0, 0, 1);
+            RContext.ModelView = float4x4.Scale(50, 50, 50) * rotation;
+
+            RContext.Render(_skyBoxMesh);
+
+            RContext.Clear(ClearFlags.Depth);
+
             // Render all Objects
             foreach (var go in HealthItems)
                 go.Value.RenderUpdate(RContext, _camMatrix);
@@ -309,16 +321,6 @@ namespace Examples.TheGame
             }
 
             Players[UserID].RenderUpdate(RContext, _camMatrix);
-
-            // Render SkyBox
-            RContext.SetShader(TextureSp);
-            RContext.SetShaderParamTexture(_skyBoxShaderParam, _skyBoxTexture);
-
-            var rotation = _camMatrix;
-            rotation.Row3 = new float4(0, 0, 0, 1);
-            RContext.ModelView = float4x4.Scale(50, 50, 50) * rotation;
-
-            RContext.Render(_skyBoxMesh);
         }
 
         internal void StartGame()

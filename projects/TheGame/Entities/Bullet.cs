@@ -52,30 +52,54 @@ namespace Examples.TheGame
         }
         internal override void OnCollisionEnter(uint id)
         {
-            Debug.WriteLine("Kollision");
-
             GameHandler.Players[id].SetLife(-10);
             var newHealth = GameHandler.Players[id].GetLife();
-            Debug.WriteLine("Gesundheit: " + newHealth);
+
             // Inform specific player!
             if (newHealth <= 0)
+            {
+                var explo = new Explosion(GameHandler, GetPosition());
+
+                // Inform other Players
+                var data = new DataPacketObjectSpawn
+                    {
+                        UserID = GetId(),
+                        ObjectID = explo.GetId(),
+                        ObjectType = 2,
+                        ObjectVelocity = 0,
+                        ObjectPosition = explo.GetPositionVector(),
+                        ObjectRotationX = new float3(0, 0, 0),
+                        ObjectRotationY = new float3(0, 0, 0),
+                        ObjectRotationZ = new float3(0, 0, 0)
+                    };
+
+                var packet = new DataPacket {PacketType = DataPacketTypes.ObjectSpawn, Packet = data};
+                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+
+                GameHandler.Explosions.Add(explo.GetId(), explo);
+                GameHandler.AudioExplosion.Play();
+
                 GameHandler.RespawnPlayer(id);
+            }
             else
             {
-                var data = new DataPacketPlayerUpdate
+                if (id != GameHandler.UserID)
                 {
-                    UserID = id,
-                    PlayerActive = true,
-                    PlayerHealth = newHealth,
-                    PlayerVelocity = 0,
-                    PlayerPosition = new float3(0, 0, 0),
-                    PlayerRotationX = new float3(0, 0, 0),
-                    PlayerRotationY = new float3(0, 0, 0),
-                    PlayerRotationZ = new float3(0, 0, 0)
-                };
+                    var data = new DataPacketPlayerUpdate
+                        {
+                            UserID = id,
+                            PlayerActive = true,
+                            PlayerHealth = newHealth,
+                            PlayerVelocity = 0,
+                            PlayerPosition = new float3(0, 0, 0),
+                            PlayerRotationX = new float3(0, 0, 0),
+                            PlayerRotationY = new float3(0, 0, 0),
+                            PlayerRotationZ = new float3(0, 0, 0)
+                        };
 
-                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                    var packet = new DataPacket {PacketType = DataPacketTypes.PlayerUpdate, Packet = data};
+                    GameHandler.Mediator.AddToSendingBuffer(packet, true);
+                }
             }
 
             // GameHandler.Players[_ownerId].SetScore();

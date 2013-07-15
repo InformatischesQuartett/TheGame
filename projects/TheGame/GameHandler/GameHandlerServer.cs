@@ -77,7 +77,7 @@ namespace Examples.TheGame
                     {
                         if (CheckCollision(player.Value, bullet.Value))
                         {
-                            // Inform other players
+                            // Inform other players that the bullet should be removed!!
                             var data = new DataPacketObjectUpdate
                             {
                                 UserID = bullet.Value.GetOwnerId(),
