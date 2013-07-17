@@ -39,17 +39,13 @@ namespace Examples.TheGame
         {
             return _life;
         }
+
         internal void SetLife(int value)
         {
             if (_life + value > 100)
-            {
                 ResetLife();
-            }
             else
-            {
-                _life += value;
-            }
-            
+                _life += value;            
         }
 
         internal void ResetLife()
@@ -66,43 +62,6 @@ namespace Examples.TheGame
         {
             return _score;
         }
-
-      /*  internal void CheckAllCollision()
-        {
-            foreach (var go in GameHandler.Players)
-            {
-                if (GetId() != go.Value.GetId())
-                {
-                    if (CheckCollision(go.Value))
-                    {
-                        Debug.WriteLine("Collision: Player " + GetId() + " BAM with " + go.Value.GetId());
-                        // Kill both players
-                        DestroyEnity();
-                    }
-                }
-            }
-
-            foreach (var go in GameHandler.Bullets)
-            {
-                if (GetId() != go.Value.GetOwnerId())
-                {
-                    if (CheckCollision(go.Value))
-                    {
-                        go.Value.OnCollisionEnter(GetId());
-                    }
-                       
-                }
-            }
-
-            foreach (var go in GameHandler.HealthItems)
-            {
-                if (CheckCollision(go.Value))
-                {
-                    go.Value.OnCollisionEnter(go.Value.GetId());
-                }
-            }
-        }
-       */
 
         internal override void OnCollisionEnter(uint id)
         {
@@ -146,14 +105,32 @@ namespace Examples.TheGame
         {
             base.Update();
 
-            if (GetId() != GameHandler.UserID)
-                SetSpeed(0);
-
             if (GetLife() <= 0)
                 DestroyEnity();
 
-            //CheckAllCollision();
             _shotTimer += (float)Time.Instance.DeltaTime;
+
+            // Send update to all clients.
+            _frameCounter = ++_frameCounter % FrameUpdate;
+
+            if (_frameCounter == 0)
+            {
+                var data = new DataPacketPlayerUpdate
+                {
+                    UserID = GetId(),
+                    Timestamp = GameHandler.Mediator.GetUnixTimestamp(),
+                    PlayerHealth = _life,
+                    PlayerActive = true,
+                    PlayerVelocity = GetAbsoluteSpeed(),
+                    PlayerPosition = GetPositionVector(),
+                    PlayerRotationX = GetRotationFromMatrix(0),
+                    PlayerRotationY = GetRotationFromMatrix(1),
+                    PlayerRotationZ = GetRotationFromMatrix(2),
+                };
+
+                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
+                GameHandler.Mediator.AddToSendingBuffer(packet, false);
+            }
         }
 
         internal void PlayerInput()
@@ -174,33 +151,7 @@ namespace Examples.TheGame
 
             if (Input.Instance.IsButtonDown(MouseButtons.Left) || Input.Instance.IsKeyPressed(KeyCodes.Space))
                 Shoot();
-
-            // Send update to all clients.
-            _frameCounter = ++_frameCounter%FrameUpdate;
-
-            if (_frameCounter == 0) {
-                var data = new DataPacketPlayerUpdate
-                {
-                    UserID = GetId(),
-                    Timestamp = GameHandler.Mediator.GetUnixTimestamp(),
-                    PlayerHealth = (int) _life,
-                    PlayerActive = true,
-                    PlayerVelocity = GetAbsoluteSpeed(),
-                    PlayerPosition = GetPositionVector(),
-                    PlayerRotationX = GetRotationFromMatrix(0),
-                    PlayerRotationY = GetRotationFromMatrix(1),
-                    PlayerRotationZ = GetRotationFromMatrix(2),
-                };
-           
-                var packet = new DataPacket { PacketType = DataPacketTypes.PlayerUpdate, Packet = data };
-                GameHandler.Mediator.AddToSendingBuffer(packet, false);
-            }
         }
-        /*internal override void InstructShader()
-        {
-            //Rc.SetShader(Sp);
-            Rc.SetShaderParamTexture(GameHandler.PlayerShaderParam, GameHandler.PlayerTexture);
-        }*/
 
         /// <summary>
         /// Instructs the shader prior to rendering
@@ -208,6 +159,7 @@ namespace Examples.TheGame
         internal override void InstructShader()
         {
             Rc.SetShaderParamTexture(Sp.GetShaderParam("tex"), GameHandler.PlayerTexture);
+
             Rc.SetShaderParam(Sp.GetShaderParam("calcLighting"), 0);
             Rc.SetShaderParam(Sp.GetShaderParam("ambientLight"), new float4(0.2f, 0.2f, 0.25f, 1.0f));
             Rc.SetShaderParam(Sp.GetShaderParam("matAmbient"), new float4(1.0f, 1.0f, 1.0f, 1.0f));

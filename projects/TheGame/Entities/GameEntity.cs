@@ -80,13 +80,6 @@ namespace Examples.TheGame
             return _collisionRadius;
         }
 
-        /*internal bool CheckCollision(GameEntity other)
-        {
-            return (other.GetPositionVector() - GetPositionVector()).LengthSquared <=
-                   other.GetCollisionRadius() * other.GetCollisionRadius() +
-                   GetCollisionRadius() * GetCollisionRadius();
-        }*/
-
         internal virtual void OnCollisionEnter(uint id)
         {
             Debug.WriteLine("OnCollisionEnter");
@@ -127,8 +120,6 @@ namespace Examples.TheGame
             return new float3(0, 0, 0);
         }
 
-
-
         internal void SetScale(float scale)
         {
             _scale = scale;
@@ -144,14 +135,14 @@ namespace Examples.TheGame
             // All speeds are negative
             if ((_speed > -_speedMax && i > 0) || (i == 0 && _speed > _speedMin))
             {
-                // Vorwärts und bremsen rückwärts
+                // flying forward - Breaking for backward moving
                 var newSpeed = _speed + (-100*(float) Time.Instance.DeltaTime*1.2f);
 
                 _speed = i == 0 ? System.Math.Max(_speedMin, newSpeed) : newSpeed;
             }
             else if ((_speed < _speedMax && i < 0) || (i == 0 && _speed < -_speedMin))
             {
-                // Rückwärts und bremsen vorwärts
+                // flying backward - Breaking for forward moving
                 var newSpeed = _speed + (50 * (float)Time.Instance.DeltaTime * 1.2f);
                 _speed = i == 0 ? System.Math.Min(-_speedMin, newSpeed) : newSpeed;
             }

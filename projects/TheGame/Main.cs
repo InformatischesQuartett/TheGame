@@ -25,7 +25,7 @@ namespace Examples.TheGame
             Input.Instance.CursorVisible = false;
             Input.Instance.FixMouseAtCenter = true;
 
-            RC.ClearColor = new float4(0.3f, 0.3f, 0.7f, 1);
+            RC.ClearColor = new float4(0f, 0f, 0f, 1);
 
             // Mediator for GameHandler and NetworkHandler
             const bool networkActive = true;

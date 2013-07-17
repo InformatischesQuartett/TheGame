@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Examples.TheGame.Shader;
 using Fusee.Engine;
 using Fusee.Math;
@@ -26,9 +24,9 @@ namespace Examples.TheGame
 
         internal enum GameEntities
         {
-            geBullet=0,
-            geHealthItem=1,
-            geExplosion=2
+            geBullet = 0,
+            geHealthItem = 1,
+            geExplosion = 2
         }
 
         internal readonly List<uint> RemoveBullets;
@@ -42,6 +40,7 @@ namespace Examples.TheGame
 
         private readonly IShaderParam _skyBoxShaderParam;
         internal readonly IShaderParam PlayerShaderParam;
+        internal readonly IShaderParam VColorShaderParam;
 
         private readonly ITexture _skyBoxTexture;
         internal readonly ITexture TextureExplosionHandle;
@@ -65,6 +64,7 @@ namespace Examples.TheGame
         internal Mesh HealthItemMesh;
         private readonly Mesh _skyBoxMesh;
         private readonly Mesh _guiCube;
+        private readonly Mesh _MicroFloatiesMesh;
 
         /// <summary>
         ///     State Object, contains the current State the Game is in
@@ -105,8 +105,9 @@ namespace Examples.TheGame
 
             _skyBoxShaderParam = rc.GetShaderParam(TextureSp, "texture1");
             PlayerShaderParam = rc.GetShaderParam(TextureSp, "texture1");
+            VColorShaderParam = rc.GetShaderParam(BasicSp, "vColor");
 
-            ImageData texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
+            var texture = rc.LoadImage("Assets/ExplosionTexture.jpg");
             TextureExplosionHandle = rc.CreateTexture(texture);
 
             texture = rc.LoadImage("Assets/skybox.png");
@@ -123,7 +124,6 @@ namespace Examples.TheGame
 
             _currentHealthBarTexture = _healthBarGreenTexture;
 
-
             AudioSoundtrack = Audio.Instance.LoadFile("Assets/TheGame Soundtrack.ogg");
             AudioExplosion = Audio.Instance.LoadFile("Assets/Explosion_Edited.wav");
             AudioShoot = Audio.Instance.LoadFile("Assets/Laser_Shoot.wav");
@@ -137,6 +137,7 @@ namespace Examples.TheGame
             HealthItemMesh = MeshReader.LoadMesh("Assets/item.obj.model");
             _skyBoxMesh = MeshReader.LoadMesh("Assets/spacebox.obj.model");
             _guiCube = MeshReader.LoadMesh("Assets/Cube.obj.model");
+            _MicroFloatiesMesh = MeshReader.LoadMesh("Assets/MicroFloaties.obj.model");
 
             // Start soundtrack
             AudioSoundtrack.Play(true);
@@ -144,7 +145,6 @@ namespace Examples.TheGame
             GameState = new GameState(GameState.State.StartMenu);
 
             _camMatrix = float4x4.Identity;
-
         }
 
         internal void Update()
@@ -186,6 +186,7 @@ namespace Examples.TheGame
                 HealthItems.Remove(removeItem);
                 _gameHandlerServer.SpawnHealthItem();
             }
+
             foreach (var removeBullet in RemoveBullets)
                 Bullets.Remove(removeBullet);
 
@@ -201,6 +202,7 @@ namespace Examples.TheGame
         private void HandleIncomingMessage()
         {
             KeyValuePair<DataPacket, bool> recvPacket;
+
             while ((recvPacket = Mediator.GetFromReceivingBuffer()).Key.Packet != null)
             {
                 switch (recvPacket.Key.PacketType)
@@ -218,7 +220,6 @@ namespace Examples.TheGame
                         {
                             // SERVER ACTIVITY!
                             _gameHandlerServer.RespawnPlayer(playerSpawnData.UserID);
-                            
                         }
 
                         break;
@@ -231,7 +232,6 @@ namespace Examples.TheGame
                         // This player got hit!
                         if (userID == UserID)
                         {
-                            Debug.WriteLine("Setze Gesundheit auf: " + playerUpdateData.PlayerHealth);
                             Players[userID].SetLife(playerUpdateData.PlayerHealth);
                             break;
                         }
@@ -339,8 +339,8 @@ namespace Examples.TheGame
 
             var rotation = _camMatrix;
             rotation.Row3 = new float4(0, 0, 0, 1);
-            RContext.ModelView = float4x4.Scale(50, 50, 50) * rotation;
 
+            RContext.ModelView = float4x4.Scale(50, 50, 50)*rotation;
             RContext.Render(_skyBoxMesh);
 
             RContext.Clear(ClearFlags.Depth);
@@ -356,16 +356,31 @@ namespace Examples.TheGame
                 go.Value.RenderUpdate(RContext, _camMatrix);
 
             foreach (var go in Players)
-            {
                 if (go.Key != UserID)
-                {
                     go.Value.RenderUpdate(RContext, _camMatrix);
-                }
-            }
 
             Players[UserID].RenderUpdate(RContext, _camMatrix);
-           
-            //Render Gui Cube for Healthbar
+
+            // Render MicroFloaties 50x
+            RContext.SetShader(BasicSp);
+            var random = new System.Random(100);
+
+            for (var x = -25; x < 25; x++)
+            {
+                var r = (float) random.NextDouble();
+                var g = (float) random.NextDouble();
+                var b = (float) random.NextDouble();
+
+                RContext.SetShaderParam(VColorShaderParam, new float4(r, g, b, 1));
+
+                RContext.ModelView = float4x4.Scale(1, 1, 1)*float4x4.CreateTranslation(4000*x, 1000*x, 2000*x)*
+                                     float4x4.CreateRotationX(20*x)*float4x4.CreateRotationZ(40*x)*
+                                     float4x4.CreateRotationZ(10*x)*_camMatrix;
+
+                RContext.Render(_MicroFloatiesMesh);
+            }
+
+            // Render cube for healthbar
             RContext.Clear(ClearFlags.Depth);
 
             if (Players[UserID].GetLife() >= 70)
@@ -379,7 +394,7 @@ namespace Examples.TheGame
 
             RContext.SetShader(TextureSp);
             RContext.SetShaderParamTexture(_skyBoxShaderParam, _currentHealthBarTexture);
-            RContext.ModelView = float4x4.Scale(1, 0.075f, 0.001f) * float4x4.CreateTranslation(0, 75, -200);
+            RContext.ModelView = float4x4.Scale(1, 0.075f, 0.001f)*float4x4.CreateTranslation(0, 75, -200);
             RContext.Render(_guiCube);
         }
 
